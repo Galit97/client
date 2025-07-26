@@ -1,6 +1,15 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
-export type UserRole = 'Owner' | 'Member' | 'Bride' | 'Groom' | 'Parent' | 'Planner';
+export type UserRole =
+  | 'Bride'
+  | 'Groom'
+  | 'MotherOfBride'
+  | 'MotherOfGroom'
+  | 'FatherOfBride'
+  | 'FatherOfGroom'
+  | 'Planner'
+  | 'Member'
+  | 'Other';
 
 export interface IUser {
   firstName: string;
@@ -38,7 +47,17 @@ const userSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ['Owner', 'Member', 'Bride', 'Groom', 'Parent', 'Planner'],
+      enum: [
+        'Bride',
+        'Groom',
+        'MotherOfBride',
+        'MotherOfGroom',
+        'FatherOfBride',
+        'FatherOfGroom',
+        'Planner',
+        'Member',
+        'Other'
+      ],
       required: true,
       default: 'Member',
     },
@@ -47,11 +66,11 @@ const userSchema = new Schema<IUser>(
       required: true,
     },
     profileImage: {
-      type: String,
+      type: String, 
     },
   },
   {
-    timestamps: true, 
+    timestamps: true,
   }
 );
 

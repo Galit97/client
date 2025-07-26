@@ -5,11 +5,11 @@ import getWeddings from "../controllers/weddingController/getWeddings";
 import getWeddingById from "../controllers/weddingController/getWeddingById";
 import updateWedding from "../controllers/weddingController/updateWedding";
 import deleteWedding from "../controllers/weddingController/deleteWedding";
-
+import { authenticateJWT } from "../src/middleware/authenticateJWT";
 
 const router = Router();
 
-router.post("/", createWedding);
+router.post("/", authenticateJWT, createWedding);
 router.get("/", getWeddings);
 router.get("/:id", getWeddingById);
 router.put("/:id", updateWedding);

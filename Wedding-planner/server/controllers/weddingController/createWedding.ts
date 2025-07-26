@@ -1,9 +1,40 @@
-import { Request, Response } from 'express';
-import Wedding from '../../models/WeddingModel';
+import { Response } from "express";
+import { AuthenticatedRequest } from "../../src/middleware/authenticateJWT";
+import Wedding from "../../models/weddingModel";
 
-const createWedding = async (req: Request, res: Response) => {
+const createWedding = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const newWedding = await Wedding.create(req.body);
+    const currentUserId = req.user?._id;
+    if (!currentUserId) {
+      return res.status(401).json({ message: "Unauthorized: no user info" });
+    }
+
+    const {
+      weddingName,
+      weddingDate,
+      startTime,
+      location,
+      addressDetails,
+      budget,
+      notes,
+      status,
+      participants = [],
+    } = req.body;
+
+    const newWeddingData = {
+      weddingName,
+      weddingDate,
+      startTime,
+      location,
+      addressDetails,
+      budget,
+      notes,
+      status,
+      ownerID: currentUserId,
+      participants: [...participants, currentUserId],
+    };
+
+    const newWedding = await Wedding.create(newWeddingData);
     res.status(201).json(newWedding);
   } catch (err: any) {
     console.error(err);

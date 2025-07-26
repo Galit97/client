@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Wedding from '../../models/WeddingModel';
+import Wedding from '../../models/weddingModel';
 
 const getWeddingById = async (req: Request, res: Response) => {
   try {
