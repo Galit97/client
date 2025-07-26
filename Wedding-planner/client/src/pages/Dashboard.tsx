@@ -4,9 +4,11 @@ import GuestListPage from "./GuestListPage";
 import VendorsListPage from "./VendorPage";
 import WeddingPage from "./WeedingPage";
 import CheckListPage from "./CheckListPage";
+import BudgetPage from "./BudgetPage";
 
 export default function Dashboard() {
-  const [selectedSection, setSelectedSection] = useState<string>("guestList");
+  // 🔥 כאן שיניתי את ה-state הראשוני ל-"wedding"
+  const [selectedSection, setSelectedSection] = useState<string>("wedding");
   const [currentUserName, setCurrentUserName] = useState<string | null>(null);
 
   useEffect(() => {
@@ -14,7 +16,6 @@ export default function Dashboard() {
     if (currentUserRaw) {
       try {
         const currentUser = JSON.parse(currentUserRaw);
-        // נניח שהשם מלא מאוחד בשדות firstName + lastName
         const name =
           currentUser.firstName && currentUser.lastName
             ? `${currentUser.firstName} ${currentUser.lastName}`
@@ -36,19 +37,48 @@ export default function Dashboard() {
         return <WeddingPage />;
       case "checklist":
         return <CheckListPage />;
+      case "budget":
+        return <BudgetPage />;
       default:
-        return <h2>בחר סעיף</h2>;
+        return <WeddingPage />;
     }
   };
 
   return (
-    <div>
-      <header style={{ marginBottom: 20 }}>
-        {currentUserName && <p>שלום, {currentUserName}</p>}
-        <Menu onSelect={setSelectedSection} />
+    <div style={{ fontFamily: "Arial, sans-serif", color: "#000" }}>
+      <header
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "10px 20px",
+          borderBottom: "1px solid black",
+          marginBottom: 20,
+          direction: "rtl",
+        }}
+      >
+        <Menu onSelect={setSelectedSection} currentUserName={currentUserName} />
+
+        <button
+          onClick={() => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("currentUser");
+            window.location.href = "/";
+          }}
+          style={{
+            background: "none",
+            border: "none",
+            padding: "0 10px",
+            fontSize: "16px",
+            cursor: "pointer",
+            color: "black",
+          }}
+        >
+          התנתקות
+        </button>
       </header>
 
-      <main>{renderSection()}</main>
+      <main style={{ padding: "0 20px" }}>{renderSection()}</main>
     </div>
   );
 }
