@@ -3,7 +3,6 @@ import Budget from "../../models/budgetModel";
 
 export const createBudget = async (req: Request, res: Response) => {
   try {
-    // נקבל ownerID מה־body
     const { ownerID, totalBudget, expenses } = req.body;
 
     if (!ownerID) {

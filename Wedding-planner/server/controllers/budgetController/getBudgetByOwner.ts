@@ -3,7 +3,6 @@ import Budget from "../../models/budgetModel";
 
 export const getBudgetByOwner = async (req: Request, res: Response) => {
   try {
-    // ניקח את ה‑ownerID מהשורה (query) של הבקשה
     const ownerID = req.query.ownerID as string;
     if (!ownerID) {
       return res.status(400).json({ message: "ownerID is required" });

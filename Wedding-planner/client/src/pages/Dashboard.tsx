@@ -40,7 +40,7 @@ export default function Dashboard() {
       case "budget":
         return <BudgetPage />;
       default:
-        return <WeddingPage />;
+        return <BudgetPage />;
     }
   };
 
