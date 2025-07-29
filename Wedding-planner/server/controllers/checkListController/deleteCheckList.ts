@@ -1,9 +1,9 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../../src/middleware/authenticateJWT';
-import CheckList from '../../models/ChecklistModel';
+import Checklist from '../../models/ChecklistModel';
 import Wedding from '../../models/weddingModel';
 
-const getCheckListById = async (req: AuthenticatedRequest, res: Response) => {
+const deleteCheckList = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const currentUserId = req.user?._id;
     if (!currentUserId) {
@@ -12,8 +12,8 @@ const getCheckListById = async (req: AuthenticatedRequest, res: Response) => {
 
     const { id } = req.params;
 
-    // Get the checklist item
-    const checklistItem = await CheckList.findById(id);
+    // First get the checklist item to find the wedding
+    const checklistItem = await Checklist.findById(id);
     if (!checklistItem) {
       return res.status(404).json({ message: 'Checklist item not found' });
     }
@@ -28,14 +28,19 @@ const getCheckListById = async (req: AuthenticatedRequest, res: Response) => {
     });
 
     if (!wedding) {
-      return res.status(403).json({ message: "You don't have permission to view this checklist item" });
+      return res.status(403).json({ message: "You don't have permission to delete checklist items for this wedding" });
     }
 
-    res.json(checklistItem);
+    const deleted = await Checklist.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({ message: 'Checklist item not found' });
+    }
+
+    res.json({ message: 'Checklist item deleted successfully' });
   } catch (err: any) {
-    console.error('Error fetching checklist item by ID:', err);
+    console.error('Error deleting checklist item:', err);
     res.status(500).json({ message: err.message });
   }
 };
 
-export default getCheckListById;
+export default deleteCheckList; 

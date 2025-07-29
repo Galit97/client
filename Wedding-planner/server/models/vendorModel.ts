@@ -2,7 +2,7 @@ import { Schema, model, Types } from 'mongoose';
 
 export type VendorStatus = 'Pending' | 'Confirmed' | 'Paid';
 
-export type VendorType = 'music' | 'food' | 'photography' | 'decor' | 'other';
+export type VendorType = 'music' | 'food' | 'photography' | 'decor' | 'clothes' | 'makeup_hair' | 'internet_orders' | 'other';
 
 export interface IVendor {
   weddingID: Types.ObjectId;
@@ -53,7 +53,7 @@ const vendorSchema = new Schema<IVendor>(
     },
     type: {
       type: String,
-      enum: ['music', 'food', 'photography', 'decor', 'other'],
+      enum: ['music', 'food', 'photography', 'decor', 'clothes', 'makeup_hair', 'internet_orders', 'other'],
       required: true,
     },
   },

@@ -11,6 +11,12 @@ import getWeddingById from "../controllers/weddingController/getWeddingById";
 
 const router = Router();
 
+// Add logging middleware for wedding routes
+router.use((req, res, next) => {
+  console.log(`💒 Wedding route: ${req.method} ${req.path}`);
+  next();
+});
+
 router.post("/", authenticateJWT, createWedding);
 router.get("/", getWeddings);
 router.get("/by-participant", authenticateJWT, getWeddingByParticipant);

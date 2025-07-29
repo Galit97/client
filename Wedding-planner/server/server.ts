@@ -12,6 +12,18 @@ dotenv.config();
 
 const app: Application = express();
 
+// Add logging middleware
+app.use((req: Request, res: Response, next) => {
+  console.log(`🌐 ${new Date().toISOString()} - ${req.method} ${req.path}`);
+  if (req.body && Object.keys(req.body).length > 0) {
+    console.log(`📦 Request body:`, JSON.stringify(req.body, null, 2));
+  }
+  if (req.query && Object.keys(req.query).length > 0) {
+    console.log(`🔍 Query params:`, JSON.stringify(req.query, null, 2));
+  }
+  next();
+});
+
 app.use(cors());
 app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ limit: "100mb", extended: true }));

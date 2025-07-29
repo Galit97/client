@@ -1,10 +1,11 @@
 import { Schema, model, Types } from 'mongoose';
 
 export interface IChecklist {
+  weddingID: Types.ObjectId;    // Add wedding association
   task: string;               
   done: boolean;              
   relatedVendorId?: Types.ObjectId; 
-  relatedoleId?: Types.ObjectId; 
+  relatedRoleId?: Types.ObjectId;  // Fix typo
   notes?: string;                
   dueDate?: Date;               
   createdAt?: Date;
@@ -13,6 +14,11 @@ export interface IChecklist {
 
 const checklistSchema = new Schema<IChecklist>(
   {
+    weddingID: {
+      type: Schema.Types.ObjectId,
+      ref: 'Wedding',
+      required: true,
+    },
     task: {
       type: String,
       required: true,
@@ -25,6 +31,10 @@ const checklistSchema = new Schema<IChecklist>(
     relatedVendorId: {
       type: Schema.Types.ObjectId,
       ref: 'Vendor',
+    },
+    relatedRoleId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
     },
     notes: {
       type: String,

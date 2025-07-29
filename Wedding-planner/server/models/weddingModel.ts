@@ -22,6 +22,17 @@ export interface IWedding {
   guestList?: Types.ObjectId[];   
   actualCost?: number;
   budgetBreakdown?: Record<string, number>; 
+  mealPricing?: {
+    basePrice: number;
+    childDiscount: number;
+    childAgeLimit: number;
+    bulkThreshold: number;
+    bulkPrice: number;
+    bulkMaxGuests: number;
+    reservePrice: number;
+    reserveThreshold: number;
+    reserveMaxGuests: number;
+  };
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -109,6 +120,44 @@ const weddingSchema = new Schema<IWedding>(
       type: Map,
       of: Number,
       default: {},
+    },
+    mealPricing: {
+      basePrice: {
+        type: Number,
+        default: 0,
+      },
+      childDiscount: {
+        type: Number,
+        default: 50,
+      },
+      childAgeLimit: {
+        type: Number,
+        default: 12,
+      },
+      bulkThreshold: {
+        type: Number,
+        default: 250,
+      },
+      bulkPrice: {
+        type: Number,
+        default: 0,
+      },
+      reservePrice: {
+        type: Number,
+        default: 0,
+      },
+      reserveThreshold: {
+        type: Number,
+        default: 300,
+      },
+      bulkMaxGuests: {
+        type: Number,
+        default: 300,
+      },
+      reserveMaxGuests: {
+        type: Number,
+        default: 500,
+      },
     },
   },
   {

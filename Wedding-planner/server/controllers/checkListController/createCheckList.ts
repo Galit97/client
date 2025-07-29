@@ -1,16 +1,16 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../../src/middleware/authenticateJWT';
-import Guest from '../../models/guestModel';
+import Checklist from '../../models/ChecklistModel';
 import Wedding from '../../models/weddingModel';
 
-const createGuest = async (req: AuthenticatedRequest, res: Response) => {
+const createCheckList = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const currentUserId = req.user?._id;
     if (!currentUserId) {
       return res.status(401).json({ message: "Unauthorized: no user info" });
     }
 
-    const { weddingID, firstName, lastName, phone, seatsReserved, tableNumber } = req.body;
+    const { weddingID, task, notes, dueDate, relatedVendorId, relatedRoleId } = req.body;
 
     // Validate that the wedding belongs to the current user
     const wedding = await Wedding.findOne({ 
@@ -22,25 +22,24 @@ const createGuest = async (req: AuthenticatedRequest, res: Response) => {
     });
 
     if (!wedding) {
-      return res.status(403).json({ message: "You don't have permission to add guests to this wedding" });
+      return res.status(403).json({ message: "You don't have permission to add checklist items to this wedding" });
     }
 
-    const newGuest = await Guest.create({
+    const newChecklistItem = await Checklist.create({
       weddingID,
-      firstName,
-      lastName,
-      phone,
-      seatsReserved,
-      tableNumber,
-      status: 'Invited',
-      invitationSent: false
+      task,
+      notes,
+      dueDate,
+      relatedVendorId,
+      relatedRoleId,
+      done: false
     });
 
-    res.status(201).json(newGuest);
+    res.status(201).json(newChecklistItem);
   } catch (err: any) {
-    console.error('Error creating guest:', err);
+    console.error('Error creating checklist item:', err);
     res.status(400).json({ message: err.message });
   }
 };
 
-export default createGuest;
+export default createCheckList; 
