@@ -397,7 +397,7 @@ export default function CheckListPage() {
               תיאור המשימה *
             </label>
         <input
-              placeholder="לדוגמה: הזמנת צלם"
+             
           value={newTask}
           onChange={e => setNewTask(e.target.value)}
           required

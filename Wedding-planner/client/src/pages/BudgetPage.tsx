@@ -782,7 +782,7 @@ const BudgetPage: React.FC = () => {
                   ...prev,
                   adultGuests: Number(e.target.value)
                 }))}
-                placeholder="לדוגמה: 150"
+               
                 style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
               />
             </div>
@@ -799,7 +799,7 @@ const BudgetPage: React.FC = () => {
                   ...prev,
                   childGuests: Number(e.target.value)
                 }))}
-                placeholder="לדוגמה: 20"
+               
                 style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
               />
             </div>

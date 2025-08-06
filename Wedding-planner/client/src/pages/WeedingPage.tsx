@@ -635,7 +635,7 @@ export default function WeddingPage() {
                 name="weddingName"
                 value={wedding.weddingName}
                 onChange={handleInputChange}
-                placeholder="לדוגמה: חתונה של דוד ושרה"
+              
                 required
                 style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
               />
@@ -676,7 +676,7 @@ export default function WeddingPage() {
                 name="location"
                 value={wedding.location}
                 onChange={handleInputChange}
-                placeholder="לדוגמה: אולם אירועים ירושלים"
+               
                 style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
               />
             </div>
@@ -691,7 +691,7 @@ export default function WeddingPage() {
                 min={0}
                 value={wedding.budget}
                 onChange={handleInputChange}
-                placeholder="לדוגמה: 50000"
+               
                 style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
               />
             </div>
@@ -977,7 +977,7 @@ export default function WeddingPage() {
                 min="0"
                 value={wedding.mealPricing?.basePrice || 0}
                 onChange={(e) => handleMealPricingChange('basePrice', Number(e.target.value))}
-                placeholder="לדוגמה: 360"
+               
                 disabled={!isEditingMealPricing}
                 style={{ 
                   width: '100%', 
@@ -999,7 +999,7 @@ export default function WeddingPage() {
                 min="0"
                 value={wedding.mealPricing?.bulkThreshold || 0}
                 onChange={(e) => handleMealPricingChange('bulkThreshold', Number(e.target.value))}
-                placeholder="לדוגמה: 250"
+               
                 disabled={!isEditingMealPricing}
                 style={{ 
                   width: '100%', 
@@ -1021,7 +1021,7 @@ export default function WeddingPage() {
                 min="0"
                 value={wedding.mealPricing?.bulkPrice || 0}
                 onChange={(e) => handleMealPricingChange('bulkPrice', Number(e.target.value))}
-                placeholder="לדוגמה: 280"
+              
                 disabled={!isEditingMealPricing}
                 style={{ 
                   width: '100%', 
@@ -1043,7 +1043,7 @@ export default function WeddingPage() {
                 min="0"
                 value={wedding.mealPricing?.bulkMaxGuests || 0}
                 onChange={(e) => handleMealPricingChange('bulkMaxGuests', Number(e.target.value))}
-                placeholder="לדוגמה: 300"
+           
                 disabled={!isEditingMealPricing}
                 style={{ 
                   width: '100%', 
@@ -1065,7 +1065,7 @@ export default function WeddingPage() {
                 min="0"
                 value={wedding.mealPricing?.reservePrice || 0}
                 onChange={(e) => handleMealPricingChange('reservePrice', Number(e.target.value))}
-                placeholder="לדוגמה: 320"
+             
                 disabled={!isEditingMealPricing}
                 style={{ 
                   width: '100%', 
@@ -1087,7 +1087,7 @@ export default function WeddingPage() {
                 min="0"
                 value={wedding.mealPricing?.reserveThreshold || 0}
                 onChange={(e) => handleMealPricingChange('reserveThreshold', Number(e.target.value))}
-                placeholder="לדוגמה: 300"
+            
                 disabled={!isEditingMealPricing}
                 style={{ 
                   width: '100%', 
@@ -1109,7 +1109,7 @@ export default function WeddingPage() {
                 min="0"
                 value={wedding.mealPricing?.reserveMaxGuests || 0}
                 onChange={(e) => handleMealPricingChange('reserveMaxGuests', Number(e.target.value))}
-                placeholder="לדוגמה: 500"
+              
                 disabled={!isEditingMealPricing}
                 style={{ 
                   width: '100%', 
@@ -1132,7 +1132,7 @@ export default function WeddingPage() {
                 max="100"
                 value={wedding.mealPricing?.childDiscount || 0}
                 onChange={(e) => handleMealPricingChange('childDiscount', Number(e.target.value))}
-                placeholder="לדוגמה: 50"
+             
                 disabled={!isEditingMealPricing}
                 style={{ 
                   width: '100%', 
@@ -1154,7 +1154,7 @@ export default function WeddingPage() {
                 min="0"
                 value={wedding.mealPricing?.childAgeLimit || 0}
                 onChange={(e) => handleMealPricingChange('childAgeLimit', Number(e.target.value))}
-                placeholder="לדוגמה: 12"
+              
                 disabled={!isEditingMealPricing}
                 style={{ 
                   width: '100%', 
@@ -1448,7 +1448,7 @@ export default function WeddingPage() {
                   ...prev,
                   adultGuests: Number(e.target.value)
                 }))}
-                placeholder="לדוגמה: 150"
+              
                 style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
               />
             </div>
@@ -1465,7 +1465,7 @@ export default function WeddingPage() {
                   ...prev,
                   childGuests: Number(e.target.value)
                 }))}
-                placeholder="לדוגמה: 20"
+            
                 style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
               />
             </div>

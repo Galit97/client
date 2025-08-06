@@ -64,19 +64,18 @@ export default function Menu({ onSelect, currentUserName, currentSection }: Prop
           {menuItems.map((item, idx) => (
             <React.Fragment key={item.id}>
               <li>
-                <button
-                  onClick={item.onClick}
-                  style={{
-                    background: currentSection === item.id ? "#e3f2fd" : "none",
-                    border: currentSection === item.id ? "2px solid #2196F3" : "none",
-                    padding: "0 10px",
-                    fontSize: "16px",
-                    cursor: "pointer",
-                    color: currentSection === item.id ? "#1976D2" : "black",
-                    borderRadius: currentSection === item.id ? "4px" : "0",
-                    fontWeight: currentSection === item.id ? "bold" : "normal",
-                  }}
-                >
+                                 <button
+                   onClick={item.onClick}
+                   style={{
+                     background: "none",
+                     border: "none",
+                     padding: "0 10px",
+                     fontSize: "16px",
+                     cursor: "pointer",
+                     color: "black",
+                     fontWeight: currentSection === item.id ? "bold" : "normal",
+                   }}
+                 >
                   {item.label}
                 </button>
               </li>

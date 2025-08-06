@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+// @ts-ignore
+import * as XLSX from 'xlsx';
 
 type GuestStatus = 'Invited' | 'Confirmed' | 'Declined' | 'Arrived';
 
@@ -35,6 +37,184 @@ export default function GuestListPage() {
     seatsReserved: 1,
     tableNumber: 0,
   });
+
+  // Excel functions
+  const downloadTemplate = () => {
+    const templateData = [
+      {
+        'שם פרטי': 'דוגמה',
+        'שם משפחה': 'כהן',
+        'מספר טלפון': '050-1234567',
+        'מספר מקומות שמורים': 2,
+        'מספר שולחן': 5,
+        'סטטוס הזמנה': 'הוזמן'
+      },
+      {
+        'שם פרטי': 'דוגמה',
+        'שם משפחה': 'לוי',
+        'מספר טלפון': '052-9876543',
+        'מספר מקומות שמורים': 1,
+        'מספר שולחן': 3,
+        'סטטוס הזמנה': 'אושר'
+      }
+    ];
+
+    const ws = XLSX.utils.json_to_sheet(templateData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'רשימת מוזמנים');
+    
+    // Set column widths
+    ws['!cols'] = [
+      { width: 15 }, // שם פרטי
+      { width: 15 }, // שם משפחה
+      { width: 15 }, // מספר טלפון
+      { width: 20 }, // מספר מקומות שמורים
+      { width: 15 }, // מספר שולחן
+      { width: 15 }  // סטטוס הזמנה
+    ];
+
+    XLSX.writeFile(wb, 'תבנית_רשימת_מוזמנים.xlsx');
+  };
+
+  const exportToExcel = () => {
+    if (guests.length === 0) {
+      alert('אין מוזמנים לייצא');
+      return;
+    }
+
+    const exportData = guests.map(guest => ({
+      'שם פרטי': guest.firstName,
+      'שם משפחה': guest.lastName,
+      'מספר טלפון': guest.phone || '',
+      'מספר מקומות שמורים': guest.seatsReserved,
+      'מספר שולחן': guest.tableNumber || '',
+      'סטטוס הזמנה': getStatusText(guest.status)
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'רשימת מוזמנים');
+    
+    // Set column widths
+    ws['!cols'] = [
+      { width: 15 }, // שם פרטי
+      { width: 15 }, // שם משפחה
+      { width: 15 }, // מספר טלפון
+      { width: 20 }, // מספר מקומות שמורים
+      { width: 15 }, // מספר שולחן
+      { width: 15 }  // סטטוס הזמנה
+    ];
+
+    XLSX.writeFile(wb, `רשימת_מוזמנים_${new Date().toLocaleDateString('he-IL')}.xlsx`);
+  };
+
+  const importFromExcel = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+      if (jsonData.length === 0) {
+        alert('הקובץ ריק או לא מכיל נתונים תקינים');
+        return;
+      }
+
+      const importedGuests = jsonData.map((row: any, guest: any) => ({
+        firstName: row['שם פרטי'] || row['firstName'] || '',
+        lastName: row['שם משפחה'] || row['lastName'] || '',
+        phone: row['מספר טלפון'] || row['phone'] || '',
+        seatsReserved: parseInt(row['מספר מקומות שמורים'] || row['seatsReserved'] || '1'),
+        tableNumber: parseInt(row['מספר שולחן'] || row['tableNumber'] || '0'),
+        status: getStatusFromText(row['סטטוס הזמנה'] || row['status'] || 'הוזמן') as GuestStatus
+      }));
+
+      // Validate data
+      const validGuests = importedGuests.filter(guest => 
+        guest.firstName.trim() && guest.lastName.trim() && guest.seatsReserved > 0
+      );
+
+      if (validGuests.length === 0) {
+        alert('לא נמצאו נתונים תקינים בקובץ');
+        return;
+      }
+
+      if (validGuests.length !== importedGuests.length) {
+        alert(`יובאו ${validGuests.length} מוזמנים מתוך ${importedGuests.length} (חלק מהשורות לא היו תקינות)`);
+      }
+
+      // Add guests to database
+      await addMultipleGuests(validGuests);
+      
+      // Clear file input
+      event.target.value = '';
+      
+    } catch (error) {
+      console.error('Error importing Excel:', error);
+      alert('שגיאה בייבוא הקובץ. אנא ודא שהקובץ בפורמט Excel תקין');
+    }
+  };
+
+  const addMultipleGuests = async (guestsToAdd: any[]) => {
+    const token = localStorage.getItem("token");
+    if (!token || !weddingId) return;
+
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const guestData of guestsToAdd) {
+      try {
+        const res = await fetch('/api/guests', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            ...guestData,
+            weddingID: weddingId,
+            invitationSent: false,
+          }),
+        });
+
+        if (res.ok) {
+          const created = await res.json();
+          setGuests(prev => [...prev, created]);
+          successCount++;
+        } else {
+          errorCount++;
+        }
+      } catch (error) {
+        console.error('Error adding guest:', error);
+        errorCount++;
+      }
+    }
+
+    if (successCount > 0) {
+      alert(`יובאו בהצלחה ${successCount} מוזמנים${errorCount > 0 ? ` (${errorCount} שגיאות)` : ''}`);
+    } else {
+      alert('לא הצלחנו לייבא אף מוזמן. אנא נסה שוב');
+    }
+  };
+
+  const getStatusFromText = (statusText: string): GuestStatus => {
+    switch (statusText) {
+      case 'אושר':
+      case 'Confirmed':
+        return 'Confirmed';
+      case 'נדחה':
+      case 'Declined':
+        return 'Declined';
+      case 'הגיע':
+      case 'Arrived':
+        return 'Arrived';
+      default:
+        return 'Invited';
+    }
+  };
 
   useEffect(() => {
     async function fetchData() {
@@ -308,6 +488,76 @@ export default function GuestListPage() {
         </div>
       </div>
 
+      {/* Excel Import/Export Section */}
+      <div style={{
+        background: '#fff3cd',
+        padding: '15px',
+        borderRadius: '8px',
+        marginBottom: '20px',
+        border: '1px solid #ffc107'
+      }}>
+        <h4 style={{ margin: '0 0 15px 0', color: '#856404' }}>📊 ייבוא וייצוא אקסל</h4>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <button
+            onClick={downloadTemplate}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#28a745',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: 'bold'
+            }}
+          >
+            📥 הורד תבנית אקסל
+          </button>
+          
+          <button
+            onClick={exportToExcel}
+            disabled={guests.length === 0}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: guests.length === 0 ? '#6c757d' : '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: guests.length === 0 ? 'not-allowed' : 'pointer',
+              fontSize: '14px',
+              fontWeight: 'bold'
+            }}
+          >
+            📤 ייצא לאקסל ({guests.length} מוזמנים)
+          </button>
+          
+          <label
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#fd7e14',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              display: 'inline-block'
+            }}
+          >
+            📁 ייבא מאקסל
+            <input
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={importFromExcel}
+              style={{ display: 'none' }}
+            />
+          </label>
+        </div>
+        <div style={{ fontSize: '12px', color: '#856404', marginTop: '10px' }}>
+          <strong>טיפ:</strong> הורד את התבנית, מלא אותה וחזור לייבוא כקובץ xlsx הקובץ חייב לכלול את העמודות: שם פרטי, שם משפחה, מספר טלפון, מספר מקומות שמורים, מספר שולחן, סטטוס הזמנה
+        </div>
+      </div>
+
       {/* Add Guest Form */}
       <div style={{
         background: '#f9f9f9',
@@ -364,7 +614,7 @@ export default function GuestListPage() {
               type="number"
               min={1}
               max={10}
-              placeholder="לדוגמה: 2"
+           
               value={newGuest.seatsReserved}
               onChange={e => setNewGuest({ ...newGuest, seatsReserved: Number(e.target.value) })}
               required
@@ -380,7 +630,7 @@ export default function GuestListPage() {
             <input
               type="number"
               min={0}
-              placeholder="לדוגמה: 5"
+            
               value={newGuest.tableNumber}
               onChange={e => setNewGuest({ ...newGuest, tableNumber: Number(e.target.value) })}
               style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}

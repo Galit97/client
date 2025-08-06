@@ -387,7 +387,7 @@ export default function VendorsListPage() {
             <input
               type="number"
               min={0}
-              placeholder="לדוגמה: 5000"
+            
               value={newVendor.price}
               onChange={(e) => setNewVendor({ ...newVendor, price: Number(e.target.value) })}
               required
