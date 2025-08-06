@@ -629,6 +629,8 @@ export default function VendorsListPage() {
                     <option value="clothes">בגדים</option>
                     <option value="makeup_hair">איפור ושיער</option>
                     <option value="internet_orders">הזמנות מקוונות</option>
+                    <option value="internet_orders">תאורה והגברה</option>
+
                     <option value="other">אחר</option>
                   </select>
                   <input

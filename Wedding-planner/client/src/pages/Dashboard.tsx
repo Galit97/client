@@ -1,84 +1,650 @@
 import React, { useState, useEffect } from "react";
-import Menu from "../components/Menu/Menu";
-import GuestListPage from "./GuestListPage";
-import VendorsListPage from "./VendorPage";
-import WeddingPage from "./WeedingPage";
-import CheckListPage from "./CheckListPage";
-import BudgetPage from "./BudgetPage";
 
-export default function Dashboard() {
-  // 🔥 כאן שיניתי את ה-state הראשוני ל-"wedding"
-  const [selectedSection, setSelectedSection] = useState<string>("wedding");
-  const [currentUserName, setCurrentUserName] = useState<string | null>(null);
+type Task = {
+  _id: string;
+  task: string;
+  notes?: string;
+  done: boolean;
+  dueDate?: string;
+  relatedVendorId?: string;
+  relatedRoleId?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+type Vendor = {
+  _id: string;
+  vendorName: string;
+  type: string;
+  status: string;
+  price: number;
+};
+
+type Guest = {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  status: 'Invited' | 'Confirmed' | 'Declined' | 'Arrived';
+  seatsReserved: number;
+  companions?: number;
+};
+
+type WeddingData = {
+  weddingDate: string;
+  budget: number;
+  totalGuests: number;
+};
+
+type Activity = {
+  id: string;
+  type: 'guest_added' | 'task_completed' | 'vendor_added' | 'vendor_updated' | 'task_added';
+  title: string;
+  description: string;
+  timestamp: string;
+  icon: string;
+};
+
+const Dashboard: React.FC = () => {
+  const [weddingData, setWeddingData] = useState<WeddingData | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [guests, setGuests] = useState<Guest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
 
   useEffect(() => {
-    const currentUserRaw = localStorage.getItem("currentUser");
-    if (currentUserRaw) {
+    async function fetchData() {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
       try {
-        const currentUser = JSON.parse(currentUserRaw);
-        const name =
-          currentUser.firstName && currentUser.lastName
-            ? `${currentUser.firstName} ${currentUser.lastName}`
-            : currentUser.name || null;
-        setCurrentUserName(name);
-      } catch {
-        setCurrentUserName(null);
+        // Fetch wedding data
+        const weddingRes = await fetch("/api/weddings/owner", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (weddingRes.ok) {
+          const wedding = await weddingRes.json();
+          setWeddingData(wedding);
+        }
+
+        // Fetch tasks
+        const tasksRes = await fetch("/api/checklists", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (tasksRes.ok) {
+          const tasksData = await tasksRes.json();
+          setTasks(tasksData);
+        }
+
+        // Fetch vendors
+        const vendorsRes = await fetch("/api/vendors", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (vendorsRes.ok) {
+          const vendorsData = await vendorsRes.json();
+          setVendors(vendorsData);
+        }
+
+        // Fetch guests
+        const guestsRes = await fetch("/api/guests", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (guestsRes.ok) {
+          const guestsData = await guestsRes.json();
+          setGuests(guestsData);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     }
+
+    fetchData();
   }, []);
 
-  const renderSection = () => {
-    switch (selectedSection) {
-      case "guestList":
-        return <GuestListPage />;
-      case "vendorsList":
-        return <VendorsListPage />;
-      case "wedding":
-        return <WeddingPage />;
-      case "checklist":
-        return <CheckListPage />;
-      case "budget":
-        return <BudgetPage />;
-      default:
-        return <BudgetPage />;
-    }
-  };
+  // Countdown timer - only days
+  useEffect(() => {
+    if (!weddingData?.weddingDate) return;
+
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const weddingDate = new Date(weddingData.weddingDate).getTime();
+      const difference = weddingDate - now;
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        setTimeLeft({ days, hours: 0, minutes: 0, seconds: 0 });
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [weddingData?.weddingDate]);
+
+  // Calculate progress percentages
+  const completedTasks = tasks.filter(task => task.done).length;
+  const totalTasks = tasks.length;
+  
+  const confirmedVendors = vendors.filter(vendor => vendor.status === 'Confirmed').length;
+  const totalVendors = vendors.length;
+  const vendorProgress = totalVendors > 0 ? (confirmedVendors / totalVendors) * 100 : 0;
+
+  // Calculate total guests including all people they're bringing
+  const totalReservedPlaces = guests.reduce((sum, guest) => {
+    return sum + guest.seatsReserved; // seatsReserved includes the guest + their companions
+  }, 0);
+  
+  const confirmedGuests = guests.filter(guest => guest.status === 'Confirmed').length;
+  const totalGuests = guests.length;
+  const guestProgress = totalGuests > 0 ? (confirmedGuests / totalGuests) * 100 : 0;
+  
+  // Calculate overall progress including checklist, vendors, guests, and recent registrations
+  const totalItems = totalTasks + totalVendors + totalGuests;
+  const completedItems = completedTasks + confirmedVendors + confirmedGuests;
+  const taskProgress = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
+
+  // Upcoming tasks from checklist (not completed)
+  const upcomingTasks = tasks
+    .filter(task => !task.done)
+    .sort((a, b) => {
+      // Sort by due date first
+      if (a.dueDate && b.dueDate) {
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      }
+      
+      // Then by creation date
+      if (a.createdAt && b.createdAt) {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+      
+      return 0;
+    })
+    .slice(0, 5);
+
+  // Recent activities (simulated - in real app this would come from activity log)
+  const recentActivities: Activity[] = [
+    // These would normally come from a database of activities
+    // For now, we'll show some sample activities based on current data
+         ...guests.slice(-2).map((guest, index) => ({
+       id: `guest_${guest._id}`,
+       type: 'guest_added' as const,
+       title: 'אורח נוסף',
+       description: `${guest.firstName} ${guest.lastName} נוסף לרשימת המוזמנים`,
+       timestamp: new Date(Date.now() - (index + 1) * 3600000).toISOString(), // 1 hour ago, 2 hours ago
+       icon: '👤'
+     })),
+         ...tasks.filter(task => task.done).slice(-2).map((task, index) => ({
+       id: `task_${task._id}`,
+       type: 'task_completed' as const,
+       title: 'משימה הושלמה',
+       description: `${task.task} הושלמה בהצלחה`,
+       timestamp: new Date(Date.now() - (index + 3) * 3600000).toISOString(), // 3 hours ago, 4 hours ago
+       icon: '✅'
+     })),
+    ...vendors.slice(-1).map((vendor, index) => ({
+      id: `vendor_${vendor._id}`,
+      type: 'vendor_added' as const,
+      title: 'ספק נוסף',
+      description: `${vendor.vendorName} נוסף לרשימת הספקים`,
+      timestamp: new Date(Date.now() - (index + 5) * 3600000).toISOString(), // 5 hours ago
+      icon: '🏢'
+    }))
+  ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 5);
+
+  // High priority tasks (tasks with due date soon)
+  const highPriorityTasks = tasks.filter(task => !task.done && task.dueDate && new Date(task.dueDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000));
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '50px' }}>
+        <div>טוען...</div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ fontFamily: "Arial, sans-serif", color: "#000" }}>
-      <header
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "10px 20px",
-          borderBottom: "1px solid black",
-          marginBottom: 20,
-          direction: "rtl",
-        }}
-      >
-        <Menu onSelect={setSelectedSection} currentUserName={currentUserName} />
+    <div style={{ 
+      padding: '20px', 
+      maxWidth: '1400px', 
+      margin: '0 auto',
+      fontFamily: 'Arial, sans-serif',
+      direction: 'rtl'
+    }}>
+      <h1 style={{ 
+        textAlign: 'center', 
+        marginBottom: '30px',
+        color: '#333',
+        borderBottom: '2px solid #ddd',
+        paddingBottom: '10px'
+      }}>
+        🎉 דשבורד החתונה
+      </h1>
 
-        <button
-          onClick={() => {
-            localStorage.removeItem("token");
-            localStorage.removeItem("currentUser");
-            window.location.href = "/";
-          }}
-          style={{
-            background: "none",
-            border: "none",
-            padding: "0 10px",
-            fontSize: "16px",
-            cursor: "pointer",
-            color: "black",
-          }}
-        >
-          התנתקות
-        </button>
-      </header>
+      {/* Countdown Timer */}
+      <div style={{ 
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        padding: '30px',
+        borderRadius: '15px',
+        marginBottom: '30px',
+        color: 'white',
+        textAlign: 'center',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+      }}>
+        <h2 style={{ margin: '0 0 20px 0', fontSize: '28px' }}>
+          {timeLeft.days > 0 ? '⏰ ספירה לאחור לחתונה' : '🎉 היום החתונה!'}
+        </h2>
+        
+        {timeLeft.days > 0 ? (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '72px', fontWeight: 'bold', lineHeight: '1', marginBottom: '10px' }}>
+              {timeLeft.days}
+            </div>
+            <div style={{ fontSize: '24px', opacity: 0.9, marginBottom: '15px' }}>ימים לחתונה</div>
+            <div style={{ fontSize: '18px', opacity: 0.8 }}>
+              תאריך האירוע: {weddingData?.weddingDate ? new Date(weddingData.weddingDate).toLocaleDateString('he-IL', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
+              }) : 'לא מוגדר'}
+            </div>
+          </div>
+        ) : (
+          <div style={{ fontSize: '36px', fontWeight: 'bold' }}>
+            מזל טוב! 🎊
+          </div>
+        )}
+      </div>
 
-      <main style={{ padding: "0 20px" }}>{renderSection()}</main>
+      {/* Progress Cards */}
+      <div style={{ 
+        display: 'grid', 
+        gap: '20px', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        marginBottom: '30px'
+      }}>
+        {/* Tasks Progress */}
+        <div style={{ 
+          background: 'white', 
+          padding: '25px', 
+          borderRadius: '12px',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          border: '1px solid #e0e0e0'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
+            <div style={{ 
+              width: '50px', 
+              height: '50px', 
+              borderRadius: '50%', 
+              background: 'linear-gradient(135deg, #4CAF50, #45a049)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginLeft: '15px'
+            }}>
+              <span style={{ fontSize: '24px' }}>✓</span>
+            </div>
+            <div>
+              <h3 style={{ margin: '0', color: '#333' }}>משימות כולל</h3>
+              <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
+                צ'קליסט, ספקים, מוזמנים
+              </p>
+              <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '12px' }}>
+                {completedItems} מתוך {totalItems} הושלמו
+              </p>
+            </div>
+          </div>
+          
+          <div style={{ 
+            width: '100%', 
+            height: '8px', 
+            background: '#f0f0f0', 
+            borderRadius: '4px',
+            overflow: 'hidden'
+          }}>
+            <div style={{ 
+              width: `${taskProgress}%`, 
+              height: '100%', 
+              background: 'linear-gradient(90deg, #4CAF50, #45a049)',
+              transition: 'width 0.3s ease'
+            }}></div>
+          </div>
+          
+          <div style={{ 
+            marginTop: '10px', 
+            fontSize: '24px', 
+            fontWeight: 'bold', 
+            color: '#4CAF50' 
+          }}>
+            {taskProgress.toFixed(0)}%
+          </div>
+        </div>
+
+        {/* Vendors Progress */}
+        <div style={{ 
+          background: 'white', 
+          padding: '25px', 
+          borderRadius: '12px',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          border: '1px solid #e0e0e0'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
+            <div style={{ 
+              width: '50px', 
+              height: '50px', 
+              borderRadius: '50%', 
+              background: 'linear-gradient(135deg, #2196F3, #1976D2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginLeft: '15px'
+            }}>
+              <span style={{ fontSize: '24px' }}>🏢</span>
+            </div>
+            <div>
+              <h3 style={{ margin: '0', color: '#333' }}>ספקים</h3>
+              <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
+                {confirmedVendors} מתוך {totalVendors} אושרו
+              </p>
+            </div>
+          </div>
+          
+          <div style={{ 
+            width: '100%', 
+            height: '8px', 
+            background: '#f0f0f0', 
+            borderRadius: '4px',
+            overflow: 'hidden'
+          }}>
+            <div style={{ 
+              width: `${vendorProgress}%`, 
+              height: '100%', 
+              background: 'linear-gradient(90deg, #2196F3, #1976D2)',
+              transition: 'width 0.3s ease'
+            }}></div>
+          </div>
+          
+          <div style={{ 
+            marginTop: '10px', 
+            fontSize: '24px', 
+            fontWeight: 'bold', 
+            color: '#2196F3' 
+          }}>
+            {vendorProgress.toFixed(0)}%
+          </div>
+        </div>
+
+        {/* Guests Progress */}
+        <div style={{ 
+          background: 'white', 
+          padding: '25px', 
+          borderRadius: '12px',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          border: '1px solid #e0e0e0'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
+            <div style={{ 
+              width: '50px', 
+              height: '50px', 
+              borderRadius: '50%', 
+              background: 'linear-gradient(135deg, #FF9800, #F57C00)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginLeft: '15px'
+            }}>
+              <span style={{ fontSize: '24px' }}>👥</span>
+            </div>
+                         <div>
+               <h3 style={{ margin: '0', color: '#333' }}>מוזמנים</h3>
+               <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
+                 {confirmedGuests} מתוך {totalGuests} אישרו הגעה
+               </p>
+               <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '12px' }}>
+                 סה"כ מוזמנים: {totalReservedPlaces}
+               </p>
+             </div>
+          </div>
+          
+          <div style={{ 
+            width: '100%', 
+            height: '8px', 
+            background: '#f0f0f0', 
+            borderRadius: '4px',
+            overflow: 'hidden'
+          }}>
+            <div style={{ 
+              width: `${guestProgress}%`, 
+              height: '100%', 
+              background: 'linear-gradient(90deg, #FF9800, #F57C00)',
+              transition: 'width 0.3s ease'
+            }}></div>
+          </div>
+          
+          <div style={{ 
+            marginTop: '10px', 
+            fontSize: '24px', 
+            fontWeight: 'bold', 
+            color: '#FF9800' 
+          }}>
+            {guestProgress.toFixed(0)}%
+          </div>
+        </div>
+      </div>
+
+      {/* Tasks and Activities */}
+      <div style={{ 
+        display: 'grid', 
+        gap: '20px', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+        marginBottom: '30px'
+      }}>
+        {/* Recent Activities */}
+        <div style={{ 
+          background: 'white', 
+          padding: '25px', 
+          borderRadius: '12px',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          border: '1px solid #e0e0e0'
+        }}>
+          <h3 style={{ 
+            margin: '0 0 20px 0', 
+            color: '#333',
+            display: 'flex',
+            alignItems: 'center'
+          }}>
+            <span style={{ marginLeft: '10px' }}>📝</span>
+            פעולות אחרונות
+          </h3>
+          
+          {recentActivities.length > 0 ? (
+            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+              {recentActivities.map((activity) => (
+                <div key={activity.id} style={{ 
+                  padding: '15px', 
+                  border: '1px solid #e3f2fd', 
+                  borderRadius: '8px', 
+                  marginBottom: '10px',
+                  background: '#f8fbff'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                    <span style={{ fontSize: '20px', marginLeft: '10px' }}>{activity.icon}</span>
+                    <div style={{ fontWeight: 'bold', color: '#1976D2' }}>
+                      {activity.title}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>
+                    {activity.description}
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#999' }}>
+                    {new Date(activity.timestamp).toLocaleString('he-IL', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', color: '#666', fontStyle: 'italic', padding: '20px' }}>
+              אין פעולות אחרונות
+            </div>
+          )}
+        </div>
+
+        {/* Upcoming Tasks from Checklist */}
+        <div style={{ 
+          background: 'white', 
+          padding: '25px', 
+          borderRadius: '12px',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          border: '1px solid #e0e0e0'
+        }}>
+          <h3 style={{ 
+            margin: '0 0 20px 0', 
+            color: '#333',
+            display: 'flex',
+            alignItems: 'center'
+          }}>
+            <span style={{ marginLeft: '10px' }}>📋</span>
+            משימות לביצוע
+          </h3>
+          
+          {upcomingTasks.length > 0 ? (
+            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+              {upcomingTasks.map((task) => (
+                                 <div key={task._id} style={{ 
+                   padding: '15px', 
+                   border: '1px solid #fff3e0', 
+                   borderRadius: '8px', 
+                   marginBottom: '10px',
+                   background: task.dueDate && new Date(task.dueDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? '#fff3e0' : '#fafafa'
+                 }}>
+                   <div style={{ 
+                     fontWeight: 'bold', 
+                     color: task.dueDate && new Date(task.dueDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? '#e65100' : '#333',
+                     marginBottom: '5px',
+                     display: 'flex',
+                     alignItems: 'center'
+                   }}>
+                     {task.dueDate && new Date(task.dueDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) && <span style={{ marginLeft: '5px' }}>🔥</span>}
+                     {task.task}
+                   </div>
+                   <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>
+                     {task.notes || 'אין הערות'}
+                   </div>
+                   <div style={{ fontSize: '12px', color: '#999' }}>
+                     {task.dueDate && (
+                       <span style={{ marginRight: '10px' }}>
+                         תאריך יעד: {new Date(task.dueDate).toLocaleDateString('he-IL')}
+                       </span>
+                     )}
+                   </div>
+                 </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', color: '#666', fontStyle: 'italic', padding: '20px' }}>
+              אין משימות לביצוע
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* High Priority Tasks */}
+      {highPriorityTasks.length > 0 && (
+        <div style={{ 
+          background: '#fff3e0', 
+          padding: '25px', 
+          borderRadius: '12px',
+          marginBottom: '30px',
+          border: '2px solid #ff9800'
+        }}>
+          <h3 style={{ 
+            margin: '0 0 20px 0', 
+            color: '#e65100',
+            display: 'flex',
+            alignItems: 'center'
+          }}>
+            <span style={{ marginLeft: '10px' }}>🚨</span>
+            משימות בעדיפות גבוהה ({highPriorityTasks.length})
+          </h3>
+          
+          <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+            {highPriorityTasks.map((task) => (
+              <div key={task._id} style={{ 
+                padding: '15px', 
+                background: 'white', 
+                borderRadius: '8px', 
+                border: '1px solid #ffcc80'
+              }}>
+                                 <div style={{ fontWeight: 'bold', color: '#e65100', marginBottom: '5px' }}>
+                   {task.task}
+                 </div>
+                 <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>
+                   {task.notes || 'אין הערות'}
+                 </div>
+                {task.dueDate && (
+                  <div style={{ fontSize: '12px', color: '#ff9800', fontWeight: 'bold' }}>
+                    תאריך יעד: {new Date(task.dueDate).toLocaleDateString('he-IL')}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Quick Stats */}
+      <div style={{ 
+        background: 'white', 
+        padding: '25px', 
+        borderRadius: '12px',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+        border: '1px solid #e0e0e0'
+      }}>
+        <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>📊 סטטיסטיקות מהירות</h3>
+        
+        <div style={{ display: 'grid', gap: '20px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#4CAF50' }}>
+              {totalItems}
+            </div>
+            <div style={{ fontSize: '14px', color: '#666' }}>סה"כ פריטים</div>
+          </div>
+          
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#2196F3' }}>
+              {totalVendors}
+            </div>
+            <div style={{ fontSize: '14px', color: '#666' }}>סה"כ ספקים</div>
+          </div>
+          
+                     <div style={{ textAlign: 'center' }}>
+             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#FF9800' }}>
+               {totalReservedPlaces}
+             </div>
+             <div style={{ fontSize: '14px', color: '#666' }}>סה"כ מוזמנים</div>
+           </div>
+          
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#9C27B0' }}>
+              {highPriorityTasks.length}
+            </div>
+            <div style={{ fontSize: '14px', color: '#666' }}>משימות דחופות</div>
+          </div>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default Dashboard;

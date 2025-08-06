@@ -850,27 +850,30 @@ const BudgetPage: React.FC = () => {
             </div>
 
             {/* Detailed Breakdown */}
-            {calculateManualMealCost().totalGuests > 0 && (
-              <div style={{ marginTop: '15px', padding: '15px', background: 'white', borderRadius: '4px' }}>
-                <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
-                  פירוט החישוב:
+            {(() => {
+              const mealCost = calculateManualMealCost();
+              return mealCost && mealCost.totalGuests && mealCost.totalGuests > 0 ? (
+                <div style={{ marginTop: '15px', padding: '15px', background: 'white', borderRadius: '4px' }}>
+                  <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
+                    פירוט החישוב:
+                  </div>
+                  <div style={{ fontSize: '12px', lineHeight: '1.4', color: '#666' }}>
+                    <div>• מבוגרים: {mealCost.adultGuests || 0} × {weddingData.mealPricing?.basePrice || 0} ₪ = {((mealCost.adultGuests || 0) * (weddingData.mealPricing?.basePrice || 0)).toLocaleString()} ₪</div>
+                    <div>• ילדים: {mealCost.childGuests || 0} × {((weddingData.mealPricing?.basePrice || 0) * (1 - (weddingData.mealPricing?.childDiscount || 0) / 100)).toFixed(0)} ₪ = {((mealCost.childGuests || 0) * ((weddingData.mealPricing?.basePrice || 0) * (1 - (weddingData.mealPricing?.childDiscount || 0) / 100))).toLocaleString()} ₪</div>
+                    {weddingData.mealPricing && (mealCost.totalGuests || 0) >= (weddingData.mealPricing?.bulkThreshold || 0) && (weddingData.mealPricing?.bulkPrice || 0) > 0 && (
+                      <div style={{ color: '#4caf50', fontWeight: 'bold' }}>
+                        ✓ מחיר התחייבות מיושם (מעל {weddingData.mealPricing?.bulkThreshold || 0} אורחים)
+                      </div>
+                    )}
+                    {weddingData.mealPricing && (mealCost.totalGuests || 0) >= (weddingData.mealPricing?.reserveThreshold || 0) && (weddingData.mealPricing?.reservePrice || 0) > 0 && (
+                      <div style={{ color: '#4caf50', fontWeight: 'bold' }}>
+                        ✓ מחיר רזרבה מיושם (מעל {weddingData.mealPricing?.reserveThreshold || 0} אורחים)
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div style={{ fontSize: '12px', lineHeight: '1.4', color: '#666' }}>
-                  <div>• מבוגרים: {calculateManualMealCost().adultGuests} × {weddingData.mealPricing?.basePrice || 0} ₪ = {(calculateManualMealCost().adultGuests * (weddingData.mealPricing?.basePrice || 0)).toLocaleString()} ₪</div>
-                  <div>• ילדים: {calculateManualMealCost().childGuests} × {((weddingData.mealPricing?.basePrice || 0) * (1 - (weddingData.mealPricing?.childDiscount || 0) / 100)).toFixed(0)} ₪ = {(calculateManualMealCost().childGuests * ((weddingData.mealPricing?.basePrice || 0) * (1 - (weddingData.mealPricing?.childDiscount || 0) / 100))).toLocaleString()} ₪</div>
-                  {weddingData.mealPricing && calculateManualMealCost().totalGuests >= (weddingData.mealPricing?.bulkThreshold || 0) && (weddingData.mealPricing?.bulkPrice || 0) > 0 && (
-                    <div style={{ color: '#4caf50', fontWeight: 'bold' }}>
-                      ✓ מחיר התחייבות מיושם (מעל {weddingData.mealPricing?.bulkThreshold || 0} אורחים)
-                    </div>
-                  )}
-                  {weddingData.mealPricing && calculateManualMealCost().totalGuests >= (weddingData.mealPricing?.reserveThreshold || 0) && (weddingData.mealPricing?.reservePrice || 0) > 0 && (
-                    <div style={{ color: '#4caf50', fontWeight: 'bold' }}>
-                      ✓ מחיר רזרבה מיושם (מעל {weddingData.mealPricing?.reserveThreshold || 0} אורחים)
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+              ) : null;
+            })()}
           </div>
         ) : (
           <div style={{ textAlign: 'center', color: '#666', fontStyle: 'italic' }}>
