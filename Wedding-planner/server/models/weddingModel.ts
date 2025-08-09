@@ -33,6 +33,14 @@ export interface IWedding {
     reserveThreshold: number;
     reserveMaxGuests: number;
   };
+  invites?: {
+    token: string;
+    createdAt: Date;
+    expiresAt?: Date;
+    usedBy?: Types.ObjectId;
+    usedAt?: Date;
+    revoked?: boolean;
+  }[];
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -159,6 +167,16 @@ const weddingSchema = new Schema<IWedding>(
         default: 500,
       },
     },
+    invites: [
+      {
+        token: { type: String, required: true },
+        createdAt: { type: Date, default: Date.now },
+        expiresAt: { type: Date },
+        usedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+        usedAt: { type: Date },
+        revoked: { type: Boolean, default: false },
+      },
+    ],
   },
   {
     timestamps: true,

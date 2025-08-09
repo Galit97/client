@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Menu from "../components/Menu/Menu";
 import GuestListPage from "./GuestListPage";
 import VendorPage from "./VendorPage";
@@ -6,6 +6,11 @@ import WeedingPage from "./WeedingPage";
 import CheckListPage from "./CheckListPage";
 import BudgetPage from "./BudgetPage";
 import Dashboard from "./Dashboard";
+import VendorComparisonPage from "./VendorComparisonPage";
+import AccountSettings from "./account/AccountSettings";
+import MyWeddings from "./weddings/MyWeddings";
+import ImportantThingsPage from "./ImportantThingsPage";
+import WeddingDayPage from "./WeddingDayPage";
 
 export default function MainDashboard() {
   const [selectedSection, setSelectedSection] = useState<string>("dashboard");
@@ -35,12 +40,22 @@ export default function MainDashboard() {
         return <GuestListPage />;
       case "vendorsList":
         return <VendorPage />;
+      case "vendorsCompare":
+        return <VendorComparisonPage />;
       case "wedding":
         return <WeedingPage />;
       case "checklist":
         return <CheckListPage />;
       case "budget":
         return <BudgetPage />;
+      case "accountSettings":
+        return <AccountSettings />;
+      case "myWeddings":
+        return <MyWeddings onOpenWedding={() => setSelectedSection('dashboard')} />;
+      case "importantThings":
+        return <ImportantThingsPage />;
+      case "weddingDay":
+        return <WeddingDayPage />;
       default:
         return <Dashboard />;
     }

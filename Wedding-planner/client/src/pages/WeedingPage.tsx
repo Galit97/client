@@ -38,6 +38,12 @@ type WeddingData = {
   mealPricing?: MealPricing;
 };
 
+// Minimal vendor type for totals
+type Vendor = {
+  _id: string;
+  price: number;
+};
+
 const initialWedding: WeddingData = {
   weddingName: "",
   weddingDate: "",
@@ -67,6 +73,8 @@ export default function WeddingPage() {
   const [selectedParticipantId, setSelectedParticipantId] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [inviteLink, setInviteLink] = useState<string | null>(null);
+  const [creatingInvite, setCreatingInvite] = useState(false);
   const [mealCalculation, setMealCalculation] = useState({
     adultGuests: 0,
     childGuests: 0,
@@ -91,6 +99,9 @@ export default function WeddingPage() {
     adultGuests: 0,
     childGuests: 0
   });
+
+  // Vendors for total expenses in manual calc (vendors + meals)
+  const [vendors, setVendors] = useState<Vendor[]>([]);
 
   // Add state for auto-saving indicator
   const [autoSaving, setAutoSaving] = useState(false);
@@ -196,6 +207,24 @@ export default function WeddingPage() {
 
     // Execute in sequence: fetchUsers first, then fetchWedding
     fetchUsers().then(fetchWedding);
+  }, []);
+
+  // Fetch vendors for totals
+  useEffect(() => {
+    async function fetchVendors() {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      try {
+        const res = await fetch("/api/vendors", { headers: { Authorization: `Bearer ${token}` } });
+        if (res.ok) {
+          const data = await res.json();
+          setVendors(data);
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    fetchVendors();
   }, []);
 
   // Fetch guest counts from guest list
@@ -522,7 +551,7 @@ export default function WeddingPage() {
 
   // Calculate meal cost for manual input
   function calculateManualMealCost() {
-    if (!wedding.mealPricing) return { totalCost: 0, costPerPerson: 0, adultGuests: 0, childGuests: 0, totalGuests: 0 };
+    if (!wedding.mealPricing) return { totalCost: 0, costPerPerson: 0, adultGuests: 0, childGuests: 0, totalGuests: 0, eventTotalCost: 0, eventCostPerPerson: 0 };
 
     const { basePrice, childDiscount, childAgeLimit, bulkThreshold, bulkPrice, bulkMaxGuests, reservePrice, reserveThreshold, reserveMaxGuests } = wedding.mealPricing;
     const { adultGuests, childGuests } = manualCalculation;
@@ -561,7 +590,12 @@ export default function WeddingPage() {
 
     const costPerPerson = totalGuests > 0 ? totalCost / totalGuests : 0;
 
-    return { totalCost, costPerPerson, adultGuests, childGuests, totalGuests };
+    // Vendors + meals totals similar to Budget page logic
+    const totalVendors = vendors.reduce((sum, v) => sum + (v.price || 0), 0);
+    const eventTotalCost = totalCost + totalVendors;
+    const eventCostPerPerson = totalGuests > 0 ? eventTotalCost / totalGuests : 0;
+
+    return { totalCost, costPerPerson, adultGuests, childGuests, totalGuests, eventTotalCost, eventCostPerPerson };
   }
 
   if (loading) {
@@ -746,6 +780,37 @@ export default function WeddingPage() {
           {/* Participants Section */}
           <div style={{ marginTop: '20px', padding: '15px', background: '#f5f5f5', borderRadius: '4px' }}>
             <h4 style={{ margin: '0 0 15px 0' }}>שותפים לאירוע</h4>
+        <div style={{ marginBottom: '12px', display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={async () => {
+              const token = localStorage.getItem('token');
+              if (!token || !wedding._id) return;
+              try {
+                setCreatingInvite(true);
+                const res = await fetch('/api/weddings/invites', { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+                if (!res.ok) throw new Error('failed');
+                const data = await res.json();
+                const url = `${window.location.origin}/invite/${data.token}`;
+                setInviteLink(url);
+              } catch (e) {
+                alert('שגיאה ביצירת קישור הזמנה');
+              } finally {
+                setCreatingInvite(false);
+              }
+            }}
+            disabled={creatingInvite || !wedding._id}
+            style={{ padding: '8px 16px', border: '1px solid #1976d2', background: creatingInvite ? '#ccc' : '#1976d2', color: 'white', borderRadius: 4, cursor: creatingInvite ? 'not-allowed' : 'pointer' }}
+          >
+            {creatingInvite ? 'יוצר קישור...' : 'צור קישור להזמנת שותף'}
+          </button>
+          {inviteLink && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <input className="input" style={{ width: 320 }} readOnly value={inviteLink} />
+              <button className="btn" onClick={() => { navigator.clipboard.writeText(inviteLink); }}>העתק</button>
+            </div>
+          )}
+        </div>
             
             <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', alignItems: 'center' }}>
               <select

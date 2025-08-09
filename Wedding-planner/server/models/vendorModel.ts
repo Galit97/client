@@ -2,15 +2,17 @@ import { Schema, model, Types } from 'mongoose';
 
 export type VendorStatus = 'Pending' | 'Confirmed' | 'Paid';
 
-export type VendorType = 'music' | 'food' | 'photography' | 'decor' | 'clothes' | 'makeup_hair' | 'internet_orders' | 'other';
+export type VendorType = 'music' | 'food' | 'photography' | 'decor' | 'clothes' | 'makeup_hair' | 'internet_orders' | 'lighting_sound' | 'guest_gifts' | 'venue_deposit' | 'bride_dress' | 'groom_suit' | 'shoes' | 'jewelry' | 'rsvp' | 'design_tables' | 'bride_bouquet' | 'chuppah' | 'flowers' | 'other';
 
 export interface IVendor {
   weddingID: Types.ObjectId;
   vendorName: string;
   price: number;
+  depositPaid: boolean;
+  depositAmount: number;
   notes?: string;
-  contractURL?: string;
-  proposalURL?: string;
+  contractFile?: string;
+  fileURL?: string;
   status: VendorStatus;
   type: VendorType;
   createdAt?: Date;
@@ -34,15 +36,23 @@ const vendorSchema = new Schema<IVendor>(
       required: true,
       default: 0,
     },
+    depositPaid: {
+      type: Boolean,
+      default: false,
+    },
+    depositAmount: {
+      type: Number,
+      default: 0,
+    },
     notes: {
       type: String,
       trim: true,
     },
-    contractURL: {
+    contractFile: {
       type: String,
       trim: true,
     },
-    proposalURL: {
+    fileURL: {
       type: String,
       trim: true,
     },
@@ -53,7 +63,7 @@ const vendorSchema = new Schema<IVendor>(
     },
     type: {
       type: String,
-      enum: ['music', 'food', 'photography', 'decor', 'clothes', 'makeup_hair', 'internet_orders', 'other'],
+      enum: ['music', 'food', 'photography', 'decor', 'clothes', 'makeup_hair', 'internet_orders', 'lighting_sound', 'guest_gifts', 'venue_deposit', 'bride_dress', 'groom_suit', 'shoes', 'jewelry', 'rsvp', 'design_tables', 'bride_bouquet', 'chuppah', 'flowers', 'other'],
       required: true,
     },
   },

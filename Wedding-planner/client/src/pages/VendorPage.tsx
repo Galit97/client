@@ -1,16 +1,18 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 
 type VendorStatus = "Pending" | "Confirmed" | "Paid";
-type VendorType = "music" | "food" | "photography" | "decor" | "clothes" | "makeup_hair" | "internet_orders" | "other";
+type VendorType = "music" | "food" | "photography" | "decor" | "clothes" | "makeup_hair" | "internet_orders" | "lighting_sound" | "guest_gifts" | "venue_deposit" | "bride_dress" | "groom_suit" | "shoes" | "jewelry" | "rsvp" | "design_tables" | "bride_bouquet" | "chuppah" | "flowers" | "other";
 
 type Vendor = {
   _id: string;
   weddingID: string;
   vendorName: string;
   price: number;
+  depositPaid: boolean;
+  depositAmount: number;
   notes?: string;
-  contractURL?: string;
-  proposalURL?: string;
+  contractFile?: string;
+  fileURL?: string;
   status: VendorStatus;
   type: VendorType;
 };
@@ -32,9 +34,11 @@ export default function VendorsListPage() {
   const [newVendor, setNewVendor] = useState({
     vendorName: "",
     price: 0,
+    depositPaid: false,
+    depositAmount: 0,
     notes: "",
-    contractURL: "",
-    proposalURL: "",
+    contractFile: "",
+    fileURL: "",
     status: "Pending" as VendorStatus,
     type: "music" as VendorType,
   });
@@ -45,6 +49,36 @@ export default function VendorsListPage() {
     sortBy: 'vendorName',
     sortOrder: 'asc'
   });
+
+  const defaultVendorsCreatedRef = useRef(false);
+
+  // Pre-defined vendor templates
+  const defaultVendors = [
+    { vendorName: "אקו\"ם", type: "other" as VendorType, notes: "זכויות מוזיקה" },
+    { vendorName: "דיג'יי", type: "music" as VendorType, notes: "" },
+    { vendorName: "צלם", type: "photography" as VendorType, notes: "" },
+    { vendorName: "רב", type: "other" as VendorType, notes: "רב לטקס" },
+    { vendorName: "רבנות", type: "other" as VendorType, notes: "טפסי רבנות" },
+    { vendorName: "טבעות נישואין", type: "jewelry" as VendorType, notes: "טבעות" },
+    { vendorName: "תאורה והגברה", type: "lighting_sound" as VendorType, notes: "" },
+    { vendorName: "מתנות לאורחים", type: "guest_gifts" as VendorType, notes: "" },
+    { vendorName: "מקדמה לאולם", type: "venue_deposit" as VendorType, notes: "" },
+    { vendorName: "שמלות כלה", type: "bride_dress" as VendorType, notes: "" },
+    { vendorName: "חליפת חתן", type: "groom_suit" as VendorType, notes: "" },
+    { vendorName: "נעליים", type: "shoes" as VendorType, notes: "" },
+    { vendorName: "תכשיטים", type: "jewelry" as VendorType, notes: "" },
+    { vendorName: "אישורי הגעה", type: "rsvp" as VendorType, notes: "" },
+    { vendorName: "עיצוב ושולחנות", type: "design_tables" as VendorType, notes: "" },
+    { vendorName: "זר כלה", type: "bride_bouquet" as VendorType, notes: "" },
+    { vendorName: "חופה", type: "chuppah" as VendorType, notes: "" },
+    { vendorName: "פרחים", type: "flowers" as VendorType, notes: "" },
+    { vendorName: "איפור ושיער", type: "makeup_hair" as VendorType, notes: "" },
+    { vendorName: "אוכל", type: "food" as VendorType, notes: "" },
+    { vendorName: "קישוט", type: "decor" as VendorType, notes: "" },
+    { vendorName: "הזמנות מקוונות", type: "internet_orders" as VendorType, notes: "" }
+  ];
+
+
 
   useEffect(() => {
     async function fetchData() {
@@ -95,6 +129,39 @@ export default function VendorsListPage() {
           const vendorsData = await vendorsRes.json();
           setVendors(vendorsData);
           console.log("Fetched vendors:", vendorsData);
+          
+          // If no vendors exist, create default ones
+          if (vendorsData.length === 0) {
+            console.log("No vendors found, creating default vendors...");
+            for (const defaultVendor of defaultVendors) {
+              const vendorData = {
+                ...defaultVendor,
+                price: 0,
+                depositPaid: false,
+                depositAmount: 0,
+                contractFile: "",
+                fileURL: "",
+                status: "Pending" as VendorStatus,
+                weddingID: weddingData._id,
+              };
+
+              const createRes = await fetch("/api/vendors", {
+                method: "POST",
+                headers: { 
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(vendorData),
+              });
+
+              if (createRes.ok) {
+                const created = await createRes.json();
+                setVendors(prev => [...prev, created]);
+                console.log(`Created default vendor: ${defaultVendor.vendorName}`);
+              }
+            }
+            defaultVendorsCreatedRef.current = true;
+          }
         } else {
           console.log("No vendors found or error fetching");
           setVendors([]);
@@ -109,6 +176,20 @@ export default function VendorsListPage() {
 
     fetchData();
   }, []);
+
+  // Create default vendors after vendors are loaded
+  useEffect(() => {
+    if (vendors.length > 0 && weddingId) {
+      createDefaultVendorsIfNeeded();
+    }
+  }, [vendors, weddingId]);
+
+  // Create default vendors if no vendors exist at all
+  useEffect(() => {
+    if (vendors.length === 0 && weddingId && !loading) {
+      createDefaultVendorsIfNeeded();
+    }
+  }, [vendors.length, weddingId, loading]);
 
   // Filter and sort vendors
   const filteredAndSortedVendors = useMemo(() => {
@@ -163,6 +244,14 @@ export default function VendorsListPage() {
     return filteredAndSortedVendors.reduce((sum, v) => sum + v.price, 0);
   }, [filteredAndSortedVendors]);
 
+  const totalDeposits = useMemo(() => {
+    return filteredAndSortedVendors.reduce((sum, v) => sum + (v.depositAmount || 0), 0);
+  }, [filteredAndSortedVendors]);
+
+  const remainingToPay = useMemo(() => {
+    return totalPrice - totalDeposits;
+  }, [totalPrice, totalDeposits]);
+
   async function addVendor(e: React.FormEvent) {
     e.preventDefault();
     if (!newVendor.vendorName.trim()) return alert("אנא הכנס שם ספק");
@@ -207,9 +296,11 @@ export default function VendorsListPage() {
       setNewVendor({
         vendorName: "",
         price: 0,
+        depositPaid: false,
+        depositAmount: 0,
         notes: "",
-        contractURL: "",
-        proposalURL: "",
+        contractFile: "",
+        fileURL: "",
         status: "Pending",
         type: "music",
       });
@@ -265,6 +356,117 @@ export default function VendorsListPage() {
     }
   }
 
+  async function createDefaultVendorsIfNeeded() {
+    if (!weddingId || defaultVendorsCreatedRef.current) return;
+
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      console.log("Creating default vendors...");
+      console.log("Current vendors:", vendors.map(v => v.vendorName));
+      
+      // Check which default vendors are missing
+      const existingVendorNames = vendors.map(v => v.vendorName);
+      const missingVendors = defaultVendors.filter(dv => !existingVendorNames.includes(dv.vendorName));
+
+      console.log("Missing vendors:", missingVendors.map(v => v.vendorName));
+
+      if (missingVendors.length === 0) {
+        console.log("All default vendors already exist");
+        defaultVendorsCreatedRef.current = true;
+        return; // All default vendors already exist
+      }
+
+      console.log(`Creating ${missingVendors.length} default vendors...`);
+
+      // Create missing vendors
+      for (const defaultVendor of missingVendors) {
+        const vendorData = {
+          ...defaultVendor,
+          price: 0,
+          depositPaid: false,
+          depositAmount: 0,
+          contractFile: "",
+          fileURL: "",
+          status: "Pending" as VendorStatus,
+          weddingID: weddingId,
+        };
+
+        const res = await fetch("/api/vendors", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(vendorData),
+        });
+
+        if (res.ok) {
+          const created = await res.json();
+          setVendors(prev => [...prev, created]);
+          console.log(`Created vendor: ${defaultVendor.vendorName}`);
+        } else {
+          const errorText = await res.text();
+          console.error(`Failed to create vendor: ${defaultVendor.vendorName}`, errorText);
+          console.error('Vendor data that failed:', vendorData);
+        }
+      }
+      console.log("Finished creating default vendors");
+      defaultVendorsCreatedRef.current = true;
+    } catch (error) {
+      console.error("Error creating default vendors:", error);
+      defaultVendorsCreatedRef.current = true; // Even if there's an error, don't try again
+    }
+  }
+
+  // File upload functions
+  async function uploadFile(file: File): Promise<string | null> {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        return result.filename;
+      } else {
+        console.error("Failed to upload file:", await res.text());
+        return null;
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      return null;
+    }
+  }
+
+  function downloadFile(filename: string, originalName?: string) {
+    const url = `http://localhost:5000/uploads/${encodeURIComponent(filename)}`;
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = originalName || filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function viewFile(filename: string) {
+    const url = `http://localhost:5000/uploads/${encodeURIComponent(filename)}`;
+    window.open(url, '_blank');
+  }
+
+
+
   function startEditing(vendor: Vendor) {
     setEditingVendor(vendor);
   }
@@ -273,23 +475,7 @@ export default function VendorsListPage() {
     setEditingVendor(null);
   }
 
-  function getStatusColor(status: VendorStatus) {
-    switch (status) {
-      case 'Pending': return '#ff9800';
-      case 'Confirmed': return '#2196F3';
-      case 'Paid': return '#4CAF50';
-      default: return '#ddd';
-    }
-  }
-
-  function getStatusText(status: VendorStatus) {
-    switch (status) {
-      case 'Pending': return 'ממתין';
-      case 'Confirmed': return 'אושר';
-      case 'Paid': return 'שולם';
-      default: return status;
-    }
-  }
+  // removed unused helpers (replaced with chips and icons)
 
   function getTypeText(type: VendorType) {
     switch (type) {
@@ -300,6 +486,18 @@ export default function VendorsListPage() {
       case 'clothes': return 'בגדים';
       case 'makeup_hair': return 'איפור ושיער';
       case 'internet_orders': return 'הזמנות מקוונות';
+      case 'lighting_sound': return 'תאורה והגברה';
+      case 'guest_gifts': return 'מתנות לאורחים';
+      case 'venue_deposit': return 'מקדמה לאולם';
+      case 'bride_dress': return 'שמלות כלה';
+      case 'groom_suit': return 'חליפת חתן';
+      case 'shoes': return 'נעליים';
+      case 'jewelry': return 'תכשיטים';
+      case 'rsvp': return 'אישורי הגעה';
+      case 'design_tables': return 'עיצוב ושולחנות';
+      case 'bride_bouquet': return 'זר כלה';
+      case 'chuppah': return 'חופה';
+      case 'flowers': return 'פרחים';
       case 'other': return 'אחר';
       default: return type;
     }
@@ -355,6 +553,8 @@ export default function VendorsListPage() {
           <div><strong>קישורים:</strong> הוסף קישורים לחוזים והצעות</div>
           <div><strong>סינון ומיון:</strong> השתמש בפילטרים כדי למצוא ספקים ספציפיים</div>
         </div>
+        
+
       </div>
 
       {/* Add Vendor Form */}
@@ -397,6 +597,45 @@ export default function VendorsListPage() {
           
           <div>
             <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+              שולם מקדמה
+            </label>
+            <input
+              type="checkbox"
+              checked={newVendor.depositPaid}
+              onChange={(e) => setNewVendor({ ...newVendor, depositPaid: e.target.checked })}
+              style={{ marginLeft: '8px' }}
+            />
+          </div>
+          
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+              סכום מקדמה (₪)
+            </label>
+            <input
+              type="number"
+              min={0}
+              max={newVendor.price}
+              placeholder="0"
+              value={newVendor.depositAmount}
+              onChange={(e) => setNewVendor({ ...newVendor, depositAmount: Number(e.target.value) })}
+              disabled={!newVendor.depositPaid}
+              style={{ 
+                width: '100%', 
+                padding: '8px', 
+                border: '1px solid #ddd', 
+                borderRadius: '4px',
+                backgroundColor: !newVendor.depositPaid ? '#f5f5f5' : 'white'
+              }}
+            />
+            {newVendor.depositPaid && newVendor.depositAmount > 0 && (
+              <small style={{ color: '#666', fontSize: '12px' }}>
+                נותר לשלם: {(newVendor.price - newVendor.depositAmount).toLocaleString()} ₪
+              </small>
+            )}
+          </div>
+          
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
               סוג ספק *
             </label>
             <select
@@ -411,6 +650,18 @@ export default function VendorsListPage() {
               <option value="decor">קישוט</option>
               <option value="clothes">בגדים</option>
               <option value="makeup_hair">איפור ושיער</option>
+              <option value="lighting_sound">תאורה והגברה</option>
+              <option value="guest_gifts">מתנות לאורחים</option>
+              <option value="venue_deposit">מקדמה לאולם</option>
+              <option value="bride_dress">שמלות כלה</option>
+              <option value="groom_suit">חליפת חתן</option>
+              <option value="shoes">נעליים</option>
+              <option value="jewelry">תכשיטים</option>
+              <option value="rsvp">אישורי הגעה</option>
+              <option value="design_tables">עיצוב ושולחנות</option>
+              <option value="bride_bouquet">זר כלה</option>
+              <option value="chuppah">חופה</option>
+              <option value="flowers">פרחים</option>
               <option value="internet_orders">הזמנות מקוונות</option>
               <option value="other">אחר</option>
             </select>
@@ -445,26 +696,56 @@ export default function VendorsListPage() {
           
           <div>
             <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
-              קישור חוזה
+              העלאת חוזה
             </label>
             <input
-              placeholder="https://example.com/contract"
-              value={newVendor.contractURL}
-              onChange={(e) => setNewVendor({ ...newVendor, contractURL: e.target.value })}
+              type="file"
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.txt"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const filename = await uploadFile(file);
+                  if (filename) {
+                    setNewVendor({ ...newVendor, contractFile: filename });
+                  } else {
+                    alert('שגיאה בהעלאת הקובץ');
+                  }
+                }
+              }}
               style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
             />
+            {newVendor.contractFile && (
+              <small style={{ color: '#666', fontSize: '12px' }}>
+                קובץ נבחר: {newVendor.contractFile}
+              </small>
+            )}
           </div>
           
           <div>
             <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
-              קישור הצעה
+              העלאת מסמך נוסף
             </label>
             <input
-              placeholder="https://example.com/proposal"
-              value={newVendor.proposalURL}
-              onChange={(e) => setNewVendor({ ...newVendor, proposalURL: e.target.value })}
+              type="file"
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.txt"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const filename = await uploadFile(file);
+                  if (filename) {
+                    setNewVendor({ ...newVendor, fileURL: filename });
+                  } else {
+                    alert('שגיאה בהעלאת הקובץ');
+                  }
+                }
+              }}
               style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
             />
+            {newVendor.fileURL && (
+              <small style={{ color: '#666', fontSize: '12px' }}>
+                קובץ נבחר: {newVendor.fileURL}
+              </small>
+            )}
           </div>
           
           <div style={{ display: 'flex', alignItems: 'end' }}>
@@ -489,32 +770,42 @@ export default function VendorsListPage() {
       </div>
 
       {/* Filters */}
-      <div style={{
-        background: '#f5f5f5',
-        padding: '15px',
-        borderRadius: '8px',
-        marginBottom: '20px',
-        border: '1px solid #ddd'
-      }}>
-        <h4 style={{ margin: '0 0 15px 0' }}>סינון ומיון</h4>
-        <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>חיפוש:</label>
+      <div className="toolbar">
+        <h4 style={{ margin: '0 0 12px 0' }}>סינון ומיון</h4>
+        {filteredAndSortedVendors.length > 0 && (
+          <div style={{
+            background: '#e8f5e8',
+            padding: '10px',
+            borderRadius: '6px',
+            marginBottom: '12px',
+            border: '1px solid #4CAF50',
+            fontSize: '14px'
+          }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 8 }}>
+              <div><strong>סה"כ מחיר:</strong> {totalPrice.toLocaleString()} ₪</div>
+              <div><strong>סה"כ מקדמות:</strong> {totalDeposits.toLocaleString()} ₪</div>
+              <div><strong>נותר לשלם:</strong> {remainingToPay.toLocaleString()} ₪</div>
+              <div><strong>ספקים מוצגים:</strong> {filteredAndSortedVendors.length}</div>
+            </div>
+          </div>
+        )}
+        <div className="toolbar-grid">
+          <div className="field">
+            <label>חיפוש</label>
             <input
+              className="input"
               type="text"
               placeholder="חפש לפי שם ספק"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ width: '100%', padding: '6px', border: '1px solid #ddd', borderRadius: '4px' }}
             />
           </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>סוג ספק:</label>
+          <div className="field">
+            <label>סוג ספק</label>
             <select
+              className="select"
               value={filters.type}
-              onChange={(e) => setFilters({...filters, type: e.target.value})}
-              style={{ width: '100%', padding: '6px', border: '1px solid #ddd', borderRadius: '4px' }}
+              onChange={(e) => setFilters({ ...filters, type: e.target.value })}
             >
               <option value="">כל הסוגים</option>
               <option value="music">מוזיקה</option>
@@ -523,17 +814,28 @@ export default function VendorsListPage() {
               <option value="decor">קישוט</option>
               <option value="clothes">בגדים</option>
               <option value="makeup_hair">איפור ושיער</option>
+              <option value="lighting_sound">תאורה והגברה</option>
+              <option value="guest_gifts">מתנות לאורחים</option>
+              <option value="venue_deposit">מקדמה לאולם</option>
+              <option value="bride_dress">שמלות כלה</option>
+              <option value="groom_suit">חליפת חתן</option>
+              <option value="shoes">נעליים</option>
+              <option value="jewelry">תכשיטים</option>
+              <option value="rsvp">אישורי הגעה</option>
+              <option value="design_tables">עיצוב ושולחנות</option>
+              <option value="bride_bouquet">זר כלה</option>
+              <option value="chuppah">חופה</option>
+              <option value="flowers">פרחים</option>
               <option value="internet_orders">הזמנות מקוונות</option>
               <option value="other">אחר</option>
             </select>
           </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>סטטוס:</label>
+          <div className="field">
+            <label>סטטוס</label>
             <select
+              className="select"
               value={filters.status}
-              onChange={(e) => setFilters({...filters, status: e.target.value})}
-              style={{ width: '100%', padding: '6px', border: '1px solid #ddd', borderRadius: '4px' }}
+              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
             >
               <option value="">כל הסטטוסים</option>
               <option value="Pending">ממתין</option>
@@ -541,26 +843,24 @@ export default function VendorsListPage() {
               <option value="Paid">שולם</option>
             </select>
           </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>מיון לפי:</label>
+          <div className="field">
+            <label>מיון לפי</label>
             <select
+              className="select"
               value={filters.sortBy}
-              onChange={(e) => setFilters({...filters, sortBy: e.target.value as any})}
-              style={{ width: '100%', padding: '6px', border: '1px solid #ddd', borderRadius: '4px' }}
+              onChange={(e) => setFilters({ ...filters, sortBy: e.target.value as any })}
             >
               <option value="vendorName">שם ספק</option>
               <option value="price">מחיר</option>
               <option value="type">סוג ספק</option>
             </select>
           </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>סדר:</label>
+          <div className="field">
+            <label>סדר</label>
             <select
+              className="select"
               value={filters.sortOrder}
-              onChange={(e) => setFilters({...filters, sortOrder: e.target.value as any})}
-              style={{ width: '100%', padding: '6px', border: '1px solid #ddd', borderRadius: '4px' }}
+              onChange={(e) => setFilters({ ...filters, sortOrder: e.target.value as any })}
             >
               <option value="asc">עולה</option>
               <option value="desc">יורד</option>
@@ -569,170 +869,180 @@ export default function VendorsListPage() {
         </div>
       </div>
 
-      {/* Vendors List */}
-      <div style={{ background: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-        <div style={{ 
-          background: '#f5f5f5', 
-          padding: '15px 20px', 
-          borderBottom: '1px solid #ddd',
-          fontWeight: 'bold'
-        }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr 1fr', gap: '10px' }}>
-            <div>שם הספק</div>
-            <div>מחיר (₪)</div>
-            <div>סוג ספק</div>
-            <div>הערות</div>
-            <div>קישור חוזה</div>
-            <div>קישור הצעה</div>
-            <div>סטטוס</div>
-            <div>פעולות</div>
-          </div>
+      {/* Vendors List as Cards */}
+      {filteredAndSortedVendors.length === 0 ? (
+        <div style={{ padding: '40px', textAlign: 'center', color: '#666' }}>
+          אין ספקים ברשימה. הוסף ספק ראשון!
         </div>
-
-        {filteredAndSortedVendors.length === 0 ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: '#666' }}>
-            אין ספקים ברשימה. הוסף ספק ראשון!
-          </div>
-        ) : (
-          filteredAndSortedVendors.map(vendor => (
-            <div key={vendor._id} style={{ 
-              padding: '15px 20px', 
-              borderBottom: '1px solid #eee',
-              display: 'grid',
-              gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr',
-              gap: '10px',
-              alignItems: 'center'
-            }}>
+      ) : (
+        <div className="card-grid">
+          {filteredAndSortedVendors.map(vendor => (
+            <div key={vendor._id} className="card">
               {editingVendor && editingVendor._id === vendor._id ? (
-                // Edit mode
                 <>
-                  <input
-                    value={editingVendor.vendorName}
-                    onChange={e => setEditingVendor({...editingVendor, vendorName: e.target.value})}
-                    style={{ padding: '4px', border: '1px solid #ddd', borderRadius: '2px' }}
-                  />
-                  <input
-                    type="number"
-                    value={editingVendor.price}
-                    onChange={e => setEditingVendor({...editingVendor, price: Number(e.target.value)})}
-                    style={{ padding: '4px', border: '1px solid #ddd', borderRadius: '2px' }}
-                  />
-                  <select
-                    value={editingVendor.type}
-                    onChange={e => setEditingVendor({...editingVendor, type: e.target.value as VendorType})}
-                    style={{ padding: '4px', border: '1px solid #ddd', borderRadius: '2px' }}
-                  >
-                    <option value="music">מוזיקה</option>
-                    <option value="food">אוכל</option>
-                    <option value="photography">צילום</option>
-                    <option value="decor">קישוט</option>
-                    <option value="clothes">בגדים</option>
-                    <option value="makeup_hair">איפור ושיער</option>
-                    <option value="internet_orders">הזמנות מקוונות</option>
-                    <option value="internet_orders">תאורה והגברה</option>
-
-                    <option value="other">אחר</option>
-                  </select>
-                  <input
-                    value={editingVendor.notes || ''}
-                    onChange={e => setEditingVendor({...editingVendor, notes: e.target.value})}
-                    style={{ padding: '4px', border: '1px solid #ddd', borderRadius: '2px' }}
-                  />
-                  <input
-                    value={editingVendor.contractURL || ''}
-                    onChange={e => setEditingVendor({...editingVendor, contractURL: e.target.value})}
-                    style={{ padding: '4px', border: '1px solid #ddd', borderRadius: '2px' }}
-                  />
-                  <input
-                    value={editingVendor.proposalURL || ''}
-                    onChange={e => setEditingVendor({...editingVendor, proposalURL: e.target.value})}
-                    style={{ padding: '4px', border: '1px solid #ddd', borderRadius: '2px' }}
-                  />
-                  <select
-                    value={editingVendor.status}
-                    onChange={e => setEditingVendor({...editingVendor, status: e.target.value as VendorStatus})}
-                    style={{ padding: '4px', border: '1px solid #ddd', borderRadius: '2px' }}
-                  >
-                    <option value="Pending">ממתין</option>
-                    <option value="Confirmed">אושר</option>
-                    <option value="Paid">שולם</option>
-                  </select>
-                  <div style={{ display: 'flex', gap: '5px' }}>
-                    <button 
-                      onClick={() => updateVendor(editingVendor)}
-                      style={{ padding: '4px 8px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
-                    >
-                      שמור
-                    </button>
-                    <button 
-                      onClick={cancelEditing}
-                      style={{ padding: '4px 8px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
-                    >
-                      ביטול
-                    </button>
+                  <div className="card-header">
+                    <input
+                      className="input"
+                      value={editingVendor.vendorName}
+                      onChange={e => setEditingVendor({ ...editingVendor, vendorName: e.target.value })}
+                    />
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button className="btn-icon" title="שמור" onClick={() => updateVendor(editingVendor)}>💾</button>
+                      <button className="btn-icon" title="בטל" onClick={cancelEditing}>✖️</button>
+                    </div>
+                  </div>
+                  <div className="card-row">
+                    <div className="field">
+                      <label>מחיר (₪)</label>
+                      <input className="input" type="number" value={editingVendor.price} onChange={e => setEditingVendor({ ...editingVendor, price: Number(e.target.value) })} />
+                    </div>
+                    <div className="field">
+                      <label>מקדמה</label>
+                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <input type="checkbox" checked={editingVendor.depositPaid || false} onChange={e => setEditingVendor({ ...editingVendor, depositPaid: e.target.checked })} />
+                        <input className="input" type="number" min={0} max={editingVendor.price} placeholder="0" value={editingVendor.depositAmount || 0} onChange={e => setEditingVendor({ ...editingVendor, depositAmount: Number(e.target.value) })} disabled={!editingVendor.depositPaid} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="card-row">
+                    <div className="field">
+                      <label>סוג ספק</label>
+                      <select className="select" value={editingVendor.type} onChange={e => setEditingVendor({ ...editingVendor, type: e.target.value as VendorType })}>
+                        <option value="music">מוזיקה</option>
+                        <option value="food">אוכל</option>
+                        <option value="photography">צילום</option>
+                        <option value="decor">קישוט</option>
+                        <option value="clothes">בגדים</option>
+                        <option value="makeup_hair">איפור ושיער</option>
+                        <option value="lighting_sound">תאורה והגברה</option>
+                        <option value="guest_gifts">מתנות לאורחים</option>
+                        <option value="venue_deposit">מקדמה לאולם</option>
+                        <option value="bride_dress">שמלות כלה</option>
+                        <option value="groom_suit">חליפת חתן</option>
+                        <option value="shoes">נעליים</option>
+                        <option value="jewelry">תכשיטים</option>
+                        <option value="rsvp">אישורי הגעה</option>
+                        <option value="design_tables">עיצוב ושולחנות</option>
+                        <option value="bride_bouquet">זר כלה</option>
+                        <option value="chuppah">חופה</option>
+                        <option value="flowers">פרחים</option>
+                        <option value="internet_orders">הזמנות מקוונות</option>
+                        <option value="other">אחר</option>
+                      </select>
+                    </div>
+                    <div className="field">
+                      <label>סטטוס</label>
+                      <select className="select" value={editingVendor.status} onChange={e => setEditingVendor({ ...editingVendor, status: e.target.value as VendorStatus })}>
+                        <option value="Pending">ממתין</option>
+                        <option value="Confirmed">אושר</option>
+                        <option value="Paid">שולם</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="field" style={{ marginBottom: 10 }}>
+                    <label>הערות</label>
+                    <input className="input" value={editingVendor.notes || ''} onChange={e => setEditingVendor({ ...editingVendor, notes: e.target.value })} />
+                  </div>
+                  <div className="card-row">
+                    <div className="field">
+                      <label>חוזה</label>
+                      <input className="file" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.txt" onChange={async e => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const filename = await uploadFile(file);
+                          if (filename) setEditingVendor({ ...editingVendor, contractFile: filename });
+                        }
+                      }} />
+                    </div>
+                    <div className="field">
+                      <label>מסמך נוסף</label>
+                      <input className="file" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.txt" onChange={async e => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const filename = await uploadFile(file);
+                          if (filename) setEditingVendor({ ...editingVendor, fileURL: filename });
+                        }
+                      }} />
+                    </div>
                   </div>
                 </>
               ) : (
-                // View mode
                 <>
-                  <div style={{ fontWeight: 'bold' }}>
-                    {vendor.vendorName}
+                  <div className="card-header">
+                    <div className="card-title">{vendor.vendorName}</div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button className="btn-icon" title="ערוך" onClick={() => startEditing(vendor)}>✏️</button>
+                      <button className="btn-icon" title="מחק" onClick={() => deleteVendor(vendor._id)}>🗑️</button>
+                    </div>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    {vendor.price.toLocaleString()} ₪
+                  <div className="card-row">
+                    <div>
+                      <div className="muted">מחיר</div>
+                      <div>{vendor.price.toLocaleString()} ₪</div>
+                    </div>
+                    <div>
+                      <div className="muted">נותר לשלם</div>
+                      <div>{(vendor.price - (vendor.depositAmount || 0)).toLocaleString()} ₪</div>
+                    </div>
                   </div>
-                  <div>
-                    {getTypeText(vendor.type)}
+                  <div className="card-row">
+                    <div>
+                      <div className="muted">מקדמה</div>
+                      <div>{vendor.depositPaid ? `💵 ${vendor.depositAmount?.toLocaleString()} ₪` : '❌ לא שולם'}</div>
+                    </div>
+                    <div>
+                      <div className="muted">סוג ספק</div>
+                      <div>{getTypeText(vendor.type)}</div>
+                    </div>
                   </div>
-                  <div>
-                    {vendor.notes || '-'}
+                  <div className="card-row">
+                    <div>
+                      <div className="muted">סטטוס</div>
+                      <div>
+                        <span className={`chip ${vendor.status === 'Pending' ? 'chip-pending' : vendor.status === 'Confirmed' ? 'chip-confirmed' : 'chip-paid'}`}>
+                          {vendor.status === 'Pending' ? '⏳ ממתין' : vendor.status === 'Confirmed' ? '✅ אושר' : '💸 שולם'}
+                        </span>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="muted">הערות</div>
+                      <div>{vendor.notes || '-'}</div>
+                    </div>
                   </div>
-                  <div>
-                    {vendor.contractURL ? (
-                      <a href={vendor.contractURL} target="_blank" rel="noreferrer" style={{ color: '#2196F3' }}>
-                        קישור
-                      </a>
-                    ) : '-'}
-                  </div>
-                  <div>
-                    {vendor.proposalURL ? (
-                      <a href={vendor.proposalURL} target="_blank" rel="noreferrer" style={{ color: '#2196F3' }}>
-                        קישור
-                      </a>
-                    ) : '-'}
-                  </div>
-                  <div>
-                    <span style={{
-                      padding: '4px 8px',
-                      borderRadius: '4px',
-                      backgroundColor: getStatusColor(vendor.status),
-                      color: 'white',
-                      fontSize: '12px',
-                      fontWeight: 'bold'
-                    }}>
-                      {getStatusText(vendor.status)}
-                    </span>
-                  </div>
-                  <div style={{ display: 'flex', gap: '5px' }}>
-                    <button 
-                      onClick={() => startEditing(vendor)}
-                      style={{ padding: '4px 8px', backgroundColor: '#2196F3', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
-                    >
-                      ערוך
-                    </button>
-                    <button 
-                      onClick={() => deleteVendor(vendor._id)}
-                      style={{ padding: '4px 8px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
-                    >
-                      מחק
-                    </button>
+                  <div className="card-row">
+                    <div>
+                      <div className="muted">חוזה</div>
+                      <div>
+                        {vendor.contractFile ? (
+                          <div style={{ display: 'flex', gap: 8 }}>
+                            <button className="btn-icon" title="צפה" onClick={() => viewFile(vendor.contractFile!)}>📄</button>
+                            <button className="btn-icon" title="הורד" onClick={() => downloadFile(vendor.contractFile!, vendor.contractFile!)}>⬇️</button>
+                          </div>
+                        ) : (
+                          <span className="muted">אין</span>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="muted">מסמך נוסף</div>
+                      <div>
+                        {vendor.fileURL ? (
+                          <div style={{ display: 'flex', gap: 8 }}>
+                            <button className="btn-icon" title="צפה" onClick={() => viewFile(vendor.fileURL!)}>📄</button>
+                            <button className="btn-icon" title="הורד" onClick={() => downloadFile(vendor.fileURL!, vendor.fileURL!)}>⬇️</button>
+                          </div>
+                        ) : (
+                          <span className="muted">אין</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </>
               )}
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Summary */}
       {vendors.length > 0 && (
@@ -747,6 +1057,8 @@ export default function VendorsListPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
             <div><strong>סה"כ ספקים:</strong> {vendors.length}</div>
             <div><strong>סה"כ עלות:</strong> {vendors.reduce((sum, v) => sum + v.price, 0).toLocaleString()} ₪</div>
+            <div><strong>סה"כ מקדמות:</strong> {vendors.reduce((sum, v) => sum + (v.depositAmount || 0), 0).toLocaleString()} ₪</div>
+            <div><strong>נותר לשלם:</strong> {vendors.reduce((sum, v) => sum + (v.price - (v.depositAmount || 0)), 0).toLocaleString()} ₪</div>
             <div><strong>ממתינים:</strong> {vendors.filter(v => v.status === 'Pending').length}</div>
             <div><strong>אושרו:</strong> {vendors.filter(v => v.status === 'Confirmed').length}</div>
             <div><strong>שולמו:</strong> {vendors.filter(v => v.status === 'Paid').length}</div>

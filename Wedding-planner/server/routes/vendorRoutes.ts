@@ -12,6 +12,22 @@ const router = Router();
 router.use(authenticateJWT);
 
 router.post("/", createVendor);
+router.post("/upload", (req, res) => {
+  // Simple file upload endpoint - in a real implementation, you would use multer
+  // and upload to cloud storage like AWS S3 or similar
+  res.json({ 
+    message: "File upload endpoint - implement with multer and cloud storage",
+    fileURL: "placeholder-file-url" 
+  });
+});
+router.post("/upload-contract", (req, res) => {
+  // Contract file upload endpoint - in a real implementation, you would use multer
+  // and upload to cloud storage like AWS S3 or similar
+  res.json({ 
+    message: "Contract file upload endpoint - implement with multer and cloud storage",
+    contractFile: "placeholder-contract-file" 
+  });
+});
 router.get("/", getVendors);
 router.get("/:id", getVendorById);
 router.put("/:id", updateVendor);

@@ -10,7 +10,7 @@ import {
   YAxis,
   Legend,
   ResponsiveContainer,
-  ReferenceLine,
+  
   LineChart,
   Line,
   CartesianGrid,
@@ -24,7 +24,7 @@ type Vendor = {
   status: string;
 };
 
-type GuestStatus = 'Confirmed' | 'Maybe' | 'Pending';
+// Removed unused GuestStatus type
 
 type MealPricing = {
   basePrice: number;
@@ -41,6 +41,30 @@ type MealPricing = {
 type WeddingData = {
   budget: number;
   mealPricing?: MealPricing;
+};
+
+// Map vendor types to Hebrew labels (aligned with server model)
+const VENDOR_TYPE_HE: { [key: string]: string } = {
+  music: 'מוזיקה',
+  food: 'אוכל',
+  photography: 'צילום',
+  decor: 'קישוט',
+  clothes: 'בגדים',
+  makeup_hair: 'איפור ושיער',
+  internet_orders: 'הזמנות מקוונות',
+  lighting_sound: 'תאורה והגברה',
+  guest_gifts: 'מתנות לאורחים',
+  venue_deposit: 'מקדמה לאולם',
+  bride_dress: 'שמלות כלה',
+  groom_suit: 'חליפת חתן',
+  shoes: 'נעליים',
+  jewelry: 'תכשיטים',
+  rsvp: 'אישורי הגעה',
+  design_tables: 'עיצוב ושולחנות',
+  bride_bouquet: 'זר כלה',
+  chuppah: 'חופה',
+  flowers: 'פרחים',
+  other: 'אחר'
 };
 
 const COLORS = [
@@ -65,7 +89,7 @@ const BudgetPage: React.FC = () => {
   });
   const [weddingData, setWeddingData] = useState<WeddingData>({ budget: 0 });
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  // removed unused saving state
 
   // Add state for manual calculation
   const [manualCalculation, setManualCalculation] = useState({
@@ -105,10 +129,13 @@ const BudgetPage: React.FC = () => {
         if (guestsRes.ok) {
           const guests = await guestsRes.json();
           const counts = {
-            confirmed: guests.filter((g: any) => g.status === 'Confirmed').length,
-            maybe: guests.filter((g: any) => g.status === 'Maybe').length,
-            pending: guests.filter((g: any) => g.status === 'Pending').length,
-            total: guests.length
+            // Sum by number of seats reserved per guest
+            confirmed: guests.reduce((sum: number, g: any) => g.status === 'Confirmed' ? sum + (g.seatsReserved || 1) : sum, 0),
+            // Use 'Arrived' as the intermediate bucket for display
+            maybe: guests.reduce((sum: number, g: any) => g.status === 'Arrived' ? sum + (g.seatsReserved || 1) : sum, 0),
+            // Pending = Invited ("הוזמן")
+            pending: guests.reduce((sum: number, g: any) => g.status === 'Invited' ? sum + (g.seatsReserved || 1) : sum, 0),
+            total: guests.reduce((sum: number, g: any) => sum + (g.seatsReserved || 1), 0)
           };
           setGuestCounts(counts);
         }
@@ -130,7 +157,7 @@ const BudgetPage: React.FC = () => {
   const totalIncome = useMemo(() => {
     if (!weddingData.mealPricing) return 0;
     
-    const { basePrice, childDiscount, bulkThreshold, bulkPrice, bulkMaxGuests, reservePrice, reserveThreshold, reserveMaxGuests } = weddingData.mealPricing;
+    const { basePrice, bulkThreshold, bulkPrice, bulkMaxGuests, reservePrice } = weddingData.mealPricing;
     
     const calculateForCount = (count: number) => {
       let totalCost = 0;
@@ -203,15 +230,7 @@ const BudgetPage: React.FC = () => {
     { name: "הוצאות", value: totalExpenses, color: "#f44336" },
   ];
 
-  // Separate profit/loss data
-  const profitLossData = [
-    { 
-      name: profit >= 0 ? "רווח" : "הפסד", 
-      value: Math.abs(profit), 
-      color: profit >= 0 ? "#2196F3" : "#ff9800",
-      isProfit: profit >= 0
-    }
-  ];
+  // Removed unused profitLossData
 
   // Line chart data for budget tracking
   const budgetTrackingData = [
@@ -230,7 +249,7 @@ const BudgetPage: React.FC = () => {
   const calculateMealCostByStatus = () => {
     if (!weddingData.mealPricing) return {};
 
-    const { basePrice, childDiscount, bulkThreshold, bulkPrice, bulkMaxGuests, reservePrice, reserveThreshold, reserveMaxGuests } = weddingData.mealPricing;
+    const { basePrice, bulkThreshold, bulkPrice, bulkMaxGuests, reservePrice } = weddingData.mealPricing;
 
     const calculateForCount = (count: number) => {
       let totalCost = 0;
@@ -269,11 +288,23 @@ const BudgetPage: React.FC = () => {
     };
   };
 
-  // Calculate meal cost for manual input
-  const calculateManualMealCost = () => {
-    if (!weddingData.mealPricing) return { totalCost: 0, costPerPerson: 0 };
+  // Event total cost (vendors + meal pricing for confirmed guests)
+  const confirmedMealCost = calculateMealCostByStatus().confirmed?.totalCost || 0;
+  const eventTotalCost = totalExpenses + confirmedMealCost;
+  const confirmedGuestsCount = guestCounts.confirmed || 0;
+  const eventCostPerPerson = confirmedGuestsCount > 0 ? Math.round(eventTotalCost / confirmedGuestsCount) : 0;
 
-    const { basePrice, childDiscount, childAgeLimit, bulkThreshold, bulkPrice, bulkMaxGuests, reservePrice, reserveThreshold, reserveMaxGuests } = weddingData.mealPricing;
+  // Calculate meal + vendors cost for manual input
+  const calculateManualMealCost = () => {
+    if (!weddingData.mealPricing) {
+      const { adultGuests, childGuests } = manualCalculation;
+      const totalGuests = adultGuests + childGuests;
+      const eventTotalCost = totalExpenses; // only vendors if no meal pricing
+      const eventCostPerPerson = totalGuests > 0 ? eventTotalCost / totalGuests : 0;
+      return { totalCost: 0, costPerPerson: 0, adultGuests, childGuests, totalGuests, eventTotalCost, eventCostPerPerson };
+    }
+
+    const { basePrice, childDiscount, bulkThreshold, bulkPrice, bulkMaxGuests, reservePrice } = weddingData.mealPricing;
     const { adultGuests, childGuests } = manualCalculation;
     const totalGuests = adultGuests + childGuests;
 
@@ -310,8 +341,10 @@ const BudgetPage: React.FC = () => {
     totalCost += childCost;
 
     const costPerPerson = totalGuests > 0 ? totalCost / totalGuests : 0;
+    const eventTotalCost = totalCost + totalExpenses; // add vendors
+    const eventCostPerPerson = totalGuests > 0 ? eventTotalCost / totalGuests : 0;
 
-    return { totalCost, costPerPerson, adultGuests, childGuests, totalGuests };
+    return { totalCost, costPerPerson, adultGuests, childGuests, totalGuests, eventTotalCost, eventCostPerPerson };
   };
 
   if (loading) {
@@ -750,6 +783,35 @@ const BudgetPage: React.FC = () => {
         )}
       </div>
 
+      {/* Event Total Cost (Vendors + Meal Cost for Confirmed Guests) */}
+      <div style={{ 
+        background: '#fffde7', 
+        padding: '20px', 
+        borderRadius: '8px',
+        marginBottom: '30px',
+        border: '1px solid #ffeb3b'
+      }}>
+        <h2 style={{ margin: '0 0 20px 0', color: '#f57f17' }}>💰 מחירי מנות - חישוב עלויות האירוע</h2>
+        <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+          <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
+            <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>סה"כ הוצאות ספקים</div>
+            <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#c62828' }}>{totalExpenses.toLocaleString()} ₪</div>
+          </div>
+          <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
+            <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>עלות מנות (מאשרים)</div>
+            <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#2e7d32' }}>{confirmedMealCost.toLocaleString()} ₪</div>
+          </div>
+          <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
+            <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>סה"כ עלות אירוע</div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f57f17' }}>{eventTotalCost.toLocaleString()} ₪</div>
+          </div>
+          <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
+            <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>עלות לאיש (מאשרים)</div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#6d4c41' }}>{eventCostPerPerson.toLocaleString()} ₪</div>
+          </div>
+        </div>
+      </div>
+
       {/* Manual Calculation - Custom Estimation */}
       <div style={{ 
         background: '#fff3e0', 
@@ -767,7 +829,7 @@ const BudgetPage: React.FC = () => {
           border: '1px solid #ddd',
           marginBottom: '20px'
         }}>
-          <h3 style={{ margin: '0 0 15px 0', color: '#333' }}>הכנס מספרי אורחים לבדיקה</h3>
+            <h3 style={{ margin: '0 0 15px 0', color: '#333' }}>הכנס מספרי אורחים לבדיקה (עלות מנות + ספקים)</h3>
           
           <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
             <div>
@@ -806,7 +868,7 @@ const BudgetPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Manual Calculation Results */}
+        {/* Manual Calculation Results (Meals + Vendors) */}
         {manualCalculation.adultGuests > 0 || manualCalculation.childGuests > 0 ? (
           <div style={{ 
             background: '#e8f5e8', 
@@ -836,7 +898,7 @@ const BudgetPage: React.FC = () => {
                 </div>
               </div>
               <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>עלות ממוצעת לאיש</div>
+                <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>עלות ממוצעת למנה</div>
                 <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>
                   {calculateManualMealCost().costPerPerson.toFixed(0)} ₪
                 </div>
@@ -847,6 +909,24 @@ const BudgetPage: React.FC = () => {
                   {calculateManualMealCost().totalCost.toLocaleString()} ₪
                 </div>
               </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>סה"כ ספקים</div>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#c62828' }}>
+                  {totalExpenses.toLocaleString()} ₪
+                </div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>סה"כ עלות אירוע</div>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f57f17' }}>
+                  {calculateManualMealCost().eventTotalCost?.toLocaleString?.() ?? (calculateManualMealCost().totalCost + totalExpenses).toLocaleString()} ₪
+                </div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>עלות לאיש</div>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#6d4c41' }}>
+                  {(calculateManualMealCost().eventCostPerPerson ?? ((calculateManualMealCost().totalCost + totalExpenses) / (calculateManualMealCost().totalGuests || 1))).toFixed(0)} ₪
+                </div>
+              </div>
             </div>
 
             {/* Detailed Breakdown */}
@@ -855,7 +935,7 @@ const BudgetPage: React.FC = () => {
               return mealCost && mealCost.totalGuests && mealCost.totalGuests > 0 ? (
                 <div style={{ marginTop: '15px', padding: '15px', background: 'white', borderRadius: '4px' }}>
                   <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
-                    פירוט החישוב:
+                    פירוט החישוב (מנות + ספקים):
                   </div>
                   <div style={{ fontSize: '12px', lineHeight: '1.4', color: '#666' }}>
                     <div>• מבוגרים: {mealCost.adultGuests || 0} × {weddingData.mealPricing?.basePrice || 0} ₪ = {((mealCost.adultGuests || 0) * (weddingData.mealPricing?.basePrice || 0)).toLocaleString()} ₪</div>
@@ -870,6 +950,9 @@ const BudgetPage: React.FC = () => {
                         ✓ מחיר רזרבה מיושם (מעל {weddingData.mealPricing?.reserveThreshold || 0} אורחים)
                       </div>
                     )}
+                    <div style={{ marginTop: '8px' }}>• הוצאות ספקים: {totalExpenses.toLocaleString()} ₪</div>
+                    <div>• סה"כ אירוע: {(mealCost.totalCost + totalExpenses).toLocaleString()} ₪</div>
+                    <div>• עלות לאיש: {(((mealCost.totalCost + totalExpenses) / (mealCost.totalGuests || 1)) || 0).toFixed(0)} ₪</div>
                   </div>
                 </div>
               ) : null;
@@ -903,7 +986,7 @@ const BudgetPage: React.FC = () => {
               outerRadius={120}
               label={({ name, value }) => `${name}: ₪${value?.toLocaleString()}`}
             >
-              {expensePieData.map((entry, index) => (
+              {expensePieData.map((_, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
@@ -935,7 +1018,7 @@ const BudgetPage: React.FC = () => {
               {vendors.map(({ _id, vendorName, price, type, status }) => (
                 <tr key={_id}>
                   <td style={{ border: '1px solid #ddd', padding: '12px' }}>{vendorName}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '12px' }}>{type}</td>
+                  <td style={{ border: '1px solid #ddd', padding: '12px' }}>{VENDOR_TYPE_HE[type] || type}</td>
                   <td style={{ border: '1px solid #ddd', padding: '12px' }}>
                     <span style={{
                       padding: '4px 8px',

@@ -9,14 +9,20 @@ const getWeddingByOwner = async (req: AuthenticatedRequest, res: Response) => {
   try {
     console.log('🚀 getWeddingByOwner called');
     const ownerID = req.user?._id;
-    console.log('🔍 Fetching wedding for owner ID:', ownerID);
+    console.log('🔍 Fetching wedding for user ID (owner or participant):', ownerID);
     
     if (!ownerID) {
       console.log('❌ No user info found');
       return res.status(401).json({ message: "Unauthorized: no user info" });
     }
 
-    const wedding = await Wedding.findOne({ ownerID });
+    // Support both the owner and any user listed as a participant
+    const wedding = await Wedding.findOne({
+      $or: [
+        { ownerID },
+        { participants: ownerID }
+      ]
+    });
     console.log('📋 Found wedding:', JSON.stringify(wedding, null, 2));
     console.log('🍽️ Meal pricing from database:', JSON.stringify(wedding?.mealPricing, null, 2));
     console.log('🔍 Wedding schema fields:', Object.keys(wedding?.toObject() || {}));

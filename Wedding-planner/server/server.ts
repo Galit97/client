@@ -7,6 +7,9 @@ import userRoutes from "./routes/userRoutes";
 import guestRoutes from "./routes/guestRoutes";
 import CheckListRoutes from "./routes/checkListRoutes";
 import weddingRoutes from "./routes/weddingRoutes";
+import uploadRoutes from "./routes/uploadRoutes";
+import listRoutes from "./routes/listRoutes";
+import path from "path";
 
 dotenv.config();
 
@@ -27,13 +30,15 @@ app.use((req: Request, res: Response, next) => {
 app.use(cors());
 app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ limit: "100mb", extended: true }));
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use("/api/vendors", vendorRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/guests", guestRoutes);
 app.use("/api/checklists", CheckListRoutes);
 app.use("/api/weddings", weddingRoutes);
+app.use("/api/upload", uploadRoutes);
+app.use("/api/lists", listRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running");

@@ -1,0 +1,129 @@
+/* Global utility styles */
+
+:root {
+  --border-color: #000;
+  --muted-border: #ddd;
+  --muted-bg: #f7f7f7;
+  --card-bg: #fff;
+  --text: #333;
+  --subtle-text: #666;
+}
+
+/* Toolbar (filters, search, actions) */
+.toolbar {
+  background: var(--muted-bg);
+  border: 1px solid var(--muted-border);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 0 0 20px 0;
+}
+
+.toolbar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.input, .select, .file {
+  width: 100%;
+  border: 1px solid var(--muted-border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: #fff;
+  color: var(--text);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #4caf50;
+  color: #fff;
+}
+
+.btn-danger {
+  background: #f44336;
+  color: #fff;
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--muted-border);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+/* Cards */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.card-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: #fff;
+}
+
+.chip-pending { background: #ff9800; }
+.chip-confirmed { background: #2196F3; }
+.chip-paid { background: #4CAF50; }
+.chip-invited { background: #ffca28; }
+.chip-declined { background: #ef5350; }
+.chip-arrived { background: #43a047; }
+
+.muted {
+  color: var(--subtle-text);
+}
+

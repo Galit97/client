@@ -8,6 +8,9 @@ import getWeddings from "../controllers/weddingController/getWeddings";
 import getWeddingByParticipant from "../controllers/weddingController/getWeddingByParticipant";
 import getWeddingByOwner from "../controllers/weddingController/getWeddingByOwner";
 import getWeddingById from "../controllers/weddingController/getWeddingById";
+import createInvite from "../controllers/weddingController/createInvite";
+import acceptInvite from "../controllers/weddingController/acceptInvite";
+import { authenticateJWT } from "../src/middleware/authenticateJWT";
 
 const router = Router();
 
@@ -24,5 +27,7 @@ router.get("/owner", authenticateJWT, getWeddingByOwner);
 router.get("/:id", getWeddingById);     
 router.put("/:id", updateWedding);
 router.delete("/:id", deleteWedding);
+router.post("/invites", authenticateJWT, createInvite);
+router.post("/invites/accept/:token", authenticateJWT, acceptInvite);
 
 export default router;

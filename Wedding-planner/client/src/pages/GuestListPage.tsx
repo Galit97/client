@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 // @ts-ignore
 import * as XLSX from 'xlsx';
 
@@ -30,6 +30,8 @@ export default function GuestListPage() {
   const [weddingId, setWeddingId] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [editingGuest, setEditingGuest] = useState<EditingGuest | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState<'' | GuestStatus>('');
   const [newGuest, setNewGuest] = useState({
     firstName: '',
     lastName: '',
@@ -123,7 +125,7 @@ export default function GuestListPage() {
         return;
       }
 
-      const importedGuests = jsonData.map((row: any, guest: any) => ({
+      const importedGuests = jsonData.map((row: any) => ({
         firstName: row['שם פרטי'] || row['firstName'] || '',
         lastName: row['שם משפחה'] || row['lastName'] || '',
         phone: row['מספר טלפון'] || row['phone'] || '',
@@ -417,16 +419,6 @@ export default function GuestListPage() {
     setEditingGuest(null);
   }
 
-  function getStatusColor(status: GuestStatus) {
-    switch (status) {
-      case 'Invited': return '#ffd700';
-      case 'Confirmed': return '#90EE90';
-      case 'Declined': return '#ff6b6b';
-      case 'Arrived': return '#4CAF50';
-      default: return '#ddd';
-    }
-  }
-
   function getStatusText(status: GuestStatus) {
     switch (status) {
       case 'Invited': return 'הוזמן';
@@ -436,6 +428,17 @@ export default function GuestListPage() {
       default: return status;
     }
   }
+
+  const filteredGuests = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    return guests.filter(g => {
+      if (filterStatus && g.status !== filterStatus) return false;
+      if (!term) return true;
+      const name = `${g.firstName} ${g.lastName}`.toLowerCase();
+      const phone = (g.phone || '').toLowerCase();
+      return name.includes(term) || phone.includes(term);
+    });
+  }, [guests, searchTerm, filterStatus]);
 
   if (loading) {
     return (
@@ -599,7 +602,7 @@ export default function GuestListPage() {
               מספר טלפון
             </label>
             <input
-              placeholder="לדוגמה: 050-1234567"
+             
               value={newGuest.phone}
               onChange={e => setNewGuest({ ...newGuest, phone: e.target.value })}
               style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
@@ -659,140 +662,124 @@ export default function GuestListPage() {
         </form>
       </div>
 
-      {/* Guest List */}
-      <div style={{ background: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-        <div style={{ 
-          background: '#f5f5f5', 
-          padding: '15px 20px', 
-          borderBottom: '1px solid #ddd',
-          fontWeight: 'bold'
-        }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr', gap: '10px' }}>
-            <div>שם המוזמן</div>
-            <div>מספר טלפון</div>
-            <div>מספר מקומות</div>
-            <div>מספר שולחן</div>
-            <div>סטטוס הזמנה</div>
-            <div>פעולות</div>
+      {/* Guests Toolbar */}
+      <div className="toolbar" style={{ marginBottom: 16 }}>
+        <h4 style={{ margin: '0 0 12px 0' }}>סינון</h4>
+        <div className="toolbar-grid">
+          <div className="field">
+            <label>חיפוש</label>
+            <input className="input" placeholder="חפש לפי שם או טלפון" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          </div>
+          <div className="field">
+            <label>סטטוס</label>
+            <select className="select" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as any)}>
+              <option value="">כולם</option>
+              <option value="Invited">הוזמן</option>
+              <option value="Confirmed">אושר</option>
+              <option value="Declined">נדחה</option>
+              <option value="Arrived">הגיע</option>
+            </select>
           </div>
         </div>
+      </div>
 
-        {guests.length === 0 ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: '#666' }}>
-            אין מוזמנים עדיין. הוסף מוזמן ראשון!
-          </div>
-        ) : (
-          guests.map(guest => (
-            <div key={guest._id} style={{ 
-              padding: '15px 20px', 
-              borderBottom: '1px solid #eee',
-              display: 'grid',
-              gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1fr',
-              gap: '10px',
-              alignItems: 'center'
-            }}>
+      {/* Guest List as Cards */}
+      {filteredGuests.length === 0 ? (
+        <div style={{ padding: '40px', textAlign: 'center', color: '#666' }}>
+          אין מוזמנים תואמים. נסה לסנן אחרת או להוסיף מוזמן.
+        </div>
+      ) : (
+        <div className="card-grid">
+          {filteredGuests.map(guest => (
+            <div key={guest._id} className="card">
               {editingGuest && editingGuest._id === guest._id ? (
-                // Edit mode
                 <>
-                  <div>
-                    <input
-                      placeholder="שם פרטי"
-                      value={editingGuest.firstName}
-                      onChange={e => setEditingGuest({...editingGuest, firstName: e.target.value})}
-                      style={{ padding: '4px', border: '1px solid #ddd', borderRadius: '2px', width: '100%' }}
-                    />
-                    <input
-                      placeholder="שם משפחה"
-                      value={editingGuest.lastName}
-                      onChange={e => setEditingGuest({...editingGuest, lastName: e.target.value})}
-                      style={{ padding: '4px', border: '1px solid #ddd', borderRadius: '2px', width: '100%', marginTop: '2px' }}
-                    />
+                  <div className="card-header">
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <input className="input" placeholder="שם פרטי" value={editingGuest.firstName} onChange={e => setEditingGuest({ ...editingGuest, firstName: e.target.value })} />
+                      <input className="input" placeholder="שם משפחה" value={editingGuest.lastName} onChange={e => setEditingGuest({ ...editingGuest, lastName: e.target.value })} />
+                    </div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button className="btn-icon" title="שמור" onClick={() => updateGuest(editingGuest!)}>💾</button>
+                      <button className="btn-icon" title="בטל" onClick={cancelEditing}>✖️</button>
+                    </div>
                   </div>
-                  <input
-                    placeholder="טלפון"
-                    value={editingGuest.phone}
-                    onChange={e => setEditingGuest({...editingGuest, phone: e.target.value})}
-                    style={{ padding: '4px', border: '1px solid #ddd', borderRadius: '2px' }}
-                  />
-                  <input
-                    type="number"
-                    min={1}
-                    max={10}
-                    placeholder="מקומות"
-                    value={editingGuest.seatsReserved}
-                    onChange={e => setEditingGuest({...editingGuest, seatsReserved: Number(e.target.value)})}
-                    style={{ padding: '4px', border: '1px solid #ddd', borderRadius: '2px' }}
-                  />
-                  <input
-                    type="number"
-                    min={0}
-                    placeholder="שולחן"
-                    value={editingGuest.tableNumber}
-                    onChange={e => setEditingGuest({...editingGuest, tableNumber: Number(e.target.value)})}
-                    style={{ padding: '4px', border: '1px solid #ddd', borderRadius: '2px' }}
-                  />
-                  <div style={{ display: 'flex', gap: '5px' }}>
-                    <button 
-                      onClick={() => updateGuest(editingGuest)}
-                      style={{ padding: '4px 8px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
-                    >
-                      שמור
-                    </button>
-                    <button 
-                      onClick={cancelEditing}
-                      style={{ padding: '4px 8px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
-                    >
-                      ביטול
-                    </button>
+                  <div className="card-row">
+                    <div className="field">
+                      <label>טלפון</label>
+                      <input className="input" placeholder="050-1234567" value={editingGuest.phone} onChange={e => setEditingGuest({ ...editingGuest, phone: e.target.value })} />
+                    </div>
+                    <div className="field">
+                      <label>מקומות</label>
+                      <input className="input" type="number" min={1} max={10} value={editingGuest.seatsReserved} onChange={e => setEditingGuest({ ...editingGuest, seatsReserved: Number(e.target.value) })} />
+                    </div>
+                  </div>
+                  <div className="card-row">
+                    <div className="field">
+                      <label>שולחן</label>
+                      <input className="input" type="number" min={0} value={editingGuest.tableNumber} onChange={e => setEditingGuest({ ...editingGuest, tableNumber: Number(e.target.value) })} />
+                    </div>
+                    <div className="field">
+                      <label>סטטוס</label>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button className="btn-icon" title="הוזמן" onClick={() => updateStatus(editingGuest!._id, 'Invited')}>⏳</button>
+                        <button className="btn-icon" title="אושר" onClick={() => updateStatus(editingGuest!._id, 'Confirmed')}>✅</button>
+                        <button className="btn-icon" title="נדחה" onClick={() => updateStatus(editingGuest!._id, 'Declined')}>❌</button>
+                        <button className="btn-icon" title="הגיע" onClick={() => updateStatus(editingGuest!._id, 'Arrived')}>🎉</button>
+                      </div>
+                    </div>
                   </div>
                 </>
               ) : (
-                // View mode
                 <>
-                  <div style={{ fontWeight: 'bold' }}>
-                    {guest.firstName} {guest.lastName}
+                  <div className="card-header">
+                    <div className="card-title">{guest.firstName} {guest.lastName}</div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button className="btn-icon" title="ערוך" onClick={() => startEditing(guest)}>✏️</button>
+                      <button className="btn-icon" title="מחק" onClick={() => deleteGuest(guest._id)}>🗑️</button>
+                    </div>
                   </div>
-                  <div>{guest.phone || '-'}</div>
-                  <div>{guest.seatsReserved}</div>
-                  <div>{guest.tableNumber || '-'}</div>
-                  <div>
-                    <select
-                      value={guest.status}
-                      onChange={e => updateStatus(guest._id, e.target.value as GuestStatus)}
-                      style={{
-                        padding: '4px 8px',
-                        border: '1px solid #ddd',
-                        borderRadius: '4px',
-                        backgroundColor: getStatusColor(guest.status),
-                        color: guest.status === 'Invited' ? '#333' : 'white'
-                      }}
-                    >
-                      <option value="Invited">הוזמן</option>
-                      <option value="Confirmed">אושר</option>
-                      <option value="Declined">נדחה</option>
-                      <option value="Arrived">הגיע</option>
-                    </select>
+                  <div className="card-row">
+                    <div>
+                      <div className="muted">טלפון</div>
+                      <div>{guest.phone || '-'}</div>
+                    </div>
+                    <div>
+                      <div className="muted">מקומות</div>
+                      <div>{guest.seatsReserved}</div>
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', gap: '5px' }}>
-                    <button 
-                      onClick={() => startEditing(guest)}
-                      style={{ padding: '4px 8px', backgroundColor: '#2196F3', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
-                    >
-                      ערוך
-                    </button>
-                    <button 
-                      onClick={() => deleteGuest(guest._id)}
-                      style={{ padding: '4px 8px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
-                    >
-                      מחק
-                    </button>
+                  <div className="card-row">
+                    <div>
+                      <div className="muted">שולחן</div>
+                      <div>{guest.tableNumber || '-'}</div>
+                    </div>
+                    <div>
+                      <div className="muted">סטטוס</div>
+                      <div>
+                        <span className={`chip ${guest.status === 'Invited' ? 'chip-invited' : guest.status === 'Confirmed' ? 'chip-confirmed' : guest.status === 'Declined' ? 'chip-declined' : 'chip-arrived'}`}>
+                          {guest.status === 'Invited' ? '⏳ הוזמן' : guest.status === 'Confirmed' ? '✅ אושר' : guest.status === 'Declined' ? '❌ נדחה' : '🎉 הגיע'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="card-row">
+                    <div>
+                      <div className="muted">שינוי סטטוס מהיר</div>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button className="btn-icon" title="הוזמן" onClick={() => updateStatus(guest._id, 'Invited')}>⏳</button>
+                        <button className="btn-icon" title="אושר" onClick={() => updateStatus(guest._id, 'Confirmed')}>✅</button>
+                        <button className="btn-icon" title="נדחה" onClick={() => updateStatus(guest._id, 'Declined')}>❌</button>
+                        <button className="btn-icon" title="הגיע" onClick={() => updateStatus(guest._id, 'Arrived')}>🎉</button>
+                      </div>
+                    </div>
                   </div>
                 </>
               )}
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Summary */}
       {guests.length > 0 && (

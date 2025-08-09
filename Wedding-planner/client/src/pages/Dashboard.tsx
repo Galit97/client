@@ -29,10 +29,23 @@ type Guest = {
   companions?: number;
 };
 
+type MealPricing = {
+  basePrice: number;
+  childDiscount: number;
+  childAgeLimit: number;
+  bulkThreshold: number;
+  bulkPrice: number;
+  bulkMaxGuests: number;
+  reservePrice: number;
+  reserveThreshold: number;
+  reserveMaxGuests: number;
+};
+
 type WeddingData = {
   weddingDate: string;
   budget: number;
   totalGuests: number;
+  mealPricing?: MealPricing;
 };
 
 type Activity = {
@@ -139,8 +152,8 @@ const Dashboard: React.FC = () => {
     return sum + guest.seatsReserved; // seatsReserved includes the guest + their companions
   }, 0);
   
-  const confirmedGuests = guests.filter(guest => guest.status === 'Confirmed').length;
-  const totalGuests = guests.length;
+  const confirmedGuests = guests.reduce((sum, g) => g.status === 'Confirmed' ? sum + (g.seatsReserved || 1) : sum, 0);
+  const totalGuests = guests.reduce((sum, g) => sum + (g.seatsReserved || 1), 0);
   const guestProgress = totalGuests > 0 ? (confirmedGuests / totalGuests) * 100 : 0;
   
   // Calculate overall progress including checklist, vendors, guests, and recent registrations
@@ -198,6 +211,34 @@ const Dashboard: React.FC = () => {
 
   // High priority tasks (tasks with due date soon)
   const highPriorityTasks = tasks.filter(task => !task.done && task.dueDate && new Date(task.dueDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000));
+
+  // Event total cost calculation (vendors + meal cost for confirmed guests)
+  const totalVendorExpenses = vendors.reduce((sum, v) => sum + (v.price || 0), 0);
+  const calculateMealCostForCount = (count: number) => {
+    if (!weddingData?.mealPricing) return 0;
+    const { basePrice, bulkThreshold, bulkPrice, bulkMaxGuests, reservePrice } = weddingData.mealPricing;
+    let totalCost = 0;
+    let remainingGuests = count;
+    const baseGuests = Math.min(remainingGuests, bulkThreshold);
+    if (baseGuests > 0) {
+      totalCost += baseGuests * basePrice;
+      remainingGuests -= baseGuests;
+    }
+    if (remainingGuests > 0 && bulkPrice > 0) {
+      const bulkGuests = Math.min(remainingGuests, Math.max(0, bulkMaxGuests - bulkThreshold));
+      if (bulkGuests > 0) {
+        totalCost += bulkGuests * bulkPrice;
+        remainingGuests -= bulkGuests;
+      }
+    }
+    if (remainingGuests > 0 && reservePrice > 0) {
+      totalCost += remainingGuests * reservePrice;
+    }
+    return totalCost;
+  };
+  const confirmedMealCost = calculateMealCostForCount(confirmedGuests);
+  const eventTotalCost = totalVendorExpenses + confirmedMealCost;
+  const costPerPerson = confirmedGuests > 0 ? Math.round(eventTotalCost / confirmedGuests) : 0;
 
   if (loading) {
     return (
@@ -433,6 +474,49 @@ const Dashboard: React.FC = () => {
             color: '#FF9800' 
           }}>
             {guestProgress.toFixed(0)}%
+          </div>
+        </div>
+        {/* Event Cost Summary */}
+        <div style={{ 
+          background: 'white', 
+          padding: '25px', 
+          borderRadius: '12px',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          border: '1px solid #e0e0e0'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
+            <div style={{ 
+              width: '50px', 
+              height: '50px', 
+              borderRadius: '50%', 
+              background: 'linear-gradient(135deg, #FFCA28, #FFA000)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginLeft: '15px'
+            }}>
+              <span style={{ fontSize: '24px' }}>💰</span>
+            </div>
+            <div>
+              <h3 style={{ margin: '0', color: '#333' }}>חישוב עלויות האירוע</h3>
+              <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
+                עלות לאיש (מאשרים): {costPerPerson.toLocaleString()} ₪
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
+            <div>
+              <div style={{ fontSize: '12px', color: '#666' }}>סה"כ ספקים</div>
+              <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#c62828' }}>{totalVendorExpenses.toLocaleString()} ₪</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '12px', color: '#666' }}>עלות מנות (מאשרים)</div>
+              <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#2e7d32' }}>{confirmedMealCost.toLocaleString()} ₪</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '12px', color: '#666' }}>סה"כ עלות אירוע</div>
+              <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#f57f17' }}>{eventTotalCost.toLocaleString()} ₪</div>
+            </div>
           </div>
         </div>
       </div>
