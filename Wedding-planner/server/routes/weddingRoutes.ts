@@ -3,7 +3,6 @@ import { Router } from "express";
 import createWedding from "../controllers/weddingController/createWedding";
 import updateWedding from "../controllers/weddingController/updateWedding";
 import deleteWedding from "../controllers/weddingController/deleteWedding";
-import { authenticateJWT } from "../src/middleware/authenticateJWT";
 import getWeddings from "../controllers/weddingController/getWeddings";
 import getWeddingByParticipant from "../controllers/weddingController/getWeddingByParticipant";
 import getWeddingByOwner from "../controllers/weddingController/getWeddingByOwner";
