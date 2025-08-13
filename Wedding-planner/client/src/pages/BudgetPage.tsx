@@ -68,14 +68,14 @@ const VENDOR_TYPE_HE: { [key: string]: string } = {
 };
 
 const COLORS = [
-  "#0088FE",
-  "#00C49F", 
-  "#FFBB28",
-  "#FF8042",
-  "#A28EFF",
-  "#FF6666",
-  "#33CC99",
-  "#FF9933",
+  "#D4A574", // חום פסטל
+  "#A8D5BA", // ירוק פסטל
+  "#F4C2C2", // ורוד פסטל
+  "#F7E7CE", // צהוב פסטל
+  "#C8A2C8", // לילך פסטל
+  "#B8E6B8", // ירוק בהיר פסטל
+  "#FFB6C1", // ורוד בהיר פסטל
+  "#F0E68C", // צהוב בהיר פסטל
 ];
 
 const BudgetPage: React.FC = () => {
@@ -226,8 +226,8 @@ const BudgetPage: React.FC = () => {
 
   // Bar chart data for income vs expenses - separate positive values
   const incomeExpenseData = [
-    { name: "הכנסות", value: totalIncome, color: "#4CAF50" },
-    { name: "הוצאות", value: totalExpenses, color: "#f44336" },
+    { name: "הכנסות", value: totalIncome, color: "#A8D5BA" }, // ירוק פסטל
+    { name: "הוצאות", value: totalExpenses, color: "#F4C2C2" }, // ורוד פסטל
   ];
 
   // Removed unused profitLossData
@@ -356,87 +356,42 @@ const BudgetPage: React.FC = () => {
   }
 
   return (
-    <div style={{ 
-      padding: '20px', 
-      maxWidth: '1400px', 
-      margin: '0 auto',
-      fontFamily: 'Arial, sans-serif',
-      direction: 'rtl'
-    }}>
-      <h1 style={{ 
-        textAlign: 'center', 
-        marginBottom: '30px',
-        color: '#333',
-        borderBottom: '2px solid #ddd',
-        paddingBottom: '10px'
-      }}>
+    <div className="page-container">
+      <h1 className="text-center mb-xl">
         📊 ניהול תקציב האירוע
       </h1>
 
       {/* Summary Cards */}
-      <div style={{ 
-        display: 'grid', 
-        gap: '20px', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-        marginBottom: '30px'
-      }}>
-        <div style={{ 
-          background: '#e8f5e8', 
-          padding: '20px', 
-          borderRadius: '8px',
-          border: '2px solid #4caf50',
-          textAlign: 'center'
-        }}>
-          <h3 style={{ margin: '0 0 10px 0', color: '#2e7d32' }}>תקציב כולל</h3>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#2e7d32' }}>
+      <div className="grid grid-4 mb-xl">
+        <div className="card text-center">
+          <h3 className="mb-md">תקציב כולל</h3>
+          <div className="text-primary" style={{ fontSize: '24px', fontWeight: 'bold' }}>
             {budget.toLocaleString()} ₪
           </div>
         </div>
 
-        <div style={{ 
-          background: '#fff3e0', 
-          padding: '20px', 
-          borderRadius: '8px',
-          border: '2px solid #ff9800',
-          textAlign: 'center'
-        }}>
-          <h3 style={{ margin: '0 0 10px 0', color: '#e65100' }}>הכנסות צפויות</h3>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#e65100' }}>
+        <div className="card text-center">
+          <h3 className="mb-md">הכנסות צפויות</h3>
+          <div className="text-primary" style={{ fontSize: '24px', fontWeight: 'bold' }}>
             {totalIncome.toLocaleString()} ₪
           </div>
         </div>
 
-        <div style={{ 
-          background: '#ffebee', 
-          padding: '20px', 
-          borderRadius: '8px',
-          border: '2px solid #f44336',
-          textAlign: 'center'
-        }}>
-          <h3 style={{ margin: '0 0 10px 0', color: '#c62828' }}>הוצאות בפועל</h3>
-          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#c62828' }}>
+        <div className="card text-center">
+          <h3 className="mb-md">הוצאות בפועל</h3>
+          <div className="text-primary" style={{ fontSize: '24px', fontWeight: 'bold' }}>
             {totalExpenses.toLocaleString()} ₪
           </div>
         </div>
 
-        <div style={{ 
-          background: profit >= 0 ? '#e3f2fd' : '#fff3e0', 
-          padding: '20px', 
-          borderRadius: '8px',
-          border: `2px solid ${profit >= 0 ? '#2196F3' : '#ff9800'}`,
-          textAlign: 'center'
-        }}>
-          <h3 style={{ margin: '0 0 10px 0', color: profit >= 0 ? '#1976d2' : '#e65100' }}>
+        <div className="card text-center">
+          <h3 className="mb-md">
             {profit >= 0 ? 'רווח' : 'הפסד'}
           </h3>
-          <div style={{ 
-            fontSize: '24px', 
-            fontWeight: 'bold', 
-            color: profit >= 0 ? '#1976d2' : '#e65100' 
-          }}>
+          <div className="text-primary" style={{ fontSize: '24px', fontWeight: 'bold' }}>
             {profit.toLocaleString()} ₪
           </div>
-          <div style={{ fontSize: '14px', color: '#666', marginTop: '5px' }}>
+          <div className="text-secondary mt-sm">
             {profitMargin.toFixed(1)}% מההכנסות
           </div>
         </div>
@@ -527,41 +482,41 @@ const BudgetPage: React.FC = () => {
           </div>
         </div>
         
-        {/* Chart Summary */}
-        <div style={{ 
-          display: 'grid', 
-          gap: '15px', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          marginTop: '20px',
-          padding: '15px',
-          background: '#f8f9fa',
-          borderRadius: '8px'
-        }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>הכנסות צפויות</div>
-            <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#4CAF50' }}>
-              {totalIncome.toLocaleString()} ₪
-            </div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>הוצאות בפועל</div>
-            <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#f44336' }}>
-              {totalExpenses.toLocaleString()} ₪
-            </div>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>
-              {profit >= 0 ? 'רווח' : 'הפסד'}
-            </div>
-            <div style={{ 
-              fontSize: '18px', 
-              fontWeight: 'bold', 
-              color: profit >= 0 ? '#2196F3' : '#ff9800' 
-            }}>
-              {profit >= 0 ? '+' : '-'}₪{Math.abs(profit).toLocaleString()}
-            </div>
-          </div>
-        </div>
+                 {/* Chart Summary */}
+         <div style={{ 
+           display: 'grid', 
+           gap: '15px', 
+           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+           marginTop: '20px',
+           padding: '15px',
+           background: '#f8f9fa',
+           borderRadius: '8px'
+         }}>
+           <div style={{ textAlign: 'center' }}>
+             <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>הכנסות צפויות</div>
+             <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#A8D5BA' }}>
+               {totalIncome.toLocaleString()} ₪
+             </div>
+           </div>
+           <div style={{ textAlign: 'center' }}>
+             <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>הוצאות בפועל</div>
+             <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#F4C2C2' }}>
+               {totalExpenses.toLocaleString()} ₪
+             </div>
+           </div>
+           <div style={{ textAlign: 'center' }}>
+             <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>
+               {profit >= 0 ? 'רווח' : 'הפסד'}
+             </div>
+             <div style={{ 
+               fontSize: '18px', 
+               fontWeight: 'bold', 
+               color: profit >= 0 ? '#D4A574' : '#C8A2C8' 
+             }}>
+               {profit >= 0 ? '+' : '-'}₪{Math.abs(profit).toLocaleString()}
+             </div>
+           </div>
+         </div>
       </div>
 
       {/* Budget Tracking Line Chart */}
@@ -581,8 +536,8 @@ const BudgetPage: React.FC = () => {
             <YAxis />
             <Tooltip formatter={(value: number) => `₪${value.toLocaleString()}`} />
             <Legend />
-            <Line type="monotone" dataKey="budget" stroke="#4CAF50" name="תקציב מתוכנן" />
-            <Line type="monotone" dataKey="actual" stroke="#f44336" name="הוצאות בפועל" />
+                         <Line type="monotone" dataKey="budget" stroke="#A8D5BA" name="תקציב מתוכנן" />
+             <Line type="monotone" dataKey="actual" stroke="#F4C2C2" name="הוצאות בפועל" />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -598,137 +553,137 @@ const BudgetPage: React.FC = () => {
         <h2 style={{ margin: '0 0 20px 0', color: '#1976d2' }}>🍽️ מחירי מנות לפי סטטוס מוזמנים</h2>
         
         <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
-          {/* Confirmed Guests */}
-          <div style={{ 
-            background: 'white', 
-            padding: '15px', 
-            borderRadius: '4px',
-            border: '2px solid #4caf50'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-              <div style={{ 
-                width: '12px', 
-                height: '12px', 
-                borderRadius: '50%', 
-                backgroundColor: '#4caf50', 
-                marginRight: '8px' 
-              }}></div>
-              <h5 style={{ margin: '0', color: '#4caf50', fontWeight: 'bold' }}>מאשרי הגעה</h5>
-            </div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '5px' }}>
-              {guestCounts.confirmed}
-            </div>
-            <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>מוזמנים</div>
-            {calculateMealCostByStatus().confirmed?.totalCost && (
-              <>
-                <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#4caf50' }}>
-                  {calculateMealCostByStatus().confirmed?.totalCost?.toLocaleString?.() ?? 0} ₪
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  {(calculateMealCostByStatus().confirmed?.costPerPerson ?? 0).toFixed(0)} ₪ לאיש
-                </div>
-              </>
-            )}
-          </div>
+                     {/* Confirmed Guests */}
+           <div style={{ 
+             background: 'white', 
+             padding: '15px', 
+             borderRadius: '4px',
+             border: '2px solid #A8D5BA'
+           }}>
+             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+               <div style={{ 
+                 width: '12px', 
+                 height: '12px', 
+                 borderRadius: '50%', 
+                 backgroundColor: '#A8D5BA', 
+                 marginRight: '8px' 
+               }}></div>
+               <h5 style={{ margin: '0', color: '#A8D5BA', fontWeight: 'bold' }}>מאשרי הגעה</h5>
+             </div>
+             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '5px' }}>
+               {guestCounts.confirmed}
+             </div>
+             <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>מוזמנים</div>
+             {calculateMealCostByStatus().confirmed?.totalCost && (
+               <>
+                 <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#A8D5BA' }}>
+                   {calculateMealCostByStatus().confirmed?.totalCost?.toLocaleString?.() ?? 0} ₪
+                 </div>
+                 <div style={{ fontSize: '12px', color: '#666' }}>
+                   {(calculateMealCostByStatus().confirmed?.costPerPerson ?? 0).toFixed(0)} ₪ לאיש
+                 </div>
+               </>
+             )}
+           </div>
 
-          {/* Maybe Guests */}
-          <div style={{ 
-            background: 'white', 
-            padding: '15px', 
-            borderRadius: '4px',
-            border: '2px solid #ff9800'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-              <div style={{ 
-                width: '12px', 
-                height: '12px', 
-                borderRadius: '50%', 
-                backgroundColor: '#ff9800', 
-                marginRight: '8px' 
-              }}></div>
-              <h5 style={{ margin: '0', color: '#ff9800', fontWeight: 'bold' }}>מתלבטים</h5>
-            </div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '5px' }}>
-              {guestCounts.maybe}
-            </div>
-            <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>מוזמנים</div>
-            {calculateMealCostByStatus().maybe?.totalCost && (
-              <>
-                <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#ff9800' }}>
-                  {calculateMealCostByStatus().maybe?.totalCost?.toLocaleString?.() ?? 0} ₪
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  {(calculateMealCostByStatus().maybe?.costPerPerson ?? 0).toFixed(0)} ₪ לאיש
-                </div>
-              </>
-            )}
-          </div>
+           {/* Maybe Guests */}
+           <div style={{ 
+             background: 'white', 
+             padding: '15px', 
+             borderRadius: '4px',
+             border: '2px solid #F7E7CE'
+           }}>
+             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+               <div style={{ 
+                 width: '12px', 
+                 height: '12px', 
+                 borderRadius: '50%', 
+                 backgroundColor: '#F7E7CE', 
+                 marginRight: '8px' 
+               }}></div>
+               <h5 style={{ margin: '0', color: '#D4A574', fontWeight: 'bold' }}>מתלבטים</h5>
+             </div>
+             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '5px' }}>
+               {guestCounts.maybe}
+             </div>
+             <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>מוזמנים</div>
+             {calculateMealCostByStatus().maybe?.totalCost && (
+               <>
+                 <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#D4A574' }}>
+                   {calculateMealCostByStatus().maybe?.totalCost?.toLocaleString?.() ?? 0} ₪
+                 </div>
+                 <div style={{ fontSize: '12px', color: '#666' }}>
+                   {(calculateMealCostByStatus().maybe?.costPerPerson ?? 0).toFixed(0)} ₪ לאיש
+                 </div>
+               </>
+             )}
+           </div>
 
-          {/* Pending Guests */}
-          <div style={{ 
-            background: 'white', 
-            padding: '15px', 
-            borderRadius: '4px',
-            border: '2px solid #9e9e9e'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-              <div style={{ 
-                width: '12px', 
-                height: '12px', 
-                borderRadius: '50%', 
-                backgroundColor: '#9e9e9e', 
-                marginRight: '8px' 
-              }}></div>
-              <h5 style={{ margin: '0', color: '#9e9e9e', fontWeight: 'bold' }}>ממתינים לתשובה</h5>
-            </div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '5px' }}>
-              {guestCounts.pending}
-            </div>
-            <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>מוזמנים</div>
-            {calculateMealCostByStatus().pending?.totalCost && (
-              <>
-                <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#9e9e9e' }}>
-                  {calculateMealCostByStatus().pending?.totalCost?.toLocaleString?.() ?? 0} ₪
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  {(calculateMealCostByStatus().pending?.costPerPerson ?? 0).toFixed(0)} ₪ לאיש
-                </div>
-              </>
-            )}
-          </div>
+           {/* Pending Guests */}
+           <div style={{ 
+             background: 'white', 
+             padding: '15px', 
+             borderRadius: '4px',
+             border: '2px solid #F4C2C2'
+           }}>
+             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+               <div style={{ 
+                 width: '12px', 
+                 height: '12px', 
+                 borderRadius: '50%', 
+                 backgroundColor: '#F4C2C2', 
+                 marginRight: '8px' 
+               }}></div>
+               <h5 style={{ margin: '0', color: '#F4C2C2', fontWeight: 'bold' }}>ממתינים לתשובה</h5>
+             </div>
+             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '5px' }}>
+               {guestCounts.pending}
+             </div>
+             <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>מוזמנים</div>
+             {calculateMealCostByStatus().pending?.totalCost && (
+               <>
+                 <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#F4C2C2' }}>
+                   {calculateMealCostByStatus().pending?.totalCost?.toLocaleString?.() ?? 0} ₪
+                 </div>
+                 <div style={{ fontSize: '12px', color: '#666' }}>
+                   {(calculateMealCostByStatus().pending?.costPerPerson ?? 0).toFixed(0)} ₪ לאיש
+                 </div>
+               </>
+             )}
+           </div>
 
-          {/* Total */}
-          <div style={{ 
-            background: 'white', 
-            padding: '15px', 
-            borderRadius: '4px',
-            border: '2px solid #2196F3'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-              <div style={{ 
-                width: '12px', 
-                height: '12px', 
-                borderRadius: '50%', 
-                backgroundColor: '#2196F3', 
-                marginRight: '8px' 
-              }}></div>
-              <h5 style={{ margin: '0', color: '#2196F3', fontWeight: 'bold' }}>סה"כ</h5>
-            </div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '5px' }}>
-              {guestCounts.total}
-            </div>
-            <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>מוזמנים</div>
-            {calculateMealCostByStatus().total?.totalCost && (
-              <>
-                <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#2196F3' }}>
-                  {calculateMealCostByStatus().total?.totalCost?.toLocaleString?.() ?? 0} ₪
-                </div>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  {(calculateMealCostByStatus().total?.costPerPerson ?? 0).toFixed(0)} ₪ לאיש
-                </div>
-              </>
-            )}
-          </div>
+           {/* Total */}
+           <div style={{ 
+             background: 'white', 
+             padding: '15px', 
+             borderRadius: '4px',
+             border: '2px solid #C8A2C8'
+           }}>
+             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+               <div style={{ 
+                 width: '12px', 
+                 height: '12px', 
+                 borderRadius: '50%', 
+                 backgroundColor: '#C8A2C8', 
+                 marginRight: '8px' 
+               }}></div>
+               <h5 style={{ margin: '0', color: '#C8A2C8', fontWeight: 'bold' }}>סה"כ</h5>
+             </div>
+             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '5px' }}>
+               {guestCounts.total}
+             </div>
+             <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>מוזמנים</div>
+             {calculateMealCostByStatus().total?.totalCost && (
+               <>
+                 <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#C8A2C8' }}>
+                   {calculateMealCostByStatus().total?.totalCost?.toLocaleString?.() ?? 0} ₪
+                 </div>
+                 <div style={{ fontSize: '12px', color: '#666' }}>
+                   {(calculateMealCostByStatus().total?.costPerPerson ?? 0).toFixed(0)} ₪ לאיש
+                 </div>
+               </>
+             )}
+           </div>
         </div>
       </div>
 
@@ -750,30 +705,30 @@ const BudgetPage: React.FC = () => {
             border: '1px solid #ddd'
           }}>
             <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>מספר מאשרי הגעה</div>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#4caf50' }}>
-                  {guestCounts.confirmed}
-                </div>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>מחיר מנה בסיסי</div>
-                <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>
-                  {weddingData.mealPricing?.basePrice || 0} ₪
-                </div>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>עלות ממוצעת לאיש</div>
-                <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>
-                  {(calculateMealCostByStatus().confirmed?.costPerPerson ?? 0).toFixed(0)} ₪
-                </div>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>סה"כ עלות מנות</div>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#2e7d32' }}>
-                  {calculateMealCostByStatus().confirmed?.totalCost?.toLocaleString?.() ?? 0} ₪
-                </div>
-              </div>
+                             <div style={{ textAlign: 'center' }}>
+                 <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>מספר מאשרי הגעה</div>
+                 <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#A8D5BA' }}>
+                   {guestCounts.confirmed}
+                 </div>
+               </div>
+               <div style={{ textAlign: 'center' }}>
+                 <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>מחיר מנה בסיסי</div>
+                 <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>
+                   {weddingData.mealPricing?.basePrice || 0} ₪
+                 </div>
+               </div>
+               <div style={{ textAlign: 'center' }}>
+                 <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>עלות ממוצעת לאיש</div>
+                 <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#333' }}>
+                   {(calculateMealCostByStatus().confirmed?.costPerPerson ?? 0).toFixed(0)} ₪
+                 </div>
+               </div>
+               <div style={{ textAlign: 'center' }}>
+                 <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>סה"כ עלות מנות</div>
+                 <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#A8D5BA' }}>
+                   {calculateMealCostByStatus().confirmed?.totalCost?.toLocaleString?.() ?? 0} ₪
+                 </div>
+               </div>
             </div>
           </div>
         ) : (
@@ -792,24 +747,24 @@ const BudgetPage: React.FC = () => {
         border: '1px solid #ffeb3b'
       }}>
         <h2 style={{ margin: '0 0 20px 0', color: '#f57f17' }}>💰 מחירי מנות - חישוב עלויות האירוע</h2>
-        <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
-          <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
-            <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>סה"כ הוצאות ספקים</div>
-            <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#c62828' }}>{totalExpenses.toLocaleString()} ₪</div>
-          </div>
-          <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
-            <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>עלות מנות (מאשרים)</div>
-            <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#2e7d32' }}>{confirmedMealCost.toLocaleString()} ₪</div>
-          </div>
-          <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
-            <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>סה"כ עלות אירוע</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f57f17' }}>{eventTotalCost.toLocaleString()} ₪</div>
-          </div>
-          <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
-            <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>עלות לאיש (מאשרים)</div>
-            <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#6d4c41' }}>{eventCostPerPerson.toLocaleString()} ₪</div>
-          </div>
-        </div>
+                 <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+           <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
+             <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>סה"כ הוצאות ספקים</div>
+             <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#F4C2C2' }}>{totalExpenses.toLocaleString()} ₪</div>
+           </div>
+           <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
+             <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>עלות מנות (מאשרים)</div>
+             <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#A8D5BA' }}>{confirmedMealCost.toLocaleString()} ₪</div>
+           </div>
+           <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
+             <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>סה"כ עלות אירוע</div>
+             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#D4A574' }}>{eventTotalCost.toLocaleString()} ₪</div>
+           </div>
+           <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
+             <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>עלות לאיש (מאשרים)</div>
+             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#C8A2C8' }}>{eventCostPerPerson.toLocaleString()} ₪</div>
+           </div>
+         </div>
       </div>
 
       {/* Manual Calculation - Custom Estimation */}
@@ -903,30 +858,30 @@ const BudgetPage: React.FC = () => {
                   {calculateManualMealCost().costPerPerson.toFixed(0)} ₪
                 </div>
               </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>סה"כ עלות מנות</div>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#2e7d32' }}>
-                  {calculateManualMealCost().totalCost.toLocaleString()} ₪
-                </div>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>סה"כ ספקים</div>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#c62828' }}>
-                  {totalExpenses.toLocaleString()} ₪
-                </div>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>סה"כ עלות אירוע</div>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f57f17' }}>
-                  {calculateManualMealCost().eventTotalCost?.toLocaleString?.() ?? (calculateManualMealCost().totalCost + totalExpenses).toLocaleString()} ₪
-                </div>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>עלות לאיש</div>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#6d4c41' }}>
-                  {(calculateManualMealCost().eventCostPerPerson ?? ((calculateManualMealCost().totalCost + totalExpenses) / (calculateManualMealCost().totalGuests || 1))).toFixed(0)} ₪
-                </div>
-              </div>
+                             <div style={{ textAlign: 'center' }}>
+                 <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>סה"כ עלות מנות</div>
+                 <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#A8D5BA' }}>
+                   {calculateManualMealCost().totalCost.toLocaleString()} ₪
+                 </div>
+               </div>
+               <div style={{ textAlign: 'center' }}>
+                 <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>סה"כ ספקים</div>
+                 <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#F4C2C2' }}>
+                   {totalExpenses.toLocaleString()} ₪
+                 </div>
+               </div>
+               <div style={{ textAlign: 'center' }}>
+                 <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>סה"כ עלות אירוע</div>
+                 <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#D4A574' }}>
+                   {calculateManualMealCost().eventTotalCost?.toLocaleString?.() ?? (calculateManualMealCost().totalCost + totalExpenses).toLocaleString()} ₪
+                 </div>
+               </div>
+               <div style={{ textAlign: 'center' }}>
+                 <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>עלות לאיש</div>
+                 <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#C8A2C8' }}>
+                   {(calculateManualMealCost().eventCostPerPerson ?? ((calculateManualMealCost().totalCost + totalExpenses) / (calculateManualMealCost().totalGuests || 1))).toFixed(0)} ₪
+                 </div>
+               </div>
             </div>
 
             {/* Detailed Breakdown */}
@@ -1019,19 +974,19 @@ const BudgetPage: React.FC = () => {
                 <tr key={_id}>
                   <td style={{ border: '1px solid #ddd', padding: '12px' }}>{vendorName}</td>
                   <td style={{ border: '1px solid #ddd', padding: '12px' }}>{VENDOR_TYPE_HE[type] || type}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '12px' }}>
-                    <span style={{
-                      padding: '4px 8px',
-                      borderRadius: '4px',
-                      backgroundColor: status === 'Confirmed' ? '#4caf50' : 
-                                     status === 'Pending' ? '#ff9800' : '#9e9e9e',
-                      color: 'white',
-                      fontSize: '12px'
-                    }}>
-                      {status === 'Confirmed' ? 'מאושר' : 
-                       status === 'Pending' ? 'ממתין' : 'לא ידוע'}
-                    </span>
-                  </td>
+                                     <td style={{ border: '1px solid #ddd', padding: '12px' }}>
+                     <span style={{
+                       padding: '4px 8px',
+                       borderRadius: '4px',
+                       backgroundColor: status === 'Confirmed' ? '#A8D5BA' : 
+                                      status === 'Pending' ? '#F7E7CE' : '#F4C2C2',
+                       color: '#333',
+                       fontSize: '12px'
+                     }}>
+                       {status === 'Confirmed' ? 'מאושר' : 
+                        status === 'Pending' ? 'ממתין' : 'לא ידוע'}
+                     </span>
+                   </td>
                   <td style={{ border: '1px solid #ddd', padding: '12px', fontWeight: 'bold' }}>
                     {price.toLocaleString()} ₪
                   </td>

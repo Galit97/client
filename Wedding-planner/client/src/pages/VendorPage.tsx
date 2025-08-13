@@ -17,6 +17,23 @@ type Vendor = {
   type: VendorType;
 };
 
+type MealPricing = {
+  basePrice: number;
+  childDiscount: number;
+  childAgeLimit: number;
+  bulkThreshold: number;
+  bulkPrice: number;
+  bulkMaxGuests: number;
+  reservePrice: number;
+  reserveThreshold: number;
+  reserveMaxGuests: number;
+};
+
+type WeddingData = {
+  budget: number;
+  mealPricing?: MealPricing;
+};
+
 type FilterOptions = {
   type: string;
   status: string;
@@ -27,6 +44,7 @@ type FilterOptions = {
 export default function VendorsListPage() {
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [weddingId, setWeddingId] = useState<string>('');
+  const [weddingData, setWeddingData] = useState<WeddingData>({ budget: 0 });
   const [loading, setLoading] = useState(true);
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -48,6 +66,12 @@ export default function VendorsListPage() {
     status: '',
     sortBy: 'vendorName',
     sortOrder: 'asc'
+  });
+
+  // Add state for manual calculation
+  const [manualCalculation, setManualCalculation] = useState({
+    adultGuests: 0,
+    childGuests: 0
   });
 
   const defaultVendorsCreatedRef = useRef(false);
@@ -113,6 +137,7 @@ export default function VendorsListPage() {
 
         const weddingData = await weddingRes.json();
         setWeddingId(weddingData._id);
+        setWeddingData(weddingData);
         console.log("Found wedding ID:", weddingData._id);
 
         // Fetch vendors for this wedding
@@ -503,6 +528,104 @@ export default function VendorsListPage() {
     }
   }
 
+  // Calculate meal costs for manual input
+  const calculateManualMealCost = () => {
+    if (!weddingData.mealPricing) {
+      const { adultGuests, childGuests } = manualCalculation;
+      const totalGuests = adultGuests + childGuests;
+      return { totalCost: 0, costPerPerson: 0, adultGuests, childGuests, totalGuests };
+    }
+
+    const { basePrice, childDiscount, bulkThreshold, bulkPrice, bulkMaxGuests, reservePrice } = weddingData.mealPricing;
+    const { adultGuests, childGuests } = manualCalculation;
+    const totalGuests = adultGuests + childGuests;
+
+    let totalCost = 0;
+    let remainingGuests = totalGuests;
+
+    // Base price tier (0 to bulkThreshold)
+    const baseGuests = Math.min(remainingGuests, bulkThreshold);
+    if (baseGuests > 0) {
+      const baseCost = baseGuests * basePrice;
+      totalCost += baseCost;
+      remainingGuests -= baseGuests;
+    }
+
+    // Bulk price tier (bulkThreshold + 1 to bulkMaxGuests)
+    if (remainingGuests > 0 && bulkPrice > 0) {
+      const bulkGuests = Math.min(remainingGuests, bulkMaxGuests - bulkThreshold);
+      if (bulkGuests > 0) {
+        const bulkCost = bulkGuests * bulkPrice;
+        totalCost += bulkCost;
+        remainingGuests -= bulkGuests;
+      }
+    }
+
+    // Reserve price tier (reserveThreshold and above)
+    if (remainingGuests > 0 && reservePrice > 0) {
+      const reserveGuests = remainingGuests;
+      const reserveCost = reserveGuests * reservePrice;
+      totalCost += reserveCost;
+    }
+
+    // Apply child discount
+    const childCost = childGuests * (basePrice * (1 - childDiscount / 100));
+    totalCost += childCost;
+
+    const costPerPerson = totalGuests > 0 ? totalCost / totalGuests : 0;
+
+    return { totalCost, costPerPerson, adultGuests, childGuests, totalGuests };
+  };
+
+  // Calculate vendor costs for manual input
+  const calculateManualVendorCost = () => {
+    const { adultGuests, childGuests } = manualCalculation;
+    const totalGuests = adultGuests + childGuests;
+    const totalVendorCost = vendors.reduce((sum, v) => sum + v.price, 0);
+    const totalDeposits = vendors.reduce((sum, v) => sum + (v.depositAmount || 0), 0);
+    const remainingToPay = totalVendorCost - totalDeposits;
+    const costPerPerson = totalGuests > 0 ? totalVendorCost / totalGuests : 0;
+
+    return { 
+      totalVendorCost, 
+      totalDeposits, 
+      remainingToPay, 
+      costPerPerson, 
+      adultGuests, 
+      childGuests, 
+      totalGuests 
+    };
+  };
+
+  // Calculate total event cost (meals + vendors)
+  const calculateTotalEventCost = () => {
+    const mealCost = calculateManualMealCost();
+    const vendorCost = calculateManualVendorCost();
+    const totalEventCost = mealCost.totalCost + vendorCost.totalVendorCost;
+    const eventCostPerPerson = mealCost.totalGuests > 0 ? totalEventCost / mealCost.totalGuests : 0;
+
+    return {
+      mealCost: mealCost.totalCost,
+      vendorCost: vendorCost.totalVendorCost,
+      totalEventCost,
+      eventCostPerPerson,
+      totalGuests: mealCost.totalGuests
+    };
+  };
+
+  // Calculate vendor distribution by type
+  const vendorDistribution = useMemo(() => {
+    const map = new Map<string, number>();
+    vendors.forEach(({ type, price }) => {
+      map.set(type, (map.get(type) || 0) + price);
+    });
+    
+    return Array.from(map.entries()).map(([name, value]) => ({ 
+      name: getTypeText(name as VendorType), 
+      value 
+    }));
+  }, [vendors]);
+
   if (loading) {
     return (
       <div style={{ textAlign: 'center', padding: '50px' }}>
@@ -521,40 +644,162 @@ export default function VendorsListPage() {
   }
 
   return (
-    <div style={{ 
-      padding: '20px', 
-      maxWidth: '1400px', 
-      margin: '0 auto',
-      fontFamily: 'Arial, sans-serif',
-      direction: 'rtl'
-    }}>
-      <h1 style={{ 
-        textAlign: 'center', 
-        marginBottom: '30px',
-        color: '#333',
-        borderBottom: '2px solid #ddd',
-        paddingBottom: '10px'
-      }}>
+    <div className="page-container">
+      <h1 className="text-center mb-xl">
         ניהול ספקים
       </h1>
 
       {/* Help Section */}
-      <div style={{
-        background: '#e3f2fd',
-        padding: '15px',
-        borderRadius: '8px',
-        marginBottom: '20px',
-        border: '1px solid #2196F3'
-      }}>
-        <h4 style={{ margin: '0 0 10px 0', color: '#1976d2' }}>💡 איך לנהל ספקים:</h4>
-        <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#333' }}>
+      <div className="alert info mb-xl">
+        <h4 className="mb-md">💡 איך לנהל ספקים:</h4>
+        <div className="text-secondary">
           <div><strong>סטטוס:</strong> ממתין → אושר → שולם</div>
           <div><strong>סוג ספק:</strong> בחר את סוג השירות שהספק מספק</div>
           <div><strong>קישורים:</strong> הוסף קישורים לחוזים והצעות</div>
           <div><strong>סינון ומיון:</strong> השתמש בפילטרים כדי למצוא ספקים ספציפיים</div>
         </div>
-        
+      </div>
 
+      {/* Manual Calculation Section */}
+      <div className="alert warning mb-xl">
+        <h2 className="mb-xl">🧮 חישוב ידני - אומדן מותאם אישית</h2>
+        
+        <div className="card mb-xl">
+            <h3 className="mb-lg">הכנס מספרי אורחים לבדיקה (עלות מנות + ספקים)</h3>
+          
+          <div className="grid grid-2">
+            <div className="form-group">
+              <label className="form-label">
+                מספר מבוגרים
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={manualCalculation.adultGuests}
+                onChange={(e) => setManualCalculation(prev => ({
+                  ...prev,
+                  adultGuests: Number(e.target.value)
+                }))}
+                className="form-input"
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">
+                מספר ילדים
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={manualCalculation.childGuests}
+                onChange={(e) => setManualCalculation(prev => ({
+                  ...prev,
+                  childGuests: Number(e.target.value)
+                }))}
+                className="form-input"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Manual Calculation Results (Meals + Vendors) */}
+        {manualCalculation.adultGuests > 0 || manualCalculation.childGuests > 0 ? (
+          <div className="alert success">
+            <h3 className="mb-lg">תוצאות החישוב</h3>
+            
+            <div className="grid grid-4">
+                          <div className="text-center">
+              <div className="text-secondary mb-sm">סה"כ אורחים</div>
+              <div className="text-primary" style={{ fontSize: '24px', fontWeight: 'bold' }}>
+                {calculateTotalEventCost().totalGuests}
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-secondary mb-sm">מבוגרים</div>
+              <div className="text-primary" style={{ fontSize: '18px', fontWeight: 'bold' }}>
+                {calculateManualMealCost().adultGuests}
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-secondary mb-sm">ילדים</div>
+              <div className="text-primary" style={{ fontSize: '18px', fontWeight: 'bold' }}>
+                {calculateManualMealCost().childGuests}
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-secondary mb-sm">עלות ממוצעת למנה</div>
+              <div className="text-primary" style={{ fontSize: '18px', fontWeight: 'bold' }}>
+                {calculateManualMealCost().costPerPerson.toFixed(0)} ₪
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-secondary mb-sm">סה"כ עלות מנות</div>
+              <div className="text-primary" style={{ fontSize: '24px', fontWeight: 'bold' }}>
+                {calculateTotalEventCost().mealCost.toLocaleString()} ₪
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-secondary mb-sm">סה"כ ספקים</div>
+              <div className="text-primary" style={{ fontSize: '24px', fontWeight: 'bold' }}>
+                {calculateTotalEventCost().vendorCost.toLocaleString()} ₪
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-secondary mb-sm">סה"כ עלות אירוע</div>
+              <div className="text-primary" style={{ fontSize: '24px', fontWeight: 'bold' }}>
+                {calculateTotalEventCost().totalEventCost.toLocaleString()} ₪
+              </div>
+            </div>
+            <div className="text-center">
+              <div className="text-secondary mb-sm">עלות לאיש</div>
+              <div className="text-primary" style={{ fontSize: '24px', fontWeight: 'bold' }}>
+                {calculateTotalEventCost().eventCostPerPerson.toFixed(0)} ₪
+              </div>
+            </div>
+            </div>
+
+            {/* Detailed Breakdown */}
+            {(() => {
+              const mealCost = calculateManualMealCost();
+              const vendorCost = calculateManualVendorCost();
+              const totalCost = calculateTotalEventCost();
+              return mealCost && mealCost.totalGuests && mealCost.totalGuests > 0 ? (
+                <div className="card mt-lg">
+                  <div className="text-primary mb-md" style={{ fontSize: '14px', fontWeight: 'bold' }}>
+                    פירוט החישוב (מנות + ספקים):
+                  </div>
+                  <div className="text-secondary" style={{ fontSize: '12px', lineHeight: '1.4' }}>
+                    {weddingData.mealPricing ? (
+                      <>
+                        <div>• מבוגרים: {mealCost.adultGuests || 0} × {weddingData.mealPricing?.basePrice || 0} ₪ = {((mealCost.adultGuests || 0) * (weddingData.mealPricing?.basePrice || 0)).toLocaleString()} ₪</div>
+                        <div>• ילדים: {mealCost.childGuests || 0} × {((weddingData.mealPricing?.basePrice || 0) * (1 - (weddingData.mealPricing?.childDiscount || 0) / 100)).toFixed(0)} ₪ = {((mealCost.childGuests || 0) * ((weddingData.mealPricing?.basePrice || 0) * (1 - (weddingData.mealPricing?.childDiscount || 0) / 100))).toLocaleString()} ₪</div>
+                        {weddingData.mealPricing && (mealCost.totalGuests || 0) >= (weddingData.mealPricing?.bulkThreshold || 0) && (weddingData.mealPricing?.bulkPrice || 0) > 0 && (
+                          <div className="text-primary" style={{ fontWeight: 'bold' }}>
+                            ✓ מחיר התחייבות מיושם (מעל {weddingData.mealPricing?.bulkThreshold || 0} אורחים)
+                          </div>
+                        )}
+                        {weddingData.mealPricing && (mealCost.totalGuests || 0) >= (weddingData.mealPricing?.reserveThreshold || 0) && (weddingData.mealPricing?.reservePrice || 0) > 0 && (
+                          <div className="text-primary" style={{ fontWeight: 'bold' }}>
+                            ✓ מחיר רזרבה מיושם (מעל {weddingData.mealPricing?.reserveThreshold || 0} אורחים)
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div>• אין תמחור מנות מוגדר</div>
+                    )}
+                    <div className="mt-md">• הוצאות ספקים: {vendorCost.totalVendorCost.toLocaleString()} ₪</div>
+                    <div>• סה"כ אירוע: {totalCost.totalEventCost.toLocaleString()} ₪</div>
+                    <div>• עלות לאיש: {totalCost.eventCostPerPerson.toFixed(0)} ₪</div>
+                  </div>
+                </div>
+              ) : null;
+            })()}
+          </div>
+        ) : (
+          <div className="text-center text-secondary" style={{ fontStyle: 'italic' }}>
+            הכנס מספרי אורחים כדי לראות את החישוב
+          </div>
+        )}
       </div>
 
       {/* Add Vendor Form */}
@@ -999,7 +1244,15 @@ export default function VendorsListPage() {
                     <div>
                       <div className="muted">סטטוס</div>
                       <div>
-                        <span className={`chip ${vendor.status === 'Pending' ? 'chip-pending' : vendor.status === 'Confirmed' ? 'chip-confirmed' : 'chip-paid'}`}>
+                        <span style={{
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          backgroundColor: vendor.status === 'Confirmed' ? '#A8D5BA' : 
+                                         vendor.status === 'Pending' ? '#F7E7CE' : '#F4C2C2',
+                          color: '#333',
+                          fontSize: '12px',
+                          fontWeight: 'bold'
+                        }}>
                           {vendor.status === 'Pending' ? '⏳ ממתין' : vendor.status === 'Confirmed' ? '✅ אושר' : '💸 שולם'}
                         </span>
                       </div>

@@ -239,6 +239,11 @@ const Dashboard: React.FC = () => {
   const confirmedMealCost = calculateMealCostForCount(confirmedGuests);
   const eventTotalCost = totalVendorExpenses + confirmedMealCost;
   const costPerPerson = confirmedGuests > 0 ? Math.round(eventTotalCost / confirmedGuests) : 0;
+  
+  // Calculate cost per person for all invited guests
+  const totalInvitedMealCost = calculateMealCostForCount(totalGuests);
+  const totalInvitedEventCost = totalVendorExpenses + totalInvitedMealCost;
+  const costPerPersonInvited = totalGuests > 0 ? Math.round(totalInvitedEventCost / totalGuests) : 0;
 
   if (loading) {
     return (
@@ -249,32 +254,15 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div style={{ 
-      padding: '20px', 
-      maxWidth: '1400px', 
-      margin: '0 auto',
-      fontFamily: 'Arial, sans-serif',
-      direction: 'rtl'
-    }}>
-      <h1 style={{ 
-        textAlign: 'center', 
-        marginBottom: '30px',
-        color: '#333',
-        borderBottom: '2px solid #ddd',
-        paddingBottom: '10px'
-      }}>
+    <div className="page-container">
+      <h1 className="text-center mb-xl">
         🎉 דשבורד החתונה
       </h1>
 
       {/* Countdown Timer */}
-      <div style={{ 
+      <div className="card text-center mb-xl" style={{ 
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        padding: '30px',
-        borderRadius: '15px',
-        marginBottom: '30px',
-        color: 'white',
-        textAlign: 'center',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+        color: 'white'
       }}>
         <h2 style={{ margin: '0 0 20px 0', fontSize: '28px' }}>
           {timeLeft.days > 0 ? '⏰ ספירה לאחור לחתונה' : '🎉 היום החתונה!'}
@@ -303,20 +291,9 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Progress Cards */}
-      <div style={{ 
-        display: 'grid', 
-        gap: '20px', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        marginBottom: '30px'
-      }}>
+      <div className="grid grid-2 mb-xl">
         {/* Tasks Progress */}
-        <div style={{ 
-          background: 'white', 
-          padding: '25px', 
-          borderRadius: '12px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-          border: '1px solid #e0e0e0'
-        }}>
+        <div className="card">
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
             <div style={{ 
               width: '50px', 
@@ -367,14 +344,8 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Vendors Progress */}
-        <div style={{ 
-          background: 'white', 
-          padding: '25px', 
-          borderRadius: '12px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-          border: '1px solid #e0e0e0'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
+        <div className="card">
+          <div className="flex-between mb-lg">
             <div style={{ 
               width: '50px', 
               height: '50px', 
@@ -395,39 +366,17 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
           
-          <div style={{ 
-            width: '100%', 
-            height: '8px', 
-            background: '#f0f0f0', 
-            borderRadius: '4px',
-            overflow: 'hidden'
-          }}>
-            <div style={{ 
-              width: `${vendorProgress}%`, 
-              height: '100%', 
-              background: 'linear-gradient(90deg, #2196F3, #1976D2)',
-              transition: 'width 0.3s ease'
-            }}></div>
+          <div className="progress">
+            <div className="progress-bar" style={{ width: `${vendorProgress}%` }}></div>
           </div>
           
-          <div style={{ 
-            marginTop: '10px', 
-            fontSize: '24px', 
-            fontWeight: 'bold', 
-            color: '#2196F3' 
-          }}>
+          <div className="text-primary mt-md" style={{ fontSize: '24px', fontWeight: 'bold' }}>
             {vendorProgress.toFixed(0)}%
           </div>
         </div>
 
         {/* Guests Progress */}
-        <div style={{ 
-          background: 'white', 
-          padding: '25px', 
-          borderRadius: '12px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-          border: '1px solid #e0e0e0'
-        }}>
+        <div className="card">
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
             <div style={{ 
               width: '50px', 
@@ -502,6 +451,9 @@ const Dashboard: React.FC = () => {
               <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
                 עלות לאיש (מאשרים): {costPerPerson.toLocaleString()} ₪
               </p>
+              <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
+                עלות לאיש (מוזמנים): {costPerPersonInvited.toLocaleString()} ₪
+              </p>
             </div>
           </div>
           <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
@@ -512,6 +464,10 @@ const Dashboard: React.FC = () => {
             <div>
               <div style={{ fontSize: '12px', color: '#666' }}>עלות מנות (מאשרים)</div>
               <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#2e7d32' }}>{confirmedMealCost.toLocaleString()} ₪</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '12px', color: '#666' }}>עלות מנות (מוזמנים)</div>
+              <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#4caf50' }}>{totalInvitedMealCost.toLocaleString()} ₪</div>
             </div>
             <div>
               <div style={{ fontSize: '12px', color: '#666' }}>סה"כ עלות אירוע</div>

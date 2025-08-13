@@ -136,7 +136,7 @@ export default function VendorComparisonPage() {
     setExtraComparisons(prev => ({ ...prev, [type]: (prev[type] || []).filter(e => e.id !== id) }));
   };
 
-  const filteredBySearch = (items: { name: string }[]) => {
+  const filteredBySearch = <T extends { name: string }>(items: T[]) => {
     if (!search.trim()) return items;
     const term = search.trim().toLowerCase();
     return items.filter(i => i.name.toLowerCase().includes(term));
@@ -174,7 +174,7 @@ export default function VendorComparisonPage() {
 
       <div className="card-grid">
         {selectedTypes.map(type => {
-          const existing = vendors.filter(v => v.type === type).map(v => ({ id: v._id, name: v.vendorName, price: v.price, notes: v.notes || '' }));
+          const existing = vendors.filter(v => v.type === type).map(v => ({ id: v._id, name: v.vendorName, price: v.price, notes: v.notes || '', phone: undefined, instagram: undefined }));
           const extras = extraComparisons[type] || [];
           const rows = filteredBySearch([...existing, ...extras]);
           const minPrice = rows.length > 0 ? Math.min(...rows.map(r => r.price || 0)) : undefined;
