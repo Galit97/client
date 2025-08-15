@@ -34,7 +34,9 @@ export default function AccountSettings() {
       if (!res.ok) throw new Error('failed');
       const updated = await res.json();
       localStorage.setItem('currentUser', JSON.stringify(updated));
-      alert('פרטי המשתמש נשמרו');
+      alert('פרטי המשתמש נשמרו בהצלחה!');
+      // Clear the password field after successful save
+      setForm(prev => ({ ...prev, password: '' }));
     } catch {
       alert('שמירה נכשלה');
     } finally {
@@ -43,31 +45,74 @@ export default function AccountSettings() {
   }
 
   return (
-    <div style={{ direction: 'rtl', maxWidth: 600, margin: '0 auto' }}>
-      <h2>הגדרות משתמש</h2>
-      <div style={{ display: 'grid', gap: 12 }}>
+    <div style={{ direction: 'rtl', maxWidth: 600, margin: '0 auto', padding: '20px' }}>
+      <h2 style={{ color: '#333', marginBottom: '20px' }}>הגדרות משתמש</h2>
+      <div style={{ display: 'grid', gap: 16 }}>
         <div>
-          <label>שם פרטי</label>
-          <input className="input" value={form.firstName} onChange={e => setForm({ ...form, firstName: e.target.value })} />
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>שם פרטי</label>
+          <input 
+            className="input" 
+            value={form.firstName} 
+            onChange={e => setForm({ ...form, firstName: e.target.value })}
+            style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
+          />
         </div>
         <div>
-          <label>שם משפחה</label>
-          <input className="input" value={form.lastName} onChange={e => setForm({ ...form, lastName: e.target.value })} />
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>שם משפחה</label>
+          <input 
+            className="input" 
+            value={form.lastName} 
+            onChange={e => setForm({ ...form, lastName: e.target.value })}
+            style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
+          />
         </div>
         <div>
-          <label>אימייל</label>
-          <input className="input" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>אימייל</label>
+          <input 
+            className="input" 
+            value={form.email} 
+            onChange={e => setForm({ ...form, email: e.target.value })}
+            style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
+          />
         </div>
         <div>
-          <label>טלפון</label>
-          <input className="input" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>טלפון</label>
+          <input 
+            className="input" 
+            value={form.phone} 
+            onChange={e => setForm({ ...form, phone: e.target.value })}
+            style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
+          />
         </div>
         <div>
-          <label>סיסמה (החלפה)</label>
-          <input className="input" type="password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
+          <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>סיסמה חדשה (השאר ריק אם לא רוצה לשנות)</label>
+          <input 
+            className="input" 
+            type="password" 
+            value={form.password} 
+            onChange={e => setForm({ ...form, password: e.target.value })}
+            placeholder="הכנס סיסמה חדשה או השאר ריק"
+            style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}
+          />
         </div>
         <div>
-          <button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? 'שומר...' : 'שמור'}</button>
+          <button 
+            className="btn btn-primary" 
+            onClick={save} 
+            disabled={saving}
+            style={{
+              background: '#A8D5BA',
+              color: '#333',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '4px',
+              cursor: saving ? 'not-allowed' : 'pointer',
+              fontWeight: 'bold',
+              opacity: saving ? 0.7 : 1
+            }}
+          >
+            {saving ? 'שומר...' : 'שמור שינויים'}
+          </button>
         </div>
       </div>
     </div>

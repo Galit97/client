@@ -1010,7 +1010,7 @@ export default function WeddingPage() {
                 fontWeight: 'bold'
               }}
             >
-              {saving ? 'שומר...' : '💾 שמור עכשיו'}
+              {saving ? 'שומר...' : '💾 שמור '}
             </button>
           </div>
           
@@ -1488,7 +1488,7 @@ export default function WeddingPage() {
         border: '1px solid #ff9800'
       }}>
         <h3 style={{ margin: '0 0 20px 0', color: '#e65100' }}>
-          🧮 חישוב ידני - אומדן מותאם אישית
+          🧮 חישוב ידני - אומדן מותאם אישית - מחירי מנות
         </h3>
         
         <div style={{ 

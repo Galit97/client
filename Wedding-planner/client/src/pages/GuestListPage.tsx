@@ -29,6 +29,8 @@ export default function GuestListPage() {
   const [guests, setGuests] = useState<Guest[]>([]);
   const [weddingId, setWeddingId] = useState<string>('');
   const [loading, setLoading] = useState(true);
+  const [importing, setImporting] = useState(false);
+  const [importMessage, setImportMessage] = useState<string | null>(null);
   const [editingGuest, setEditingGuest] = useState<EditingGuest | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'' | GuestStatus>('');
@@ -44,7 +46,7 @@ export default function GuestListPage() {
   const downloadTemplate = () => {
     const templateData = [
       {
-        'שם פרטי': 'דוגמה',
+        'שם פרטי': 'ישראל',
         'שם משפחה': 'כהן',
         'מספר טלפון': '050-1234567',
         'מספר מקומות שמורים': 2,
@@ -52,12 +54,28 @@ export default function GuestListPage() {
         'סטטוס הזמנה': 'הוזמן'
       },
       {
-        'שם פרטי': 'דוגמה',
+        'שם פרטי': 'שרה',
         'שם משפחה': 'לוי',
         'מספר טלפון': '052-9876543',
         'מספר מקומות שמורים': 1,
         'מספר שולחן': 3,
         'סטטוס הזמנה': 'אושר'
+      },
+      {
+        'שם פרטי': 'דוד',
+        'שם משפחה': 'גולדברג',
+        'מספר טלפון': '054-5551234',
+        'מספר מקומות שמורים': 4,
+        'מספר שולחן': 8,
+        'סטטוס הזמנה': 'הוזמן'
+      },
+      {
+        'שם פרטי': 'רחל',
+        'שם משפחה': 'ברק',
+        'מספר טלפון': '',
+        'מספר מקומות שמורים': 2,
+        'מספר שולחן': 0,
+        'סטטוס הזמנה': 'הוזמן'
       }
     ];
 
@@ -69,10 +87,10 @@ export default function GuestListPage() {
     ws['!cols'] = [
       { width: 15 }, // שם פרטי
       { width: 15 }, // שם משפחה
-      { width: 15 }, // מספר טלפון
-      { width: 20 }, // מספר מקומות שמורים
+      { width: 18 }, // מספר טלפון
+      { width: 22 }, // מספר מקומות שמורים
       { width: 15 }, // מספר שולחן
-      { width: 15 }  // סטטוס הזמנה
+      { width: 18 }  // סטטוס הזמנה
     ];
 
     XLSX.writeFile(wb, 'תבנית_רשימת_מוזמנים.xlsx');
@@ -114,35 +132,62 @@ export default function GuestListPage() {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    setImporting(true);
     try {
       const data = await file.arrayBuffer();
       const workbook = XLSX.read(data);
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
       const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
+      console.log('Raw Excel data:', jsonData); // Debug log
+
       if (jsonData.length === 0) {
         alert('הקובץ ריק או לא מכיל נתונים תקינים');
+        setImporting(false);
         return;
       }
 
-      const importedGuests = jsonData.map((row: any) => ({
-        firstName: row['שם פרטי'] || row['firstName'] || '',
-        lastName: row['שם משפחה'] || row['lastName'] || '',
-        phone: row['מספר טלפון'] || row['phone'] || '',
-        seatsReserved: parseInt(row['מספר מקומות שמורים'] || row['seatsReserved'] || '1'),
-        tableNumber: parseInt(row['מספר שולחן'] || row['tableNumber'] || '0'),
-        status: getStatusFromText(row['סטטוס הזמנה'] || row['status'] || 'הוזמן') as GuestStatus
-      }));
+      const importedGuests = jsonData.map((row: any, index: number) => {
+        // Handle multiple possible column names
+        const firstName = row['שם פרטי'] || row['firstName'] || row['שם'] || row['name'] || '';
+        const lastName = row['שם משפחה'] || row['lastName'] || row['משפחה'] || row['family'] || '';
+        const phone = row['מספר טלפון'] || row['phone'] || row['טלפון'] || row['telephone'] || '';
+        const seatsReserved = row['מספר מקומות שמורים'] || row['seatsReserved'] || row['מקומות'] || row['seats'] || row['מספר מוזמנים'] || row['guests'] || 1;
+        const tableNumber = row['מספר שולחן'] || row['tableNumber'] || row['שולחן'] || row['table'] || 0;
+        const status = row['סטטוס הזמנה'] || row['status'] || row['סטטוס'] || 'הוזמן';
 
-      // Validate data
-      const validGuests = importedGuests.filter(guest => 
-        guest.firstName.trim() && guest.lastName.trim() && guest.seatsReserved > 0
-      );
+        // Convert to proper types
+        const parsedSeats = typeof seatsReserved === 'string' ? parseInt(seatsReserved) || 1 : seatsReserved || 1;
+        const parsedTable = typeof tableNumber === 'string' ? parseInt(tableNumber) || 0 : tableNumber || 0;
+
+        console.log(`Row ${index + 1}:`, { firstName, lastName, phone, seatsReserved: parsedSeats, tableNumber: parsedTable, status }); // Debug log
+
+        return {
+          firstName: firstName.toString().trim(),
+          lastName: lastName.toString().trim(),
+          phone: phone.toString().trim(),
+          seatsReserved: parsedSeats,
+          tableNumber: parsedTable,
+          status: getStatusFromText(status) as GuestStatus
+        };
+      });
+
+      // Validate data - be more lenient with validation
+      const validGuests = importedGuests.filter((guest, index) => {
+        const isValid = guest.firstName && guest.lastName && guest.seatsReserved > 0;
+        if (!isValid) {
+          console.log(`Invalid guest at row ${index + 1}:`, guest); // Debug log
+        }
+        return isValid;
+      });
 
       if (validGuests.length === 0) {
-        alert('לא נמצאו נתונים תקינים בקובץ');
+        alert('לא נמצאו נתונים תקינים בקובץ. אנא ודא שיש לפחות שם פרטי, שם משפחה ומספר מקומות שמורים');
+        setImporting(false);
         return;
       }
+
+      console.log('Valid guests to import:', validGuests); // Debug log
 
       if (validGuests.length !== importedGuests.length) {
         alert(`יובאו ${validGuests.length} מוזמנים מתוך ${importedGuests.length} (חלק מהשורות לא היו תקינות)`);
@@ -157,18 +202,25 @@ export default function GuestListPage() {
     } catch (error) {
       console.error('Error importing Excel:', error);
       alert('שגיאה בייבוא הקובץ. אנא ודא שהקובץ בפורמט Excel תקין');
+      setImporting(false);
     }
   };
 
   const addMultipleGuests = async (guestsToAdd: any[]) => {
     const token = localStorage.getItem("token");
-    if (!token || !weddingId) return;
+    if (!token || !weddingId) {
+      alert('שגיאה: לא נמצא משתמש מחובר או אירוע');
+      return;
+    }
 
     let successCount = 0;
     let errorCount = 0;
+    const errors: string[] = [];
 
     for (const guestData of guestsToAdd) {
       try {
+        console.log('Adding guest:', guestData); // Debug log
+        
         const res = await fetch('/api/guests', {
           method: 'POST',
           headers: { 
@@ -186,20 +238,37 @@ export default function GuestListPage() {
           const created = await res.json();
           setGuests(prev => [...prev, created]);
           successCount++;
+          console.log('Successfully added guest:', created); // Debug log
         } else {
+          const errorData = await res.json().catch(() => ({ message: 'Unknown error' }));
+          console.error('Failed to add guest:', errorData); // Debug log
+          errors.push(`${guestData.firstName} ${guestData.lastName}: ${errorData.message}`);
           errorCount++;
         }
       } catch (error) {
         console.error('Error adding guest:', error);
+        errors.push(`${guestData.firstName} ${guestData.lastName}: Network error`);
         errorCount++;
       }
     }
 
+    // Show detailed results
     if (successCount > 0) {
-      alert(`יובאו בהצלחה ${successCount} מוזמנים${errorCount > 0 ? ` (${errorCount} שגיאות)` : ''}`);
+      let message = `יובאו בהצלחה ${successCount} מוזמנים`;
+      if (errorCount > 0) {
+        message += `\n${errorCount} שגיאות:`;
+        message += '\n' + errors.slice(0, 5).join('\n'); // Show first 5 errors
+        if (errors.length > 5) {
+          message += `\n...ועוד ${errors.length - 5} שגיאות`;
+        }
+      }
+      setImportMessage(message);
+      setTimeout(() => setImportMessage(null), 5000); // Clear message after 5 seconds
     } else {
-      alert('לא הצלחנו לייבא אף מוזמן. אנא נסה שוב');
+      setImportMessage('לא הצלחנו לייבא אף מוזמן. אנא נסה שוב');
+      setTimeout(() => setImportMessage(null), 5000);
     }
+    setImporting(false);
   };
 
   const getStatusFromText = (statusText: string): GuestStatus => {
@@ -537,27 +606,60 @@ export default function GuestListPage() {
           <label
             style={{
               padding: '8px 16px',
-              backgroundColor: '#fd7e14',
+              backgroundColor: importing ? '#6c757d' : '#fd7e14',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
-              cursor: 'pointer',
+              cursor: importing ? 'not-allowed' : 'pointer',
               fontSize: '14px',
               fontWeight: 'bold',
               display: 'inline-block'
             }}
           >
-            📁 ייבא מאקסל
+            {importing ? '⏳ מייבא...' : '📁 ייבא מאקסל'}
             <input
               type="file"
               accept=".xlsx,.xls"
               onChange={importFromExcel}
+              disabled={importing}
               style={{ display: 'none' }}
             />
           </label>
         </div>
         <div style={{ fontSize: '12px', color: '#856404', marginTop: '10px' }}>
-          <strong>טיפ:</strong> הורד את התבנית, מלא אותה וחזור לייבוא כקובץ xlsx הקובץ חייב לכלול את העמודות: שם פרטי, שם משפחה, מספר טלפון, מספר מקומות שמורים, מספר שולחן, סטטוס הזמנה
+          <strong>הוראות ייבוא:</strong>
+          <ul style={{ margin: '5px 0', paddingRight: '20px' }}>
+            <li>הורד את התבנית ומיל אותה עם הנתונים שלך</li>
+            <li>הקובץ חייב להיות בפורמט .xlsx או .xls</li>
+            <li>עמודות חובה: שם פרטי, שם משפחה, מספר מקומות שמורים</li>
+            <li>עמודות אופציונליות: מספר טלפון, מספר שולחן, סטטוס הזמנה</li>
+            <li>סטטוס הזמנה אפשרי: הוזמן, אושר, נדחה, הגיע</li>
+            <li>מספר מקומות שמורים חייב להיות מספר גדול מ-0</li>
+          </ul>
+          {importing && (
+            <div style={{ 
+              marginTop: '10px', 
+              padding: '8px', 
+              backgroundColor: '#d1ecf1', 
+              border: '1px solid #bee5eb',
+              borderRadius: '4px',
+              color: '#0c5460'
+            }}>
+              ⏳ מייבא מוזמנים... אנא המתן
+            </div>
+          )}
+          {importMessage && (
+            <div style={{ 
+              marginTop: '10px', 
+              padding: '8px', 
+              backgroundColor: importMessage.includes('בהצלחה') ? '#d4edda' : '#f8d7da', 
+              border: `1px solid ${importMessage.includes('בהצלחה') ? '#c3e6cb' : '#f5c6cb'}`,
+              borderRadius: '4px',
+              color: importMessage.includes('בהצלחה') ? '#155724' : '#721c24'
+            }}>
+              {importMessage.includes('בהצלחה') ? '✅ ' : '❌ '}{importMessage}
+            </div>
+          )}
         </div>
       </div>
 

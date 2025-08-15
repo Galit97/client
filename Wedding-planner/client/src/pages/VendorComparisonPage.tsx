@@ -68,7 +68,7 @@ export default function VendorComparisonPage() {
   const [loading, setLoading] = useState(true);
   const [selectedTypes, setSelectedTypes] = useState<VendorType[]>([]);
   const [typeToAdd, setTypeToAdd] = useState<VendorType>('photography');
-  const [extraComparisons, setExtraComparisons] = useState<Record<VendorType, ExtraComparison[]>>({});
+  const [extraComparisons, setExtraComparisons] = useState<Record<VendorType, ExtraComparison[]>>({} as Record<VendorType, ExtraComparison[]>);
   const [search, setSearch] = useState('');
   const [weddingId, setWeddingId] = useState<string>('');
 

@@ -1,6 +1,7 @@
-import { Request, Response } from "express";
-import bcrypt from "bcrypt";
-import User from "../../models/userModel";
+import { Request, Response } from 'express';
+import bcrypt from 'bcrypt';
+import User from '../../models/userModel';
+import { sendWelcomeEmail } from '../../services/emailService';
 
 interface MulterRequest extends Request {
   file?: Express.Multer.File;
@@ -32,6 +33,15 @@ const createUser = async (req: MulterRequest, res: Response) => {
       passwordHash,
       profileImage: profileImageUrl,
     });
+
+    // Send welcome email
+    try {
+      await sendWelcomeEmail(email, `${firstName} ${lastName}`);
+      console.log('Welcome email sent successfully');
+    } catch (emailError) {
+      console.error('Failed to send welcome email:', emailError);
+      // Don't fail the registration if email fails
+    }
 
     res.status(201).json(newUser);
   } catch (err: any) {

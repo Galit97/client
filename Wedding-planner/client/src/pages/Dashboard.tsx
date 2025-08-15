@@ -256,7 +256,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="page-container">
       <h1 className="text-center mb-xl">
-        🎉 דשבורד החתונה
+        🎉מסך הבית
       </h1>
 
       {/* Countdown Timer */}

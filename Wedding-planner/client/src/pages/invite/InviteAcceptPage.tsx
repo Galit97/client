@@ -40,7 +40,7 @@ export default function InviteAcceptPage() {
   return (
     <div style={{ padding: 40, textAlign: 'center', direction: 'rtl' }}>
       {status === 'accepting' && <h2>מצטרף לאירוע...</h2>}
-      {status === 'success' && <h2>מצטרפת/מצטרף לאירוע בהצלחה! מעביר לדשבורד...</h2>}
+      {status === 'success' && <h2>מצטרפת/מצטרף לאירוע בהצלחה! מעביר למסך הבית...</h2>}
       {status === 'error' && (
         <>
           <h2>שגיאה בהצטרפות</h2>

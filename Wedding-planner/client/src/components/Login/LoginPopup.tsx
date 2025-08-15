@@ -12,12 +12,17 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null); // Clear previous errors
+    
     try {
       const data = await loginUser({ email, password });
       console.log("התחברות הצליחה", data);
@@ -26,9 +31,46 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
       onClose();
       onSuccess();
     } catch (err: any) {
-      alert(err.message);
+      setError(err.message);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      alert('אנא הכנס את האימייל שלך תחילה');
+      return;
+    }
+
+    setForgotPasswordLoading(true);
+    try {
+      const response = await fetch('/api/users/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        
+        if (result.emailError) {
+          // Email failed, show password in alert
+          alert(`סיסמה זמנית נוצרה: ${result.tempPassword}\n\n${result.note}`);
+          setPassword(result.tempPassword);
+        } else {
+          // Email sent successfully
+          alert(`${result.message}\n\n${result.note}`);
+        }
+      } else {
+        const error = await response.json();
+        alert('שגיאה: ' + error.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('שגיאה בשחזור סיסמה');
+    } finally {
+      setForgotPasswordLoading(false);
     }
   };
 
@@ -132,6 +174,22 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
           </p>
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div style={{
+            background: '#ffebee',
+            color: '#c62828',
+            padding: '12px 16px',
+            borderRadius: '8px',
+            marginBottom: '20px',
+            fontSize: '14px',
+            border: '1px solid #ffcdd2',
+            textAlign: 'center'
+          }}>
+            {error}
+          </div>
+        )}
+
         {/* Form */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>
@@ -148,7 +206,10 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
               type="email"
               placeholder="הכנס את האימייל שלך"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError(null); // Clear error when user starts typing
+              }}
               required
               style={{
                 width: '100%',
@@ -184,7 +245,10 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
               type="password"
               placeholder="הכנס את הסיסמה שלך"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError(null); // Clear error when user starts typing
+              }}
               required
               style={{
                 width: '100%',
@@ -204,6 +268,27 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
                 e.target.style.boxShadow = 'none';
               }}
             />
+            
+            {/* Forgot Password Link */}
+            <div style={{ textAlign: 'left', marginTop: '8px' }}>
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                disabled={forgotPasswordLoading}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#A8D5BA',
+                  fontSize: '12px',
+                  cursor: forgotPasswordLoading ? 'not-allowed' : 'pointer',
+                  textDecoration: 'underline',
+                  padding: 0,
+                  opacity: forgotPasswordLoading ? 0.6 : 1
+                }}
+              >
+                {forgotPasswordLoading ? 'שולח...' : 'שכחתי סיסמה'}
+              </button>
+            </div>
           </div>
 
           <button 

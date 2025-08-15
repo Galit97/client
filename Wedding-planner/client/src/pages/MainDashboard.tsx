@@ -7,6 +7,7 @@ import CheckListPage from "./CheckListPage";
 import BudgetPage from "./BudgetPage";
 import Dashboard from "./Dashboard";
 import VendorComparisonPage from "./VendorComparisonPage";
+import VenueComparisonPage from "./VenueComparisonPage";
 import AccountSettings from "./account/AccountSettings";
 import MyWeddings from "./weddings/MyWeddings";
 import ImportantThingsPage from "./ImportantThingsPage";
@@ -14,48 +15,39 @@ import WeddingDayPage from "./WeddingDayPage";
 
 export default function MainDashboard() {
   const [selectedSection, setSelectedSection] = useState<string>("dashboard");
-  const [currentUserName, setCurrentUserName] = useState<string | null>(null);
 
-  useEffect(() => {
-    const currentUserRaw = localStorage.getItem("currentUser");
-    if (currentUserRaw) {
-      try {
-        const currentUser = JSON.parse(currentUserRaw);
-        const name =
-          currentUser.firstName && currentUser.lastName
-            ? `${currentUser.firstName} ${currentUser.lastName}`
-            : currentUser.name || null;
-        setCurrentUserName(name);
-      } catch {
-        setCurrentUserName(null);
-      }
-    }
-  }, []);
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("currentUser");
+    window.location.href = "/";
+  };
 
   const renderSection = () => {
     switch (selectedSection) {
       case "dashboard":
         return <Dashboard />;
+      case "eventSettings":
+        return <WeedingPage />;
       case "guestList":
         return <GuestListPage />;
-      case "vendorsList":
+      case "vendors":
         return <VendorPage />;
-      case "vendorsCompare":
-        return <VendorComparisonPage />;
-      case "wedding":
-        return <WeedingPage />;
-      case "checklist":
-        return <CheckListPage />;
       case "budget":
         return <BudgetPage />;
-      case "accountSettings":
-        return <AccountSettings />;
-      case "myWeddings":
-        return <MyWeddings onOpenWedding={() => setSelectedSection('dashboard')} />;
+      case "vendorCompare":
+        return <VendorComparisonPage />;
+      case "venueCompare":
+        return <VenueComparisonPage />;
+      case "checklist":
+        return <CheckListPage />;
       case "importantThings":
         return <ImportantThingsPage />;
       case "weddingDay":
         return <WeddingDayPage />;
+      case "accountSettings":
+        return <AccountSettings />;
+      case "myWeddings":
+        return <MyWeddings onOpenWedding={() => setSelectedSection('dashboard')} />;
       default:
         return <Dashboard />;
     }
@@ -72,30 +64,53 @@ export default function MainDashboard() {
           borderBottom: "1px solid black",
           marginBottom: 20,
           direction: "rtl",
+          flexWrap: "wrap",
+          gap: "10px",
         }}
+        className="dashboard-header"
       >
-        <Menu onSelect={setSelectedSection} currentUserName={currentUserName} currentSection={selectedSection} />
+        <Menu 
+          onSelect={setSelectedSection} 
+          onLogout={handleLogout}
+        />
 
         <button
-          onClick={() => {
-            localStorage.removeItem("token");
-            localStorage.removeItem("currentUser");
-            window.location.href = "/";
-          }}
+          onClick={handleLogout}
           style={{
             background: "none",
             border: "none",
-            padding: "0 10px",
+            padding: "8px 12px",
             fontSize: "16px",
             cursor: "pointer",
             color: "black",
+            borderRadius: "4px",
+            transition: "background-color 0.2s ease",
           }}
+          className="logout-button desktop-logout"
         >
           התנתקות
         </button>
       </header>
 
       <main style={{ padding: "0 20px" }}>{renderSection()}</main>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .dashboard-header {
+            padding: 10px 15px !important;
+            flex-direction: row !important;
+            justify-content: space-between !important;
+          }
+          .desktop-logout {
+            display: none !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .dashboard-header {
+            padding: 8px 10px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 } 

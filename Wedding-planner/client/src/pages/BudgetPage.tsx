@@ -453,13 +453,13 @@ const BudgetPage: React.FC = () => {
         <div style={{ 
           marginTop: '20px',
           padding: '20px',
-          background: profit >= 0 ? '#e8f5e8' : '#fff3e0',
+          background: profit >= 0 ? '#e8f5e8' : '#fff8e1',
           borderRadius: '8px',
-          border: `2px solid ${profit >= 0 ? '#4caf50' : '#ff9800'}`
+          border: `2px solid ${profit >= 0 ? '#81c784' : '#ffcc80'}`
         }}>
           <h3 style={{ 
             margin: '0 0 15px 0', 
-            color: profit >= 0 ? '#2e7d32' : '#e65100',
+            color: profit >= 0 ? '#2e7d32' : '#f57c00',
             textAlign: 'center'
           }}>
             {profit >= 0 ? '📈 רווח' : '📉 הפסד'}
@@ -468,7 +468,7 @@ const BudgetPage: React.FC = () => {
             fontSize: '32px', 
             fontWeight: 'bold', 
             textAlign: 'center',
-            color: profit >= 0 ? '#2e7d32' : '#e65100'
+            color: profit >= 0 ? '#2e7d32' : '#f57c00'
           }}>
             {profit >= 0 ? '+' : '-'}₪{Math.abs(profit).toLocaleString()}
           </div>
@@ -544,13 +544,13 @@ const BudgetPage: React.FC = () => {
 
       {/* Meal Pricing by Guest Status */}
       <div style={{ 
-        background: '#e3f2fd', 
+        background: '#e1f5fe', 
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
-        border: '1px solid #2196F3'
+        border: '1px solid #81d4fa'
       }}>
-        <h2 style={{ margin: '0 0 20px 0', color: '#1976d2' }}>🍽️ מחירי מנות לפי סטטוס מוזמנים</h2>
+        <h2 style={{ margin: '0 0 20px 0', color: '#0277bd' }}>🍽️ מחירי מנות לפי סטטוס מוזמנים</h2>
         
         <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
                      {/* Confirmed Guests */}
@@ -689,13 +689,13 @@ const BudgetPage: React.FC = () => {
 
       {/* Real Calculation Results - Based on Confirmed Guests */}
       <div style={{ 
-        background: '#e8f5e8', 
+        background: '#f1f8e9', 
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
-        border: '1px solid #4caf50'
+        border: '1px solid #a5d6a7'
       }}>
-        <h2 style={{ margin: '0 0 20px 0', color: '#2e7d32' }}>📊 תוצאות חישוב אמיתיות - לפי מאשרי הגעה</h2>
+        <h2 style={{ margin: '0 0 20px 0', color: '#33691e' }}>📊 תוצאות חישוב אמיתיות - לפי מאשרי הגעה</h2>
         
         {calculateMealCostByStatus().confirmed?.totalCost ? (
           <div style={{ 
@@ -740,13 +740,13 @@ const BudgetPage: React.FC = () => {
 
       {/* Event Total Cost (Vendors + Meal Cost for Confirmed Guests) */}
       <div style={{ 
-        background: '#fffde7', 
+        background: '#fffef7', 
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
-        border: '1px solid #ffeb3b'
+        border: '1px solid #fff59d'
       }}>
-        <h2 style={{ margin: '0 0 20px 0', color: '#f57f17' }}>💰 מחירי מנות - חישוב עלויות האירוע</h2>
+        <h2 style={{ margin: '0 0 20px 0', color: '#f9a825' }}>💰 מחירי מנות - חישוב עלויות האירוע</h2>
                  <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
            <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
              <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>סה"כ הוצאות ספקים</div>
@@ -769,13 +769,13 @@ const BudgetPage: React.FC = () => {
 
       {/* Manual Calculation - Custom Estimation */}
       <div style={{ 
-        background: '#fff3e0', 
+        background: '#fff8e1', 
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
-        border: '1px solid #ff9800'
+        border: '1px solidrgb(244, 224, 194)'
       }}>
-        <h2 style={{ margin: '0 0 20px 0', color: '#e65100' }}>🧮 חישוב ידני - אומדן מותאם אישית</h2>
+        <h2 style={{ margin: '0 0 20px 0', color: '#f57c00' }}>🧮 חישוב ידני - אומדן מותאם אישית</h2>
         
         <div style={{ 
           background: 'white', 
@@ -826,12 +826,12 @@ const BudgetPage: React.FC = () => {
         {/* Manual Calculation Results (Meals + Vendors) */}
         {manualCalculation.adultGuests > 0 || manualCalculation.childGuests > 0 ? (
           <div style={{ 
-            background: '#e8f5e8', 
+            background: '#f1f8e9', 
             padding: '20px', 
             borderRadius: '8px',
-            border: '1px solid #4caf50'
+            border: '1px solidrgb(209, 235, 210)'
           }}>
-            <h3 style={{ margin: '0 0 15px 0', color: '#2e7d32' }}>תוצאות החישוב</h3>
+            <h3 style={{ margin: '0 0 15px 0', color: '#33691e' }}>תוצאות החישוב</h3>
             
             <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
               <div style={{ textAlign: 'center' }}>
