@@ -45,7 +45,7 @@ export default function FirstPage() {
         textAlign: 'center',
         maxWidth: '600px',
         width: '100%',
-        boxShadow: '0 25px 50px rgba(0, 0, 0, 0.1)',
+     
         border: '2px solid rgba(255, 255, 255, 0.3)',
         backdropFilter: 'blur(10px)'
       }}>
@@ -60,7 +60,7 @@ export default function FirstPage() {
           alignItems: 'center',
           justifyContent: 'center',
           fontSize: '48px',
-          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)'
+        
         }}>
           💒
         </div>
@@ -135,7 +135,7 @@ export default function FirstPage() {
           <button 
             onClick={() => setLoginOpen(true)}
             style={{
-              background: 'linear-gradient(135deg, #A8D5BA, #B8E6B8)',
+              background: 'linear-gradient(135deg, #a7d6ba, #b8e6b8)',
               color: '#333',
               border: 'none',
               borderRadius: '12px',
@@ -144,15 +144,15 @@ export default function FirstPage() {
               fontWeight: '600',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
-              boxShadow: '0 4px 15px rgba(168, 213, 186, 0.3)'
+         
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-3px)';
-              e.currentTarget.style.boxShadow = '0 8px 25px rgba(168, 213, 186, 0.4)';
+            
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(168, 213, 186, 0.3)';
+       
             }}
           >
             התחברות
@@ -161,7 +161,7 @@ export default function FirstPage() {
           <button 
             onClick={() => setRegisterOpen(true)}
             style={{
-              background: 'linear-gradient(135deg, #F4C2C2, #C8A2C8)',
+              background: 'linear-gradient(135deg, #f4c2c2, #c8a2c8)',
               color: '#333',
               border: 'none',
               borderRadius: '12px',
@@ -170,15 +170,15 @@ export default function FirstPage() {
               fontWeight: '600',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
-              boxShadow: '0 4px 15px rgba(244, 194, 194, 0.3)'
+            
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-3px)';
-              e.currentTarget.style.boxShadow = '0 8px 25px rgba(244, 194, 194, 0.4)';
+           
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(244, 194, 194, 0.3)';
+           
             }}
           >
             יצירת משתמש חדש

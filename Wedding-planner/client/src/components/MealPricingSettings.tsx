@@ -31,11 +31,11 @@ export default function MealPricingSettings({
 
   return (
     <div style={{
-      background: '#fff3e0',
+      background: '#f2ebe2',
       padding: '20px',
       borderRadius: '8px',
       marginBottom: '30px',
-      border: '1px solid #ff9800'
+     
     }}>
       <h3 style={{ margin: '0 0 20px 0', color: '#e65100' }}>
         🍽️ מחירי מנות - חישוב עלויות האירוע
@@ -46,7 +46,7 @@ export default function MealPricingSettings({
         padding: '15px', 
         borderRadius: '4px', 
         marginBottom: '20px',
-        border: '1px solid #ddd'
+       
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
           <h4 style={{ margin: '0', color: '#333' }}>הגדרות מחירים</h4>
@@ -57,7 +57,7 @@ export default function MealPricingSettings({
               padding: '8px 16px',
               backgroundColor: isEditing ? '#f44336' : '#4CAF50',
               color: 'white',
-              border: 'none',
+           
               borderRadius: '4px',
               cursor: 'pointer',
               fontSize: '14px',
@@ -75,7 +75,7 @@ export default function MealPricingSettings({
             padding: '8px 12px', 
             background: '#e3f2fd', 
             borderRadius: '4px', 
-            border: '1px solid #2196F3',
+         
             display: 'flex',
             alignItems: 'center',
             gap: '8px'
@@ -84,7 +84,7 @@ export default function MealPricingSettings({
               width: '12px', 
               height: '12px', 
               borderRadius: '50%', 
-              border: '2px solid #2196F3', 
+            
               borderTop: '2px solid transparent',
               animation: 'spin 1s linear infinite'
             }}></div>
@@ -97,16 +97,14 @@ export default function MealPricingSettings({
         <div style={{ 
           marginBottom: '15px', 
           padding: '8px 12px', 
-          background: '#fff3e0', 
+          background: '#f2ebe2', 
           borderRadius: '4px', 
-          border: '1px solid #ff9800',
+      
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
-          <div style={{ fontSize: '12px', color: '#e65100' }}>
-            <strong>💡 טיפ:</strong> השינויים נשמרים אוטומטית תוך 2 שניות מהשינוי האחרון
-          </div>
+        
           {onSave && (
             <button
               type="button"
@@ -116,7 +114,7 @@ export default function MealPricingSettings({
                 padding: '6px 12px',
                 backgroundColor: saving ? '#ccc' : '#ff9800',
                 color: 'white',
-                border: 'none',
+              
                 borderRadius: '4px',
                 cursor: saving ? 'not-allowed' : 'pointer',
                 fontSize: '12px',
@@ -134,7 +132,7 @@ export default function MealPricingSettings({
             padding: '10px 15px', 
             background: '#e8f5e8', 
             borderRadius: '4px', 
-            border: '1px solid #4caf50',
+          
             textAlign: 'center'
           }}>
             <div style={{ fontSize: '14px', color: '#2e7d32', fontWeight: 'bold' }}>
@@ -160,7 +158,7 @@ export default function MealPricingSettings({
               style={{ 
                 width: '100%', 
                 padding: '8px', 
-                border: '1px solid #ddd', 
+               
                 borderRadius: '4px',
                 backgroundColor: isEditing ? 'white' : '#f5f5f5',
                 cursor: isEditing ? 'text' : 'not-allowed'
@@ -181,7 +179,7 @@ export default function MealPricingSettings({
               style={{ 
                 width: '100%', 
                 padding: '8px', 
-                border: '1px solid #ddd', 
+            
                 borderRadius: '4px',
                 backgroundColor: isEditing ? 'white' : '#f5f5f5',
                 cursor: isEditing ? 'text' : 'not-allowed'
@@ -202,7 +200,7 @@ export default function MealPricingSettings({
               style={{ 
                 width: '100%', 
                 padding: '8px', 
-                border: '1px solid #ddd', 
+            
                 borderRadius: '4px',
                 backgroundColor: isEditing ? 'white' : '#f5f5f5',
                 cursor: isEditing ? 'text' : 'not-allowed'
@@ -223,7 +221,7 @@ export default function MealPricingSettings({
               style={{ 
                 width: '100%', 
                 padding: '8px', 
-                border: '1px solid #ddd', 
+          
                 borderRadius: '4px',
                 backgroundColor: isEditing ? 'white' : '#f5f5f5',
                 cursor: isEditing ? 'text' : 'not-allowed'
@@ -244,7 +242,7 @@ export default function MealPricingSettings({
               style={{ 
                 width: '100%', 
                 padding: '8px', 
-                border: '1px solid #ddd', 
+              
                 borderRadius: '4px',
                 backgroundColor: isEditing ? 'white' : '#f5f5f5',
                 cursor: isEditing ? 'text' : 'not-allowed'
@@ -265,7 +263,7 @@ export default function MealPricingSettings({
               style={{ 
                 width: '100%', 
                 padding: '8px', 
-                border: '1px solid #ddd', 
+          
                 borderRadius: '4px',
                 backgroundColor: isEditing ? 'white' : '#f5f5f5',
                 cursor: isEditing ? 'text' : 'not-allowed'
@@ -308,7 +306,7 @@ export default function MealPricingSettings({
               style={{ 
                 width: '100%', 
                 padding: '8px', 
-                border: '1px solid #ddd', 
+              
                 borderRadius: '4px',
                 backgroundColor: isEditing ? 'white' : '#f5f5f5',
                 cursor: isEditing ? 'text' : 'not-allowed'

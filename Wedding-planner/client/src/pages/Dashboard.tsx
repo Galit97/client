@@ -255,14 +255,16 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="page-container">
-      <h1 className="text-center mb-xl">
-        🎉מסך הבית
-      </h1>
+   
 
       {/* Countdown Timer */}
       <div className="card text-center mb-xl" style={{ 
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        color: 'white'
+        background: 'linear-gradient(135deg, #c8e6d1 0%, #d4f0d4 25%, #f8d7da 50%, #e0c8e0 75%, #c8e6d1 100%)',
+        color: '#333',
+        border: '1px solid #e9ecef',
+        boxShadow: '0 4px 15px rgba(200, 230, 209, 0.3)',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
         <h2 style={{ margin: '0 0 20px 0', fontSize: '28px' }}>
           {timeLeft.days > 0 ? '⏰ ספירה לאחור לחתונה' : '🎉 היום החתונה!'}
@@ -295,16 +297,16 @@ const Dashboard: React.FC = () => {
         {/* Tasks Progress */}
         <div className="card">
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-            <div style={{ 
-              width: '50px', 
-              height: '50px', 
-              borderRadius: '50%', 
-              background: 'linear-gradient(135deg, #4CAF50, #45a049)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginLeft: '15px'
-            }}>
+                         <div style={{ 
+               width: '50px', 
+               height: '50px', 
+               borderRadius: '50%', 
+               background: 'linear-gradient(135deg, #c8e6d1, #d4f0d4)',
+               display: 'flex',
+               alignItems: 'center',
+               justifyContent: 'center',
+               marginLeft: '15px'
+             }}>
               <span style={{ fontSize: '24px' }}>✓</span>
             </div>
             <div>
@@ -328,7 +330,7 @@ const Dashboard: React.FC = () => {
             <div style={{ 
               width: `${taskProgress}%`, 
               height: '100%', 
-              background: 'linear-gradient(90deg, #4CAF50, #45a049)',
+              background: 'linear-gradient(135deg, #c8e6d1, #d4f0d4)',
               transition: 'width 0.3s ease'
             }}></div>
           </div>
@@ -337,7 +339,7 @@ const Dashboard: React.FC = () => {
             marginTop: '10px', 
             fontSize: '24px', 
             fontWeight: 'bold', 
-            color: '#4CAF50' 
+            color: '#c8e6d1' 
           }}>
             {taskProgress.toFixed(0)}%
           </div>
@@ -346,16 +348,16 @@ const Dashboard: React.FC = () => {
         {/* Vendors Progress */}
         <div className="card">
           <div className="flex-between mb-lg">
-            <div style={{ 
-              width: '50px', 
-              height: '50px', 
-              borderRadius: '50%', 
-              background: 'linear-gradient(135deg, #2196F3, #1976D2)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginLeft: '15px'
-            }}>
+                         <div style={{ 
+               width: '50px', 
+               height: '50px', 
+               borderRadius: '50%', 
+               background: 'linear-gradient(135deg, #f8d7da, #e0c8e0)',
+               display: 'flex',
+               alignItems: 'center',
+               justifyContent: 'center',
+               marginLeft: '15px'
+             }}>
               <span style={{ fontSize: '24px' }}>🏢</span>
             </div>
             <div>
@@ -366,28 +368,44 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
           
-          <div className="progress">
-            <div className="progress-bar" style={{ width: `${vendorProgress}%` }}></div>
-          </div>
+                     <div style={{ 
+             width: '100%', 
+             height: '8px', 
+             background: '#f0f0f0', 
+             borderRadius: '4px',
+             overflow: 'hidden'
+           }}>
+             <div style={{ 
+               width: `${vendorProgress}%`, 
+               height: '100%', 
+               background: 'linear-gradient(90deg, #f8d7da, #e0c8e0)',
+               transition: 'width 0.3s ease'
+             }}></div>
+           </div>
           
-          <div className="text-primary mt-md" style={{ fontSize: '24px', fontWeight: 'bold' }}>
-            {vendorProgress.toFixed(0)}%
-          </div>
+                     <div style={{ 
+             marginTop: '10px', 
+             fontSize: '24px', 
+             fontWeight: 'bold', 
+             color: '#f8d7da' 
+           }}>
+             {vendorProgress.toFixed(0)}%
+           </div>
         </div>
 
         {/* Guests Progress */}
         <div className="card">
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-            <div style={{ 
-              width: '50px', 
-              height: '50px', 
-              borderRadius: '50%', 
-              background: 'linear-gradient(135deg, #FF9800, #F57C00)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginLeft: '15px'
-            }}>
+                         <div style={{ 
+               width: '50px', 
+               height: '50px', 
+               borderRadius: '50%', 
+               background: 'linear-gradient(135deg, #c8e6d1, #f8d7da)',
+               display: 'flex',
+               alignItems: 'center',
+               justifyContent: 'center',
+               marginLeft: '15px'
+             }}>
               <span style={{ fontSize: '24px' }}>👥</span>
             </div>
                          <div>
@@ -401,49 +419,49 @@ const Dashboard: React.FC = () => {
              </div>
           </div>
           
-          <div style={{ 
-            width: '100%', 
-            height: '8px', 
-            background: '#f0f0f0', 
-            borderRadius: '4px',
-            overflow: 'hidden'
-          }}>
-            <div style={{ 
-              width: `${guestProgress}%`, 
-              height: '100%', 
-              background: 'linear-gradient(90deg, #FF9800, #F57C00)',
-              transition: 'width 0.3s ease'
-            }}></div>
-          </div>
+                     <div style={{ 
+             width: '100%', 
+             height: '8px', 
+             background: '#f0f0f0', 
+             borderRadius: '4px',
+             overflow: 'hidden'
+           }}>
+             <div style={{ 
+               width: `${guestProgress}%`, 
+               height: '100%', 
+               background: 'linear-gradient(90deg, #c8e6d1, #f8d7da)',
+               transition: 'width 0.3s ease'
+             }}></div>
+           </div>
           
-          <div style={{ 
-            marginTop: '10px', 
-            fontSize: '24px', 
-            fontWeight: 'bold', 
-            color: '#FF9800' 
-          }}>
-            {guestProgress.toFixed(0)}%
-          </div>
+                     <div style={{ 
+             marginTop: '10px', 
+             fontSize: '24px', 
+             fontWeight: 'bold', 
+             color: '#c8e6d1' 
+           }}>
+             {guestProgress.toFixed(0)}%
+           </div>
         </div>
         {/* Event Cost Summary */}
         <div style={{ 
           background: 'white', 
           padding: '25px', 
           borderRadius: '12px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-          border: '1px solid #e0e0e0'
+  
+         
         }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-            <div style={{ 
-              width: '50px', 
-              height: '50px', 
-              borderRadius: '50%', 
-              background: 'linear-gradient(135deg, #FFCA28, #FFA000)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginLeft: '15px'
-            }}>
+                         <div style={{ 
+               width: '50px', 
+               height: '50px', 
+               borderRadius: '50%', 
+               background: 'linear-gradient(135deg, #d4f0d4, #e0c8e0)',
+               display: 'flex',
+               alignItems: 'center',
+               justifyContent: 'center',
+               marginLeft: '15px'
+             }}>
               <span style={{ fontSize: '24px' }}>💰</span>
             </div>
             <div>
@@ -489,8 +507,8 @@ const Dashboard: React.FC = () => {
           background: 'white', 
           padding: '25px', 
           borderRadius: '12px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-          border: '1px solid #e0e0e0'
+     
+      
         }}>
           <h3 style={{ 
             margin: '0 0 20px 0', 
@@ -507,7 +525,7 @@ const Dashboard: React.FC = () => {
               {recentActivities.map((activity) => (
                 <div key={activity.id} style={{ 
                   padding: '15px', 
-                  border: '1px solid #e3f2fd', 
+                 
                   borderRadius: '8px', 
                   marginBottom: '10px',
                   background: '#f8fbff'
@@ -545,8 +563,8 @@ const Dashboard: React.FC = () => {
           background: 'white', 
           padding: '25px', 
           borderRadius: '12px',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-          border: '1px solid #e0e0e0'
+      
+       
         }}>
           <h3 style={{ 
             margin: '0 0 20px 0', 
@@ -563,10 +581,10 @@ const Dashboard: React.FC = () => {
               {upcomingTasks.map((task) => (
                                  <div key={task._id} style={{ 
                    padding: '15px', 
-                   border: '1px solid #fff3e0', 
+                                       border: '1px solid #f2ebe2', 
                    borderRadius: '8px', 
                    marginBottom: '10px',
-                   background: task.dueDate && new Date(task.dueDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? '#fff3e0' : '#fafafa'
+                                       background: task.dueDate && new Date(task.dueDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? '#f2ebe2' : '#fafafa'
                  }}>
                    <div style={{ 
                      fontWeight: 'bold', 
@@ -601,13 +619,13 @@ const Dashboard: React.FC = () => {
 
       {/* High Priority Tasks */}
       {highPriorityTasks.length > 0 && (
-        <div style={{ 
-          background: '#fff3e0', 
-          padding: '25px', 
-          borderRadius: '12px',
-          marginBottom: '30px',
-          border: '2px solid #ff9800'
-        }}>
+                 <div style={{ 
+           background: '#f2ebe2', 
+           padding: '25px', 
+           borderRadius: '12px',
+           marginBottom: '30px',
+          
+         }}>
           <h3 style={{ 
             margin: '0 0 20px 0', 
             color: '#e65100',
@@ -624,7 +642,7 @@ const Dashboard: React.FC = () => {
                 padding: '15px', 
                 background: 'white', 
                 borderRadius: '8px', 
-                border: '1px solid #ffcc80'
+             
               }}>
                                  <div style={{ fontWeight: 'bold', color: '#e65100', marginBottom: '5px' }}>
                    {task.task}
@@ -633,7 +651,7 @@ const Dashboard: React.FC = () => {
                    {task.notes || 'אין הערות'}
                  </div>
                 {task.dueDate && (
-                  <div style={{ fontSize: '12px', color: '#ff9800', fontWeight: 'bold' }}>
+                                     <div style={{ fontSize: '12px', color: '#ff9800', fontWeight: 'bold' }}>
                     תאריך יעד: {new Date(task.dueDate).toLocaleDateString('he-IL')}
                   </div>
                 )}
@@ -648,8 +666,6 @@ const Dashboard: React.FC = () => {
         background: 'white', 
         padding: '25px', 
         borderRadius: '12px',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-        border: '1px solid #e0e0e0'
       }}>
         <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>📊 סטטיסטיקות מהירות</h3>
         
@@ -669,7 +685,7 @@ const Dashboard: React.FC = () => {
           </div>
           
                      <div style={{ textAlign: 'center' }}>
-             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#FF9800' }}>
+                            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ff9800' }}>
                {totalReservedPlaces}
              </div>
              <div style={{ fontSize: '14px', color: '#666' }}>סה"כ מוזמנים</div>

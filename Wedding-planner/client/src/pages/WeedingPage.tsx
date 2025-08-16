@@ -639,7 +639,7 @@ export default function WeddingPage() {
         padding: '15px',
         borderRadius: '8px',
         marginBottom: '20px',
-        border: '1px solid #2196F3'
+      
       }}>
         <h4 style={{ margin: '0 0 10px 0', color: '#1976d2' }}>💡 איך לנהל את האירוע:</h4>
         <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#333' }}>
@@ -652,11 +652,11 @@ export default function WeddingPage() {
 
       {/* Wedding Form */}
       <div style={{
-        background: '#f9f9f9',
+        background: '#ffffff',
         padding: '20px',
         borderRadius: '8px',
         marginBottom: '30px',
-        border: '1px solid #ddd'
+       
       }}>
         <h3 style={{ marginTop: 0, marginBottom: '20px' }}>פרטי האירוע</h3>
         <form onSubmit={handleSubmit}>
@@ -800,7 +800,7 @@ export default function WeddingPage() {
               }
             }}
             disabled={creatingInvite || !wedding._id}
-            style={{ padding: '8px 16px', border: '1px solid #1976d2', background: creatingInvite ? '#ccc' : '#1976d2', color: 'white', borderRadius: 4, cursor: creatingInvite ? 'not-allowed' : 'pointer' }}
+            style={{ padding: '8px 16px', border: '1px solid #d4a574', background: creatingInvite ? '#ccc' : '#d4a574', color: 'white', borderRadius: 4, cursor: creatingInvite ? 'not-allowed' : 'pointer' }}
           >
             {creatingInvite ? 'יוצר קישור...' : 'צור קישור להזמנת שותף'}
           </button>
@@ -838,9 +838,9 @@ export default function WeddingPage() {
                 disabled={!selectedParticipantId}
                 style={{ 
                   padding: '8px 16px', 
-                  border: '1px solid #2196F3', 
-                  background: selectedParticipantId ? '#2196F3' : '#ccc',
-                  color: 'white',
+                  border: '1px solid #a7d6ba', 
+                  background: selectedParticipantId ? '#a7d6ba' : '#ccc',
+                  color: '#333',
                   borderRadius: '4px',
                   cursor: selectedParticipantId ? 'pointer' : 'not-allowed'
                 }}
@@ -870,9 +870,9 @@ export default function WeddingPage() {
                       onClick={() => handleRemoveParticipant(p.id)}
                       style={{ 
                         padding: '4px 8px', 
-                        border: '1px solid #f44336', 
-                        background: '#f44336',
-                        color: 'white',
+                        border: '1px solid #f4c2c2', 
+                        background: '#f4c2c2',
+                        color: '#333',
                         borderRadius: '4px',
                         cursor: 'pointer',
                         fontSize: '12px'
@@ -896,8 +896,8 @@ export default function WeddingPage() {
               disabled={saving}
               style={{
                 padding: '12px 24px',
-                backgroundColor: saving ? '#ccc' : '#4CAF50',
-                color: 'white',
+                backgroundColor: saving ? '#ccc' : '#a7d6ba',
+                color: '#333',
                 border: 'none',
                 borderRadius: '4px',
                 cursor: saving ? 'not-allowed' : 'pointer',
@@ -913,11 +913,11 @@ export default function WeddingPage() {
 
       {/* Meal Pricing Section */}
       <div style={{
-        background: '#fff3e0',
+        background: '#f2ebe2',
         padding: '20px',
         borderRadius: '8px',
         marginBottom: '30px',
-        border: '1px solid #ff9800'
+      
       }}>
         <h3 style={{ margin: '0 0 20px 0', color: '#e65100' }}>
           🍽️ מחירי מנות - חישוב עלויות האירוע
@@ -928,7 +928,7 @@ export default function WeddingPage() {
           padding: '15px', 
           borderRadius: '4px', 
           marginBottom: '20px',
-          border: '1px solid #ddd'
+       
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
             <h4 style={{ margin: '0', color: '#333' }}>הגדרות מחירים</h4>
@@ -937,9 +937,9 @@ export default function WeddingPage() {
               onClick={() => setIsEditingMealPricing(!isEditingMealPricing)}
               style={{
                 padding: '8px 16px',
-                backgroundColor: isEditingMealPricing ? '#f44336' : '#4CAF50',
-                color: 'white',
-                border: 'none',
+                backgroundColor: isEditingMealPricing ? '#f4c2c2' : '#a7d6ba',
+                color: '#333',
+             
                 borderRadius: '4px',
                 cursor: 'pointer',
                 fontSize: '14px',
@@ -979,7 +979,7 @@ export default function WeddingPage() {
           <div style={{ 
             marginBottom: '15px', 
             padding: '8px 12px', 
-            background: '#fff3e0', 
+            background: '#f2ebe2', 
             borderRadius: '4px', 
             border: '1px solid #ff9800',
             display: 'flex',
@@ -1462,7 +1462,7 @@ export default function WeddingPage() {
             disabled={saving}
             style={{
               padding: '12px 24px',
-              backgroundColor: saving ? '#ccc' : '#ff9800',
+              backgroundColor: saving ? '#ccc' : '#d4a574',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
@@ -1481,11 +1481,11 @@ export default function WeddingPage() {
 
       {/* Manual Calculation - Custom Estimation */}
       <div style={{ 
-        background: '#fff3e0', 
+        background: '#f2ebe2', 
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
-        border: '1px solid #ff9800'
+      
       }}>
         <h3 style={{ margin: '0 0 20px 0', color: '#e65100' }}>
           🧮 חישוב ידני - אומדן מותאם אישית - מחירי מנות
@@ -1495,7 +1495,7 @@ export default function WeddingPage() {
           background: 'white', 
           padding: '20px', 
           borderRadius: '8px',
-          border: '1px solid #ddd',
+    
           marginBottom: '20px'
         }}>
           <h4 style={{ margin: '0 0 15px 0', color: '#333' }}>הכנס מספרי אורחים לבדיקה</h4>
@@ -1540,10 +1540,10 @@ export default function WeddingPage() {
         {/* Manual Calculation Results */}
         {manualCalculation.adultGuests > 0 || manualCalculation.childGuests > 0 ? (
           <div style={{ 
-            background: '#e8f5e8', 
+            background: '#ffffff', 
             padding: '20px', 
             borderRadius: '8px',
-            border: '1px solid #4caf50'
+          
           }}>
             <h4 style={{ margin: '0 0 15px 0', color: '#2e7d32' }}>תוצאות החישוב</h4>
             
@@ -1615,9 +1615,7 @@ export default function WeddingPage() {
         <div style={{
           background: 'white',
           padding: '20px',
-          borderRadius: '8px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          border: '1px solid #ddd'
+          borderRadius: '8px'
         }}>
           <h3 style={{ margin: '0 0 20px 0', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
             📋 סיכום האירוע
@@ -1697,7 +1695,7 @@ export default function WeddingPage() {
                         background: '#e3f2fd',
                         borderRadius: '4px',
                         fontSize: '14px',
-                        border: '1px solid #2196F3'
+             
                       }}
                     >
                       {p.name}
@@ -1712,7 +1710,7 @@ export default function WeddingPage() {
 
           {/* Meal Pricing Summary */}
           {wedding.mealPricing && (
-            <div style={{ marginTop: '20px', padding: '15px', background: '#fff3e0', borderRadius: '4px', border: '1px solid #ff9800' }}>
+            <div style={{ marginTop: '20px', padding: '15px', background: '#f2ebe2', borderRadius: '4px'}}>
               <h4 style={{ margin: '0 0 15px 0', color: '#e65100' }}>🍽️ עלויות מנות</h4>
               
               {/* Basic Pricing */}

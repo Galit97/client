@@ -154,44 +154,7 @@ const BudgetPage: React.FC = () => {
     [vendors]
   );
 
-  const totalIncome = useMemo(() => {
-    if (!weddingData.mealPricing) return 0;
-    
-    const { basePrice, bulkThreshold, bulkPrice, bulkMaxGuests, reservePrice } = weddingData.mealPricing;
-    
-    const calculateForCount = (count: number) => {
-      let totalCost = 0;
-      let remainingGuests = count;
 
-      // Base price tier
-      const baseGuests = Math.min(remainingGuests, bulkThreshold);
-      if (baseGuests > 0) {
-        totalCost += baseGuests * basePrice;
-        remainingGuests -= baseGuests;
-      }
-
-      // Bulk price tier
-      if (remainingGuests > 0 && bulkPrice > 0) {
-        const bulkGuests = Math.min(remainingGuests, bulkMaxGuests - bulkThreshold);
-        if (bulkGuests > 0) {
-          totalCost += bulkGuests * bulkPrice;
-          remainingGuests -= bulkGuests;
-        }
-      }
-
-      // Reserve price tier
-      if (remainingGuests > 0 && reservePrice > 0) {
-        totalCost += remainingGuests * reservePrice;
-      }
-
-      return totalCost;
-    };
-
-    return calculateForCount(guestCounts.total);
-  }, [weddingData.mealPricing, guestCounts.total]);
-
-  const profit = totalIncome - totalExpenses;
-  const profitMargin = totalIncome > 0 ? (profit / totalIncome) * 100 : 0;
 
   // Pie chart data for expense distribution
   const expensePieData = useMemo(() => {
@@ -224,11 +187,7 @@ const BudgetPage: React.FC = () => {
     }));
   }, [vendors]);
 
-  // Bar chart data for income vs expenses - separate positive values
-  const incomeExpenseData = [
-    { name: "הכנסות", value: totalIncome, color: "#A8D5BA" }, // ירוק פסטל
-    { name: "הוצאות", value: totalExpenses, color: "#F4C2C2" }, // ורוד פסטל
-  ];
+
 
   // Removed unused profitLossData
 
@@ -370,12 +329,7 @@ const BudgetPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="card text-center">
-          <h3 className="mb-md">הכנסות צפויות</h3>
-          <div className="text-primary" style={{ fontSize: '24px', fontWeight: 'bold' }}>
-            {totalIncome.toLocaleString()} ₪
-          </div>
-        </div>
+
 
         <div className="card text-center">
           <h3 className="mb-md">הוצאות בפועל</h3>
@@ -384,140 +338,10 @@ const BudgetPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="card text-center">
-          <h3 className="mb-md">
-            {profit >= 0 ? 'רווח' : 'הפסד'}
-          </h3>
-          <div className="text-primary" style={{ fontSize: '24px', fontWeight: 'bold' }}>
-            {profit.toLocaleString()} ₪
-          </div>
-          <div className="text-secondary mt-sm">
-            {profitMargin.toFixed(1)}% מההכנסות
-          </div>
-        </div>
+
       </div>
 
-      {/* Income vs Expenses Chart */}
-      <div style={{ 
-        background: 'white', 
-        padding: '20px', 
-        borderRadius: '8px',
-        marginBottom: '30px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        border: '1px solid #ddd'
-      }}>
-        <h2 style={{ margin: '0 0 20px 0', color: '#333' }}>📈 הכנסות מול הוצאות</h2>
-        
-        {/* Main Income vs Expenses */}
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart 
-            data={incomeExpenseData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis 
-              dataKey="name" 
-              tick={{ fontSize: 14, fill: '#333' }}
-              axisLine={{ stroke: '#ddd' }}
-              tickLine={{ stroke: '#ddd' }}
-            />
-            <YAxis 
-              tick={{ fontSize: 12, fill: '#666' }}
-              axisLine={{ stroke: '#ddd' }}
-              tickLine={{ stroke: '#ddd' }}
-              tickFormatter={(value) => `${(value / 1000).toFixed(0)}K`}
-            />
-            <Tooltip 
-              formatter={(value: number) => [`₪${value.toLocaleString()}`, '']}
-              labelStyle={{ color: '#333' }}
-              contentStyle={{ 
-                backgroundColor: 'white', 
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-              }}
-            />
-            <Bar 
-              dataKey="value" 
-              radius={[4, 4, 0, 0]}
-              barSize={80}
-            >
-              {incomeExpenseData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
 
-        {/* Profit/Loss Summary */}
-        <div style={{ 
-          marginTop: '20px',
-          padding: '20px',
-          background: profit >= 0 ? '#e8f5e8' : '#fff8e1',
-          borderRadius: '8px',
-          border: `2px solid ${profit >= 0 ? '#81c784' : '#ffcc80'}`
-        }}>
-          <h3 style={{ 
-            margin: '0 0 15px 0', 
-            color: profit >= 0 ? '#2e7d32' : '#f57c00',
-            textAlign: 'center'
-          }}>
-            {profit >= 0 ? '📈 רווח' : '📉 הפסד'}
-          </h3>
-          <div style={{ 
-            fontSize: '32px', 
-            fontWeight: 'bold', 
-            textAlign: 'center',
-            color: profit >= 0 ? '#2e7d32' : '#f57c00'
-          }}>
-            {profit >= 0 ? '+' : '-'}₪{Math.abs(profit).toLocaleString()}
-          </div>
-          <div style={{ 
-            fontSize: '16px', 
-            textAlign: 'center',
-            color: '#666',
-            marginTop: '8px'
-          }}>
-            {profitMargin.toFixed(1)}% מההכנסות
-          </div>
-        </div>
-        
-                 {/* Chart Summary */}
-         <div style={{ 
-           display: 'grid', 
-           gap: '15px', 
-           gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-           marginTop: '20px',
-           padding: '15px',
-           background: '#f8f9fa',
-           borderRadius: '8px'
-         }}>
-           <div style={{ textAlign: 'center' }}>
-             <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>הכנסות צפויות</div>
-             <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#A8D5BA' }}>
-               {totalIncome.toLocaleString()} ₪
-             </div>
-           </div>
-           <div style={{ textAlign: 'center' }}>
-             <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>הוצאות בפועל</div>
-             <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#F4C2C2' }}>
-               {totalExpenses.toLocaleString()} ₪
-             </div>
-           </div>
-           <div style={{ textAlign: 'center' }}>
-             <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>
-               {profit >= 0 ? 'רווח' : 'הפסד'}
-             </div>
-             <div style={{ 
-               fontSize: '18px', 
-               fontWeight: 'bold', 
-               color: profit >= 0 ? '#D4A574' : '#C8A2C8' 
-             }}>
-               {profit >= 0 ? '+' : '-'}₪{Math.abs(profit).toLocaleString()}
-             </div>
-           </div>
-         </div>
-      </div>
 
       {/* Budget Tracking Line Chart */}
       <div style={{ 
@@ -525,8 +349,8 @@ const BudgetPage: React.FC = () => {
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        border: '1px solid #ddd'
+      
+       
       }}>
         <h2 style={{ margin: '0 0 20px 0', color: '#333' }}>📊 מעקב תקציב לאורך זמן</h2>
         <ResponsiveContainer width="100%" height={300}>
@@ -548,7 +372,7 @@ const BudgetPage: React.FC = () => {
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
-        border: '1px solid #81d4fa'
+   
       }}>
         <h2 style={{ margin: '0 0 20px 0', color: '#0277bd' }}>🍽️ מחירי מנות לפי סטטוס מוזמנים</h2>
         
@@ -558,7 +382,7 @@ const BudgetPage: React.FC = () => {
              background: 'white', 
              padding: '15px', 
              borderRadius: '4px',
-             border: '2px solid #A8D5BA'
+         
            }}>
              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                <div style={{ 
@@ -591,7 +415,7 @@ const BudgetPage: React.FC = () => {
              background: 'white', 
              padding: '15px', 
              borderRadius: '4px',
-             border: '2px solid #F7E7CE'
+         
            }}>
              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                <div style={{ 
@@ -624,7 +448,7 @@ const BudgetPage: React.FC = () => {
              background: 'white', 
              padding: '15px', 
              borderRadius: '4px',
-             border: '2px solid #F4C2C2'
+            
            }}>
              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                <div style={{ 
@@ -657,7 +481,7 @@ const BudgetPage: React.FC = () => {
              background: 'white', 
              padding: '15px', 
              borderRadius: '4px',
-             border: '2px solid #C8A2C8'
+         
            }}>
              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                <div style={{ 
@@ -693,7 +517,7 @@ const BudgetPage: React.FC = () => {
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
-        border: '1px solid #a5d6a7'
+     
       }}>
         <h2 style={{ margin: '0 0 20px 0', color: '#33691e' }}>📊 תוצאות חישוב אמיתיות - לפי מאשרי הגעה</h2>
         
@@ -702,7 +526,7 @@ const BudgetPage: React.FC = () => {
             background: 'white', 
             padding: '20px', 
             borderRadius: '8px',
-            border: '1px solid #ddd'
+            
           }}>
             <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                              <div style={{ textAlign: 'center' }}>
@@ -744,23 +568,23 @@ const BudgetPage: React.FC = () => {
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
-        border: '1px solid #fff59d'
+     
       }}>
-        <h2 style={{ margin: '0 0 20px 0', color: '#f9a825' }}>💰 מחירי מנות - חישוב עלויות האירוע</h2>
+                 <h2 style={{ margin: '0 0 20px 0', color: '#ff9800' }}>💰 מחירי מנות - חישוב עלויות האירוע</h2>
                  <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
-           <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
+           <div style={{ background: 'white', padding: '15px', borderRadius: '8px' }}>
              <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>סה"כ הוצאות ספקים</div>
              <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#F4C2C2' }}>{totalExpenses.toLocaleString()} ₪</div>
            </div>
-           <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
+           <div style={{ background: 'white', padding: '15px', borderRadius: '8px', }}>
              <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>עלות מנות (מאשרים)</div>
              <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#A8D5BA' }}>{confirmedMealCost.toLocaleString()} ₪</div>
            </div>
-           <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
+           <div style={{ background: 'white', padding: '15px', borderRadius: '8px' }}>
              <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>סה"כ עלות אירוע</div>
              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#D4A574' }}>{eventTotalCost.toLocaleString()} ₪</div>
            </div>
-           <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid #eee' }}>
+           <div style={{ background: 'white', padding: '15px', borderRadius: '8px' }}>
              <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>עלות לאיש (מאשרים)</div>
              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#C8A2C8' }}>{eventCostPerPerson.toLocaleString()} ₪</div>
            </div>
@@ -773,15 +597,15 @@ const BudgetPage: React.FC = () => {
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
-        border: '1px solidrgb(244, 224, 194)'
+      
       }}>
-        <h2 style={{ margin: '0 0 20px 0', color: '#f57c00' }}>🧮 חישוב ידני - אומדן מותאם אישית</h2>
+                 <h2 style={{ margin: '0 0 20px 0', color: '#ff9800' }}>🧮 חישוב ידני - אומדן מותאם אישית</h2>
         
         <div style={{ 
           background: 'white', 
           padding: '20px', 
           borderRadius: '8px',
-          border: '1px solid #ddd',
+         
           marginBottom: '20px'
         }}>
             <h3 style={{ margin: '0 0 15px 0', color: '#333' }}>הכנס מספרי אורחים לבדיקה (עלות מנות + ספקים)</h3>
@@ -800,7 +624,7 @@ const BudgetPage: React.FC = () => {
                   adultGuests: Number(e.target.value)
                 }))}
                
-                style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                style={{ width: '100%', padding: '8px',   borderRadius: '4px' }}
               />
             </div>
 
@@ -817,7 +641,7 @@ const BudgetPage: React.FC = () => {
                   childGuests: Number(e.target.value)
                 }))}
                
-                style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                style={{ width: '100%', padding: '8px', borderRadius: '4px' }}
               />
             </div>
           </div>
@@ -829,7 +653,7 @@ const BudgetPage: React.FC = () => {
             background: '#f1f8e9', 
             padding: '20px', 
             borderRadius: '8px',
-            border: '1px solidrgb(209, 235, 210)'
+           
           }}>
             <h3 style={{ margin: '0 0 15px 0', color: '#33691e' }}>תוצאות החישוב</h3>
             
@@ -926,8 +750,8 @@ const BudgetPage: React.FC = () => {
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        border: '1px solid #ddd'
+      
+      
       }}>
         <h2 style={{ margin: '0 0 20px 0', color: '#333' }}>🥧 התפלגות הוצאות לפי נושאים</h2>
         <ResponsiveContainer width="100%" height={400}>
@@ -955,8 +779,8 @@ const BudgetPage: React.FC = () => {
         background: 'white', 
         padding: '20px', 
         borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        border: '1px solid #ddd'
+      
+      
       }}>
         <h2 style={{ margin: '0 0 20px 0', color: '#333' }}>📋 רשימת ספקים והוצאות</h2>
         <div style={{ overflowX: 'auto' }}>

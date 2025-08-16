@@ -455,7 +455,7 @@ export default function VenueComparisonPage() {
             background: 'white', 
             padding: '20px', 
             borderRadius: '8px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          
             border: '1px solid #ddd'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -539,7 +539,7 @@ export default function VenueComparisonPage() {
               
               {/* Pricing Explanation */}
               <div style={{ 
-                background: '#fff3e0', 
+                background: '#f2ebe2', 
                 padding: '12px', 
                 borderRadius: '6px',
                 marginBottom: '15px',

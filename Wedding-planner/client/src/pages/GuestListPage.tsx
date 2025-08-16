@@ -574,8 +574,8 @@ export default function GuestListPage() {
             onClick={downloadTemplate}
             style={{
               padding: '8px 16px',
-              backgroundColor: '#28a745',
-              color: 'white',
+              backgroundColor: '#a7d6ba',
+              color: '#333',
               border: 'none',
               borderRadius: '4px',
               cursor: 'pointer',
@@ -591,7 +591,7 @@ export default function GuestListPage() {
             disabled={guests.length === 0}
             style={{
               padding: '8px 16px',
-              backgroundColor: guests.length === 0 ? '#6c757d' : '#007bff',
+              backgroundColor: guests.length === 0 ? '#6c757d' : '#d4a574',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
@@ -606,7 +606,7 @@ export default function GuestListPage() {
           <label
             style={{
               padding: '8px 16px',
-              backgroundColor: importing ? '#6c757d' : '#fd7e14',
+              backgroundColor: importing ? '#6c757d' : '#d4a574',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
@@ -665,11 +665,11 @@ export default function GuestListPage() {
 
       {/* Add Guest Form */}
       <div style={{
-        background: '#f9f9f9',
+        background: '#ffffff',
         padding: '20px',
         borderRadius: '8px',
         marginBottom: '30px',
-        border: '1px solid #ddd'
+       
       }}>
         <h3 style={{ marginTop: 0, marginBottom: '15px' }}>הוסף מוזמן חדש</h3>
         <form onSubmit={addGuest} style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
@@ -748,8 +748,8 @@ export default function GuestListPage() {
               type="submit"
               style={{
                 padding: '12px 24px',
-                backgroundColor: '#4CAF50',
-                color: 'white',
+                backgroundColor: '#a7d6ba',
+                color: '#333',
                 border: 'none',
                 borderRadius: '4px',
                 cursor: 'pointer',

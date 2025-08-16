@@ -35,7 +35,7 @@ export const sendPasswordResetEmail = async (email: string, data: EmailTemplateD
               background: white;
               border-radius: 10px;
               padding: 30px;
-              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+           
             }
             .header {
               text-align: center;
@@ -109,7 +109,7 @@ export const sendPasswordResetEmail = async (email: string, data: EmailTemplateD
             }
             .button:hover {
               transform: translateY(-2px);
-              box-shadow: 0 8px 20px rgba(168, 213, 186, 0.3);
+            
             }
             .footer {
               margin-top: 30px;
@@ -214,7 +214,7 @@ export const sendWelcomeEmail = async (email: string, userName: string) => {
               background: white;
               border-radius: 10px;
               padding: 30px;
-              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          
             }
             .header {
               text-align: center;

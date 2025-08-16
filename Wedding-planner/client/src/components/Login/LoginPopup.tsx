@@ -104,8 +104,8 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
           maxWidth: '400px',
           width: '90%',
           position: 'relative',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
-          border: '2px solid #A8D5BA'
+         
+        
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -118,7 +118,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
             top: '15px',
             left: '15px',
             background: 'none',
-            border: 'none',
+         
             fontSize: '24px',
             cursor: 'pointer',
             color: '#666',
@@ -183,7 +183,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
             borderRadius: '8px',
             marginBottom: '20px',
             fontSize: '14px',
-            border: '1px solid #ffcdd2',
+    
             textAlign: 'center'
           }}>
             {error}
@@ -214,7 +214,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: '2px solid #E0E0E0',
+              
                 borderRadius: '8px',
                 fontSize: '14px',
                 transition: 'all 0.3s ease',
@@ -222,11 +222,11 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
               }}
               onFocus={(e) => {
                 e.target.style.borderColor = '#A8D5BA';
-                e.target.style.boxShadow = '0 0 0 3px rgba(168, 213, 186, 0.1)';
+            
               }}
               onBlur={(e) => {
                 e.target.style.borderColor = '#E0E0E0';
-                e.target.style.boxShadow = 'none';
+             
               }}
             />
           </div>
@@ -253,7 +253,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: '2px solid #E0E0E0',
+             
                 borderRadius: '8px',
                 fontSize: '14px',
                 transition: 'all 0.3s ease',
@@ -261,11 +261,11 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
               }}
               onFocus={(e) => {
                 e.target.style.borderColor = '#A8D5BA';
-                e.target.style.boxShadow = '0 0 0 3px rgba(168, 213, 186, 0.1)';
+        
               }}
               onBlur={(e) => {
                 e.target.style.borderColor = '#E0E0E0';
-                e.target.style.boxShadow = 'none';
+             
               }}
             />
             
@@ -277,8 +277,8 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
                 disabled={forgotPasswordLoading}
                 style={{
                   background: 'none',
-                  border: 'none',
-                  color: '#A8D5BA',
+                
+                  color: '#a7d6ba',
                   fontSize: '12px',
                   cursor: forgotPasswordLoading ? 'not-allowed' : 'pointer',
                   textDecoration: 'underline',
@@ -295,9 +295,9 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
             type="submit" 
             disabled={isLoading}
             style={{
-              background: 'linear-gradient(135deg, #A8D5BA, #B8E6B8)',
+              background: 'linear-gradient(135deg, #a7d6ba, #b8e6b8)',
               color: '#333',
-              border: 'none',
+            
               borderRadius: '8px',
               padding: '14px 20px',
               fontSize: '16px',
@@ -310,13 +310,13 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
             onMouseEnter={(e) => {
               if (!isLoading) {
                 e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 8px 20px rgba(168, 213, 186, 0.3)';
+           
               }
             }}
             onMouseLeave={(e) => {
               if (!isLoading) {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
+               
               }
             }}
           >
@@ -340,7 +340,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
             <span 
               onClick={handleSwitchToRegister}
               style={{
-                color: '#A8D5BA',
+                color: '#a7d6ba',
                 cursor: 'pointer',
                 fontWeight: '600',
                 textDecoration: 'underline'

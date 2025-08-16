@@ -118,8 +118,8 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
           maxHeight: '90vh',
           overflowY: 'auto',
           position: 'relative',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
-          border: '2px solid #F4C2C2'
+        
+         
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -132,7 +132,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
             top: '15px',
             left: '15px',
             background: 'none',
-            border: 'none',
+      
             fontSize: '24px',
             cursor: 'pointer',
             color: '#666',
@@ -211,7 +211,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-                  border: '2px solid #E0E0E0',
+                
                   borderRadius: '8px',
                   fontSize: '14px',
                   transition: 'all 0.3s ease',
@@ -219,11 +219,11 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
                 }}
                 onFocus={(e) => {
                   e.target.style.borderColor = '#F4C2C2';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(244, 194, 194, 0.1)';
+            
                 }}
                 onBlur={(e) => {
                   e.target.style.borderColor = '#E0E0E0';
-                  e.target.style.boxShadow = 'none';
+            
                 }}
               />
             </div>
@@ -246,7 +246,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-                  border: '2px solid #E0E0E0',
+             
                   borderRadius: '8px',
                   fontSize: '14px',
                   transition: 'all 0.3s ease',
@@ -254,11 +254,11 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
                 }}
                 onFocus={(e) => {
                   e.target.style.borderColor = '#F4C2C2';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(244, 194, 194, 0.1)';
+           
                 }}
                 onBlur={(e) => {
                   e.target.style.borderColor = '#E0E0E0';
-                  e.target.style.boxShadow = 'none';
+               
                 }}
               />
             </div>
@@ -284,7 +284,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: '2px solid #E0E0E0',
+               
                 borderRadius: '8px',
                 fontSize: '14px',
                 transition: 'all 0.3s ease',
@@ -292,11 +292,11 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
               }}
               onFocus={(e) => {
                 e.target.style.borderColor = '#F4C2C2';
-                e.target.style.boxShadow = '0 0 0 3px rgba(244, 194, 194, 0.1)';
+               
               }}
               onBlur={(e) => {
                 e.target.style.borderColor = '#E0E0E0';
-                e.target.style.boxShadow = 'none';
+              
               }}
             />
           </div>
@@ -323,7 +323,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-                  border: '2px solid #E0E0E0',
+                
                   borderRadius: '8px',
                   fontSize: '14px',
                   transition: 'all 0.3s ease',
@@ -331,11 +331,11 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
                 }}
                 onFocus={(e) => {
                   e.target.style.borderColor = '#F4C2C2';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(244, 194, 194, 0.1)';
+               
                 }}
                 onBlur={(e) => {
                   e.target.style.borderColor = '#E0E0E0';
-                  e.target.style.boxShadow = 'none';
+              
                 }}
               />
             </div>
@@ -359,7 +359,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-                  border: '2px solid #E0E0E0',
+               
                   borderRadius: '8px',
                   fontSize: '14px',
                   transition: 'all 0.3s ease',
@@ -367,11 +367,11 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
                 }}
                 onFocus={(e) => {
                   e.target.style.borderColor = '#F4C2C2';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(244, 194, 194, 0.1)';
+               
                 }}
                 onBlur={(e) => {
                   e.target.style.borderColor = '#E0E0E0';
-                  e.target.style.boxShadow = 'none';
+                
                 }}
               />
             </div>
@@ -395,7 +395,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: '2px solid #E0E0E0',
+             
                 borderRadius: '8px',
                 fontSize: '14px',
                 transition: 'all 0.3s ease',
@@ -405,11 +405,11 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
               }}
               onFocus={(e) => {
                 e.target.style.borderColor = '#F4C2C2';
-                e.target.style.boxShadow = '0 0 0 3px rgba(244, 194, 194, 0.1)';
+         
               }}
               onBlur={(e) => {
                 e.target.style.borderColor = '#E0E0E0';
-                e.target.style.boxShadow = 'none';
+            
               }}
             >
               <option value="Bride">כלה</option>
@@ -440,7 +440,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
               style={{
                 width: '100%',
                 padding: '12px 16px',
-                border: '2px solid #E0E0E0',
+              
                 borderRadius: '8px',
                 fontSize: '14px',
                 transition: 'all 0.3s ease',
@@ -454,9 +454,9 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
             type="submit" 
             disabled={isLoading}
             style={{
-              background: 'linear-gradient(135deg, #F4C2C2, #C8A2C8)',
+              background: 'linear-gradient(135deg, #f4c2c2, #c8a2c8)',
               color: '#333',
-              border: 'none',
+            
               borderRadius: '8px',
               padding: '16px 20px',
               fontSize: '16px',
@@ -469,13 +469,13 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
             onMouseEnter={(e) => {
               if (!isLoading) {
                 e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 8px 20px rgba(244, 194, 194, 0.3)';
+           
               }
             }}
             onMouseLeave={(e) => {
               if (!isLoading) {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
+                
               }
             }}
           >
@@ -499,7 +499,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
             <span 
               onClick={handleSwitchToLogin}
               style={{
-                color: '#F4C2C2',
+                color: '#f4c2c2',
                 cursor: 'pointer',
                 fontWeight: '600',
                 textDecoration: 'underline'

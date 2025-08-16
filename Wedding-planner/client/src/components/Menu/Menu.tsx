@@ -120,7 +120,7 @@ export default function Menu({ onSelect, onLogout }: MenuProps) {
         style={{
           display: "none",
           background: "none",
-          border: "none",
+      
           cursor: "pointer",
           padding: "8px",
           marginLeft: "10px",
@@ -161,9 +161,9 @@ export default function Menu({ onSelect, onLogout }: MenuProps) {
             <summary style={{ listStyle: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '16px' }}>
               שלום, {currentUserName}
             </summary>
-            <div style={{ position: 'absolute', right: 0, background: 'white', border: '1px solid #ddd', borderRadius: 6, marginTop: 6, minWidth: 160, zIndex: 10 }}>
-              <button onClick={() => handleMenuItemClick('accountSettings')} style={{ display: 'block', width: '100%', textAlign: 'right', padding: '8px 12px', background: 'none', border: 'none', cursor: 'pointer' }}>הגדרות משתמש</button>
-              <button onClick={() => handleMenuItemClick('myWeddings')} style={{ display: 'block', width: '100%', textAlign: 'right', padding: '8px 12px', background: 'none', border: 'none', cursor: 'pointer' }}>האירועים שלי</button>
+            <div style={{ position: 'absolute', right: 0, background: 'white', borderRadius: 6, marginTop: 6, minWidth: 160, zIndex: 10 }}>
+              <button onClick={() => handleMenuItemClick('accountSettings')} style={{ display: 'block', width: '100%', textAlign: 'right', padding: '8px 12px', background: 'none', cursor: 'pointer' }}>הגדרות משתמש</button>
+              <button onClick={() => handleMenuItemClick('myWeddings')} style={{ display: 'block', width: '100%', textAlign: 'right', padding: '8px 12px', background: 'none', cursor: 'pointer' }}>האירועים שלי</button>
             </div>
           </details>
         </div>
@@ -206,7 +206,7 @@ export default function Menu({ onSelect, onLogout }: MenuProps) {
                           background: 'white',
                           border: '1px solid #ddd',
                           borderRadius: '4px',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                       
                           minWidth: '200px',
                           zIndex: 1000
                         }}
@@ -291,7 +291,7 @@ export default function Menu({ onSelect, onLogout }: MenuProps) {
           width: "280px",
           height: "100vh",
           backgroundColor: "white",
-          boxShadow: "2px 0 10px rgba(0, 0, 0, 0.1)",
+    
           transition: "right 0.3s ease",
           zIndex: 1001,
           padding: "20px",

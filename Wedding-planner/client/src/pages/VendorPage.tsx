@@ -996,17 +996,17 @@ export default function VendorsListPage() {
           <div style={{ display: 'flex', alignItems: 'end' }}>
             <button 
               type="submit"
-              style={{
-                padding: '12px 24px',
-                backgroundColor: '#4CAF50',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '16px',
-                fontWeight: 'bold',
-                width: '100%'
-              }}
+                          style={{
+              padding: '12px 24px',
+              backgroundColor: '#a7d6ba',
+              color: '#333',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              width: '100%'
+            }}
             >
               הוסף ספק
             </button>
@@ -1023,7 +1023,7 @@ export default function VendorsListPage() {
             padding: '10px',
             borderRadius: '6px',
             marginBottom: '12px',
-            border: '1px solid #4CAF50',
+       
             fontSize: '14px'
           }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 8 }}>

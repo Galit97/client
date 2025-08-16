@@ -371,7 +371,7 @@ export default function CheckListPage() {
         padding: '15px',
         borderRadius: '8px',
         marginBottom: '20px',
-        border: '1px solid #2196F3'
+   
       }}>
         <h4 style={{ margin: '0 0 10px 0', color: '#1976d2' }}>💡 איך להשתמש בצ'קליסט:</h4>
         <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#333' }}>
@@ -384,11 +384,11 @@ export default function CheckListPage() {
 
       {/* Add Task Form */}
       <div style={{
-        background: '#f9f9f9',
+        background: '#ffffff',
         padding: '20px',
         borderRadius: '8px',
         marginBottom: '30px',
-        border: '1px solid #ddd'
+     
       }}>
         <h3 style={{ marginTop: 0, marginBottom: '15px' }}>הוסף משימה חדשה</h3>
         <form onSubmit={addTask} style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
@@ -470,8 +470,8 @@ export default function CheckListPage() {
               type="submit"
               style={{
                 padding: '12px 24px',
-                backgroundColor: '#4CAF50',
-                color: 'white',
+                backgroundColor: '#a7d6ba',
+                color: '#333',
                 border: 'none',
                 borderRadius: '4px',
                 cursor: 'pointer',
@@ -488,11 +488,11 @@ export default function CheckListPage() {
 
       {/* Filters */}
       <div style={{
-        background: '#f5f5f5',
+        background: '#ffffff',
         padding: '15px',
         borderRadius: '8px',
         marginBottom: '20px',
-        border: '1px solid #ddd'
+       
       }}>
         <h4 style={{ margin: '0 0 15px 0' }}>סינון ומיון</h4>
         <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
@@ -515,7 +515,7 @@ export default function CheckListPage() {
         <select
               value={filters.role}
               onChange={e => setFilters({...filters, role: e.target.value})}
-              style={{ width: '100%', padding: '6px', border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '6px',  borderRadius: '4px' }}
         >
               <option value="">כל התפקידים</option>
           {users.map(u => (
@@ -565,7 +565,7 @@ export default function CheckListPage() {
       </div>
 
       {/* Task List */}
-      <div style={{ background: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+      <div style={{ background: 'white', borderRadius: '8px', overflow: 'hidden' }}>
         <div style={{ 
           background: '#f5f5f5', 
           padding: '15px 20px', 
@@ -700,13 +700,13 @@ export default function CheckListPage() {
                   <>
                     <button 
                       onClick={() => updateTask(editingItem)}
-                      style={{ padding: '4px 8px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
+                      style={{ padding: '4px 8px', backgroundColor: '#a7d6ba', color: '#333', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
                     >
                       שמור
                     </button>
                     <button 
                       onClick={cancelEditing}
-                      style={{ padding: '4px 8px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
+                      style={{ padding: '4px 8px', backgroundColor: '#f4c2c2', color: '#333', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
                     >
                       ביטול
                     </button>
@@ -715,13 +715,13 @@ export default function CheckListPage() {
                   <>
                     <button 
                       onClick={() => startEditing(item)}
-                      style={{ padding: '4px 8px', backgroundColor: '#2196F3', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
+                      style={{ padding: '4px 8px', backgroundColor: '#d4a574', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
                     >
                       ערוך
                     </button>
                     <button 
                       onClick={() => deleteTask(item._id)}
-                      style={{ padding: '4px 8px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
+                      style={{ padding: '4px 8px', backgroundColor: '#f4c2c2', color: '#333', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
                     >
                       מחק
                     </button>
