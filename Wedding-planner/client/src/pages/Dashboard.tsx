@@ -294,10 +294,10 @@ const Dashboard: React.FC = () => {
 
       {/* Progress Cards */}
       <div className="grid grid-2 mb-xl">
-        {/* Tasks Progress */}
-        <div className="card">
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-                         <div style={{ 
+                 {/* Tasks Progress */}
+         <div className="card">
+           <div className="flex-between mb-lg">
+             <div style={{ 
                width: '50px', 
                height: '50px', 
                borderRadius: '50%', 
@@ -307,66 +307,66 @@ const Dashboard: React.FC = () => {
                justifyContent: 'center',
                marginLeft: '15px'
              }}>
-              <span style={{ fontSize: '24px' }}>✓</span>
-            </div>
-            <div>
-              <h3 style={{ margin: '0', color: '#333' }}>משימות כולל</h3>
-              <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
-                צ'קליסט, ספקים, מוזמנים
-              </p>
-              <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '12px' }}>
-                {completedItems} מתוך {totalItems} הושלמו
-              </p>
-            </div>
-          </div>
+               <span style={{ fontSize: '24px' }}>✓</span>
+             </div>
+             <div>
+               <h3 style={{ margin: '0', color: '#333' }}>משימות כולל</h3>
+               <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
+                 צ'קליסט, ספקים, מוזמנים
+               </p>
+               <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '12px' }}>
+                 {completedItems} מתוך {totalItems} הושלמו
+               </p>
+             </div>
+           </div>
           
-          <div style={{ 
-            width: '100%', 
-            height: '8px', 
-            background: '#f0f0f0', 
-            borderRadius: '4px',
-            overflow: 'hidden'
-          }}>
-            <div style={{ 
-              width: `${taskProgress}%`, 
-              height: '100%', 
-              background: 'linear-gradient(135deg, #c8e6d1, #d4f0d4)',
-              transition: 'width 0.3s ease'
-            }}></div>
-          </div>
-          
-          <div style={{ 
-            marginTop: '10px', 
-            fontSize: '24px', 
-            fontWeight: 'bold', 
-            color: '#c8e6d1' 
-          }}>
-            {taskProgress.toFixed(0)}%
-          </div>
+           <div style={{ 
+             width: '100%', 
+             height: '8px', 
+             background: '#f0f0f0', 
+             borderRadius: '4px',
+             overflow: 'hidden'
+           }}>
+             <div style={{ 
+               width: `${taskProgress}%`, 
+               height: '100%', 
+               background: 'linear-gradient(135deg, #c8e6d1, #d4f0d4)',
+               transition: 'width 0.3s ease'
+             }}></div>
+           </div>
+           
+           <div style={{ 
+             marginTop: '15px', 
+             fontSize: '28px', 
+             fontWeight: 'bold', 
+             color: '#c8e6d1' 
+           }}>
+             {taskProgress.toFixed(0)}%
+           </div>
         </div>
 
-        {/* Vendors Progress */}
-        <div className="card">
-          <div className="flex-between mb-lg">
-                         <div style={{ 
-               width: '50px', 
-               height: '50px', 
-               borderRadius: '50%', 
-               background: 'linear-gradient(135deg, #f8d7da, #e0c8e0)',
-               display: 'flex',
-               alignItems: 'center',
-               justifyContent: 'center',
-               marginLeft: '15px'
-             }}>
-              <span style={{ fontSize: '24px' }}>🏢</span>
-            </div>
-            <div>
-              <h3 style={{ margin: '0', color: '#333' }}>ספקים</h3>
-              <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
-                {confirmedVendors} מתוך {totalVendors} אושרו
-              </p>
-            </div>
-          </div>
+                 {/* Vendors Progress */}
+         <div className="card">
+           <div className="flex-between mb-lg">
+                          <div style={{ 
+                width: '25px', 
+                height: '25px', 
+                borderRadius: '50%', 
+                background: 'linear-gradient(135deg, #f8d7da, #e0c8e0)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginLeft: '8px'
+              }}>
+               <span style={{ fontSize: '12px' }}>🏢</span>
+             </div>
+             <div>
+               <h3 style={{ margin: '0', color: '#333', fontSize: '16px' }}>ספקים</h3>
+               <p style={{ margin: '2px 0 0 0', color: '#666', fontSize: '12px' }}>
+                 {confirmedVendors} מתוך {totalVendors} אושרו
+               </p>
+             </div>
+           </div>
           
                      <div style={{ 
              width: '100%', 
@@ -620,7 +620,7 @@ const Dashboard: React.FC = () => {
       {/* High Priority Tasks */}
       {highPriorityTasks.length > 0 && (
                  <div style={{ 
-           background: '#f2ebe2', 
+           background: '#ffffff', 
            padding: '25px', 
            borderRadius: '12px',
            marginBottom: '30px',
@@ -628,7 +628,7 @@ const Dashboard: React.FC = () => {
          }}>
           <h3 style={{ 
             margin: '0 0 20px 0', 
-            color: '#e65100',
+            color: '#666',
             display: 'flex',
             alignItems: 'center'
           }}>
@@ -636,7 +636,7 @@ const Dashboard: React.FC = () => {
             משימות בעדיפות גבוהה ({highPriorityTasks.length})
           </h3>
           
-          <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+          <div style={{ display: 'grid', gap: '15px',backgroundColor: 'ffffe6', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
             {highPriorityTasks.map((task) => (
               <div key={task._id} style={{ 
                 padding: '15px', 

@@ -635,7 +635,7 @@ export default function WeddingPage() {
 
       {/* Help Section */}
       <div style={{
-        background: '#e3f2fd',
+      background: 'linear-gradient(135deg, #cce7ff 0%, #d4f5d4 25%, #f5f0e6 50%, #cce7ff 100%)',
         padding: '15px',
         borderRadius: '8px',
         marginBottom: '20px',
@@ -913,7 +913,7 @@ export default function WeddingPage() {
 
       {/* Meal Pricing Section */}
       <div style={{
-        background: '#f2ebe2',
+        background: '#ffffff',
         padding: '20px',
         borderRadius: '8px',
         marginBottom: '30px',
@@ -924,7 +924,7 @@ export default function WeddingPage() {
         </h3>
         
         <div style={{ 
-          background: '#fff', 
+          background: '#f5f5f5',
           padding: '15px', 
           borderRadius: '4px', 
           marginBottom: '20px',
@@ -957,7 +957,7 @@ export default function WeddingPage() {
               padding: '8px 12px', 
               background: '#e3f2fd', 
               borderRadius: '4px', 
-              border: '1px solid #2196F3',
+           
               display: 'flex',
               alignItems: 'center',
               gap: '8px'
@@ -1018,9 +1018,9 @@ export default function WeddingPage() {
             <div style={{ 
               marginBottom: '15px', 
               padding: '10px 15px', 
-              background: '#e8f5e8', 
+              background: '#ffffff', 
               borderRadius: '4px', 
-              border: '1px solid #4caf50',
+             
               textAlign: 'center'
             }}>
               <div style={{ fontSize: '14px', color: '#2e7d32', fontWeight: 'bold' }}>
@@ -1238,11 +1238,11 @@ export default function WeddingPage() {
 
         {/* Guest Status Based Pricing */}
         <div style={{ 
-          background: '#e3f2fd', 
+      background: '#f5f5f5',
           padding: '15px', 
           borderRadius: '4px',
           marginTop: '20px',
-          border: '1px solid #2196F3'
+         
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
             <h4 style={{ margin: '0', color: '#1976d2' }}>👥 מחירי מנות לפי סטטוס מוזמנים</h4>
@@ -1710,7 +1710,7 @@ export default function WeddingPage() {
 
           {/* Meal Pricing Summary */}
           {wedding.mealPricing && (
-            <div style={{ marginTop: '20px', padding: '15px', background: '#f2ebe2', borderRadius: '4px'}}>
+            <div style={{ marginTop: '20px', padding: '15px', background: '#', borderRadius: '4px'}}>
               <h4 style={{ margin: '0 0 15px 0', color: '#e65100' }}>🍽️ עלויות מנות</h4>
               
               {/* Basic Pricing */}

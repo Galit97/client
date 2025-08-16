@@ -546,11 +546,11 @@ export default function GuestListPage() {
 
       {/* Help Section */}
       <div style={{
-        background: '#e3f2fd',
+        background: 'linear-gradient(135deg, #cce7ff 0%, #d4f5d4 25%, #f5f0e6 50%, #cce7ff 100%)',
         padding: '15px',
         borderRadius: '8px',
         marginBottom: '20px',
-        border: '1px solid #2196F3'
+     
       }}>
         <h4 style={{ margin: '0 0 10px 0', color: '#1976d2' }}>💡 איך להשתמש ברשימת המוזמנים:</h4>
         <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#333' }}>
@@ -562,11 +562,11 @@ export default function GuestListPage() {
 
       {/* Excel Import/Export Section */}
       <div style={{
-        background: '#fff3cd',
+        background: '#ffffff',
         padding: '15px',
         borderRadius: '8px',
         marginBottom: '20px',
-        border: '1px solid #ffc107'
+    
       }}>
         <h4 style={{ margin: '0 0 15px 0', color: '#856404' }}>📊 ייבוא וייצוא אקסל</h4>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
@@ -793,7 +793,7 @@ export default function GuestListPage() {
       ) : (
         <div className="card-grid">
           {filteredGuests.map(guest => (
-            <div key={guest._id} className="card">
+                         <div key={guest._id} className="card">
               {editingGuest && editingGuest._id === guest._id ? (
                 <>
                   <div className="card-header">
@@ -834,48 +834,48 @@ export default function GuestListPage() {
                 </>
               ) : (
                 <>
-                  <div className="card-header">
-                    <div className="card-title">{guest.firstName} {guest.lastName}</div>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      <button className="btn-icon" title="ערוך" onClick={() => startEditing(guest)}>✏️</button>
-                      <button className="btn-icon" title="מחק" onClick={() => deleteGuest(guest._id)}>🗑️</button>
-                    </div>
-                  </div>
-                  <div className="card-row">
-                    <div>
-                      <div className="muted">טלפון</div>
-                      <div>{guest.phone || '-'}</div>
-                    </div>
-                    <div>
-                      <div className="muted">מקומות</div>
-                      <div>{guest.seatsReserved}</div>
-                    </div>
-                  </div>
-                  <div className="card-row">
-                    <div>
-                      <div className="muted">שולחן</div>
-                      <div>{guest.tableNumber || '-'}</div>
-                    </div>
-                    <div>
-                      <div className="muted">סטטוס</div>
-                      <div>
-                        <span className={`chip ${guest.status === 'Invited' ? 'chip-invited' : guest.status === 'Confirmed' ? 'chip-confirmed' : guest.status === 'Declined' ? 'chip-declined' : 'chip-arrived'}`}>
-                          {guest.status === 'Invited' ? '⏳ הוזמן' : guest.status === 'Confirmed' ? '✅ אושר' : guest.status === 'Declined' ? '❌ נדחה' : '🎉 הגיע'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="card-row">
-                    <div>
-                      <div className="muted">שינוי סטטוס מהיר</div>
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        <button className="btn-icon" title="הוזמן" onClick={() => updateStatus(guest._id, 'Invited')}>⏳</button>
-                        <button className="btn-icon" title="אושר" onClick={() => updateStatus(guest._id, 'Confirmed')}>✅</button>
-                        <button className="btn-icon" title="נדחה" onClick={() => updateStatus(guest._id, 'Declined')}>❌</button>
-                        <button className="btn-icon" title="הגיע" onClick={() => updateStatus(guest._id, 'Arrived')}>🎉</button>
-                      </div>
-                    </div>
-                  </div>
+                                     <div className="card-header">
+                     <div className="card-title">{guest.firstName} {guest.lastName}</div>
+                     <div style={{ display: 'flex', gap: 8 }}>
+                       <button className="btn-icon" title="ערוך" onClick={() => startEditing(guest)}>✏️</button>
+                       <button className="btn-icon" title="מחק" onClick={() => deleteGuest(guest._id)}>🗑️</button>
+                     </div>
+                   </div>
+                                     <div className="card-row">
+                     <div>
+                       <div className="muted">טלפון</div>
+                       <div>{guest.phone || '-'}</div>
+                     </div>
+                     <div>
+                       <div className="muted">מקומות</div>
+                       <div>{guest.seatsReserved}</div>
+                     </div>
+                   </div>
+                                     <div className="card-row">
+                     <div>
+                       <div className="muted">שולחן</div>
+                       <div>{guest.tableNumber || '-'}</div>
+                     </div>
+                     <div>
+                       <div className="muted">סטטוס</div>
+                       <div>
+                         <span className={`chip ${guest.status === 'Invited' ? 'chip-invited' : guest.status === 'Confirmed' ? 'chip-confirmed' : guest.status === 'Declined' ? 'chip-declined' : 'chip-arrived'}`}>
+                           {guest.status === 'Invited' ? '⏳ הוזמן' : guest.status === 'Confirmed' ? '✅ אושר' : guest.status === 'Declined' ? '❌ נדחה' : '🎉 הגיע'}
+                         </span>
+                       </div>
+                     </div>
+                   </div>
+                                     <div className="card-row">
+                     <div>
+                       <div className="muted">שינוי סטטוס מהיר</div>
+                       <div style={{ display: 'flex', gap: 8 }}>
+                         <button className="btn-icon" title="הוזמן" onClick={() => updateStatus(guest._id, 'Invited')}>⏳</button>
+                         <button className="btn-icon" title="אושר" onClick={() => updateStatus(guest._id, 'Confirmed')}>✅</button>
+                         <button className="btn-icon" title="נדחה" onClick={() => updateStatus(guest._id, 'Declined')}>❌</button>
+                         <button className="btn-icon" title="הגיע" onClick={() => updateStatus(guest._id, 'Arrived')}>🎉</button>
+                       </div>
+                     </div>
+                   </div>
                 </>
               )}
             </div>
@@ -888,9 +888,9 @@ export default function GuestListPage() {
         <div style={{
           marginTop: '20px',
           padding: '15px',
-          background: '#e8f5e8',
+          background: 'linear-gradient(135deg, #cce7ff 0%, #d4f5d4 25%, #f5f0e6 50%, #cce7ff 100%)',
           borderRadius: '8px',
-          border: '1px solid #4CAF50'
+         
         }}>
           <h4 style={{ margin: '0 0 10px 0' }}>📊 סיכום רשימת המוזמנים</h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>

@@ -804,11 +804,11 @@ export default function VendorsListPage() {
 
       {/* Add Vendor Form */}
       <div style={{
-        background: '#f9f9f9',
+        background: '#ffffff',
         padding: '20px',
         borderRadius: '8px',
         marginBottom: '30px',
-        border: '1px solid #ddd'
+       
       }}>
         <h3 style={{ marginTop: 0, marginBottom: '15px' }}>הוסף ספק חדש</h3>
         <form onSubmit={addVendor} style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
@@ -1304,7 +1304,7 @@ export default function VendorsListPage() {
           padding: '15px',
           background: '#e8f5e8',
           borderRadius: '8px',
-          border: '1px solid #4CAF50'
+         
         }}>
           <h4 style={{ margin: '0 0 10px 0' }}>📊 סיכום ספקים</h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>

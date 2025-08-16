@@ -65,8 +65,16 @@ export default function VenueComparisonPage() {
         const currentUserRaw = localStorage.getItem("currentUser");
         let currentUserId = 'default';
         if (currentUserRaw) {
-          const currentUser = JSON.parse(currentUserRaw);
-          currentUserId = currentUser._id || currentUser.id || 'default';
+          try {
+            const currentUser = JSON.parse(currentUserRaw);
+            currentUserId = currentUser._id || currentUser.id || 'default';
+            setUserId(currentUserId);
+          } catch (parseError) {
+            console.error("Error parsing current user:", parseError);
+            currentUserId = 'default';
+            setUserId(currentUserId);
+          }
+        } else {
           setUserId(currentUserId);
         }
 
@@ -111,6 +119,18 @@ export default function VenueComparisonPage() {
             setChildGuests(savedChildGuests || 20);
           } catch (error) {
             console.error("Error loading saved guest counts:", error);
+            // Try fallback to old storage key
+            const oldSavedGuestCounts = localStorage.getItem('venueComparisons_guestCounts');
+            if (oldSavedGuestCounts) {
+              try {
+                const { guestCount: savedGuestCount, adultGuests: savedAdultGuests, childGuests: savedChildGuests } = JSON.parse(oldSavedGuestCounts);
+                setGuestCount(savedGuestCount || 100);
+                setAdultGuests(savedAdultGuests || 80);
+                setChildGuests(savedChildGuests || 20);
+              } catch (oldError) {
+                console.error("Error loading old saved guest counts:", oldError);
+              }
+            }
           }
         }
         
@@ -326,7 +346,7 @@ export default function VenueComparisonPage() {
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
-        border: '1px solid #a5d6a7'
+       
       }}>
         <h2 style={{ margin: '0 0 20px 0', color: '#33691e' }}>👥 הגדרת מספר אורחים לחישוב</h2>
         
@@ -456,7 +476,7 @@ export default function VenueComparisonPage() {
             padding: '20px', 
             borderRadius: '8px',
           
-            border: '1px solid #ddd'
+        
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h3 style={{ margin: 0, color: '#333' }}>אולם/גן אירועים #{index + 1}</h3>
@@ -533,7 +553,7 @@ export default function VenueComparisonPage() {
               padding: '20px', 
               borderRadius: '8px',
               marginBottom: '20px',
-              border: '1px solid #fff59d'
+          
             }}>
               <h4 style={{ margin: '0 0 15px 0', color: '#f9a825' }}>🍽️ מחירי מנות</h4>
               
@@ -543,13 +563,13 @@ export default function VenueComparisonPage() {
                 padding: '12px', 
                 borderRadius: '6px',
                 marginBottom: '15px',
-                border: '1px solid #ffcc80',
+             
                 fontSize: '14px',
                 color: '#e65100'
               }}>
                 <strong>💡 איך עובד מחיר הרזרבה:</strong><br/>
                 • עד <strong>סף מחיר רזרבה</strong> - כל אורח משלם <strong>מחיר מנה בסיסי</strong><br/>
-                • מעל <strong>סף מחיר רזרבה</strong> - אורחים נוספים משלמים <strong>מחיר רזרבה</strong> (בדרך כלל נמוך יותר)
+                • מעל <strong>סף מחיר רזרבה</strong> - אורחים נוספים משלמים <strong>מחיר רזרבה</strong> 
               </div>
               
               <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
@@ -562,7 +582,7 @@ export default function VenueComparisonPage() {
                     min="0"
                     value={venue.basePrice}
                     onChange={(e) => updateVenue(venue.id, { basePrice: Number(e.target.value) })}
-                    style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                    style={{ width: '100%', padding: '8px', borderRadius: '4px' }}
                   />
                 </div>
                 <div>

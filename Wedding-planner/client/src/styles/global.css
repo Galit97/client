@@ -60,7 +60,7 @@ body {
   font-size: var(--font-size-base);
   line-height: 1.5;
   color: var(--color-primary);
-  background-color: #f8f6f2;
+  background-color: #F1EEE7;
   direction: rtl;
 }
 
@@ -492,8 +492,9 @@ p {
 }
 
 .alert.info {
-  border-color: var(--color-accent);
-  background-color: var(--color-gray-light);
+  border: none;
+  background-color:  linear-gradient(135deg, #cce7ff 0%, #d4f5d4 25%, #f5f0e6 50%, #cce7ff 100%);
+  border-radius: 10px;
 }
 
 .alert.success {
@@ -502,8 +503,9 @@ p {
 }
 
 .alert.warning {
-  border-color: var(--color-accent);
-  background-color: var(--color-gray-light);
+  border: none;
+  background-color: var(--color-white);
+  border-radius: 10px;
 }
 
 .alert.error {
@@ -696,7 +698,7 @@ p {
 
 /* ===== LEGACY CLASSES (for existing code) ===== */
 .toolbar {
-  background: var(--color-gray-light);
+  background: white;
  
   border-radius: var(--border-radius-md);
   padding: var(--spacing-lg);

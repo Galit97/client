@@ -71,21 +71,79 @@ export default function VendorComparisonPage() {
   const [extraComparisons, setExtraComparisons] = useState<Record<VendorType, ExtraComparison[]>>({} as Record<VendorType, ExtraComparison[]>);
   const [search, setSearch] = useState('');
   const [weddingId, setWeddingId] = useState<string>('');
+  const [userId, setUserId] = useState<string>('');
 
   useEffect(() => {
     async function init() {
       const token = localStorage.getItem('token');
       if (!token) { setLoading(false); return; }
       try {
+        // Get current user info for personalized storage
+        const currentUserRaw = localStorage.getItem("currentUser");
+        let currentUserId = 'default';
+        if (currentUserRaw) {
+          try {
+            const currentUser = JSON.parse(currentUserRaw);
+            currentUserId = currentUser._id || currentUser.id || 'default';
+            setUserId(currentUserId);
+          } catch (parseError) {
+            console.error("Error parsing current user:", parseError);
+            currentUserId = 'default';
+            setUserId(currentUserId);
+          }
+        } else {
+          setUserId(currentUserId);
+        }
+
         // get wedding id for persistence key
         const wed = await fetch('/api/weddings/owner', { headers: { Authorization: `Bearer ${token}` } });
         if (wed.ok) {
           const w = await wed.json();
           setWeddingId(w._id);
-          const saved = localStorage.getItem(`vendorComparisons:${w._id}`);
-          const savedTypes = localStorage.getItem(`vendorComparisonTypes:${w._id}`);
-          if (saved) setExtraComparisons(JSON.parse(saved));
-          if (savedTypes) setSelectedTypes(JSON.parse(savedTypes));
+          
+          // Use user-specific storage keys
+          const storageKey = `vendorComparisons_${currentUserId}`;
+          const typesStorageKey = `vendorComparisonTypes_${currentUserId}`;
+          
+          // If no user ID, use wedding ID as fallback
+          const fallbackStorageKey = currentUserId === 'default' ? `vendorComparisons:${w._id}` : storageKey;
+          const fallbackTypesStorageKey = currentUserId === 'default' ? `vendorComparisonTypes:${w._id}` : typesStorageKey;
+          
+          const saved = localStorage.getItem(storageKey) || localStorage.getItem(fallbackStorageKey);
+          const savedTypes = localStorage.getItem(typesStorageKey) || localStorage.getItem(fallbackTypesStorageKey);
+          
+          if (saved) {
+            try {
+              setExtraComparisons(JSON.parse(saved));
+            } catch (parseError) {
+              console.error("Error parsing saved vendor comparisons:", parseError);
+              // Try fallback to old storage key
+              const oldSaved = localStorage.getItem('vendorComparisons');
+              if (oldSaved) {
+                try {
+                  setExtraComparisons(JSON.parse(oldSaved));
+                } catch (oldParseError) {
+                  console.error("Error parsing old saved vendor comparisons:", oldParseError);
+                }
+              }
+            }
+          }
+          if (savedTypes) {
+            try {
+              setSelectedTypes(JSON.parse(savedTypes));
+            } catch (parseError) {
+              console.error("Error parsing saved vendor comparison types:", parseError);
+              // Try fallback to old storage key
+              const oldSavedTypes = localStorage.getItem('vendorComparisonTypes');
+              if (oldSavedTypes) {
+                try {
+                  setSelectedTypes(JSON.parse(oldSavedTypes));
+                } catch (oldParseError) {
+                  console.error("Error parsing old saved vendor comparison types:", oldParseError);
+                }
+              }
+            }
+          }
         }
         // vendors
         const res = await fetch('/api/vendors', { headers: { Authorization: `Bearer ${token}` } });
@@ -104,23 +162,45 @@ export default function VendorComparisonPage() {
 
   // persist
   useEffect(() => {
-    if (!weddingId) return;
-    localStorage.setItem(`vendorComparisons:${weddingId}`, JSON.stringify(extraComparisons));
-  }, [extraComparisons, weddingId]);
+    if (!userId || !weddingId) return;
+    const storageKey = `vendorComparisons_${userId}`;
+    const fallbackStorageKey = userId === 'default' ? `vendorComparisons:${weddingId}` : storageKey;
+    
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(extraComparisons));
+      // Also save to fallback key if using default user
+      if (userId === 'default') {
+        localStorage.setItem(fallbackStorageKey, JSON.stringify(extraComparisons));
+      }
+    } catch (error) {
+      console.error("Error saving vendor comparisons:", error);
+    }
+  }, [extraComparisons, userId, weddingId]);
 
   // keep selected types in sync with existing comparisons (and persist)
   useEffect(() => {
-    if (!weddingId) return;
+    if (!userId) return;
     const keys = Object.keys(extraComparisons) as VendorType[];
     if (keys.length > 0) {
       setSelectedTypes(keys);
     }
-  }, [extraComparisons, weddingId]);
+  }, [extraComparisons, userId]);
 
   useEffect(() => {
-    if (!weddingId) return;
-    localStorage.setItem(`vendorComparisonTypes:${weddingId}`, JSON.stringify(selectedTypes));
-  }, [selectedTypes, weddingId]);
+    if (!userId || !weddingId) return;
+    const typesStorageKey = `vendorComparisonTypes_${userId}`;
+    const fallbackTypesStorageKey = userId === 'default' ? `vendorComparisonTypes:${weddingId}` : typesStorageKey;
+    
+    try {
+      localStorage.setItem(typesStorageKey, JSON.stringify(selectedTypes));
+      // Also save to fallback key if using default user
+      if (userId === 'default') {
+        localStorage.setItem(fallbackTypesStorageKey, JSON.stringify(selectedTypes));
+      }
+    } catch (error) {
+      console.error("Error saving vendor comparison types:", error);
+    }
+  }, [selectedTypes, userId, weddingId]);
 
   const availableTypes = useMemo(() => allTypes, []);
 
