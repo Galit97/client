@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 type Venue = {
   id: string;
@@ -28,180 +28,87 @@ type Venue = {
   costPerPerson: number;
 };
 
-type MealPricing = {
-  basePrice: number;
-  childDiscount: number;
-  childAgeLimit: number;
-  bulkThreshold: number;
-  bulkPrice: number;
-  bulkMaxGuests: number;
-  reservePrice: number;
-  reserveThreshold: number;
-  reserveMaxGuests: number;
-};
+// Removed unused MealPricing type
 
 export default function VenueComparisonPage() {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState(true);
-  const [weddingData, setWeddingData] = useState<{ mealPricing?: MealPricing }>({});
+  // Removed unused weddingData state
+  const [weddingId, setWeddingId] = useState<string>('');
   const [guestCount, setGuestCount] = useState(100);
   const [adultGuests, setAdultGuests] = useState(80);
   const [childGuests, setChildGuests] = useState(20);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
-  const [userId, setUserId] = useState<string>('');
-  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isInitialLoadRef = useRef(true);
+  const [noWeddingFound, setNoWeddingFound] = useState(false);
+  // Removed auto-save refs
 
   useEffect(() => {
-    async function fetchData() {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
+    async function init() {
+      const token = localStorage.getItem('token');
+      if (!token) { setLoading(false); return; }
       try {
-        // Get current user info for personalized storage
-        const currentUserRaw = localStorage.getItem("currentUser");
-        let currentUserId = 'default';
-        if (currentUserRaw) {
-          try {
-            const currentUser = JSON.parse(currentUserRaw);
-            currentUserId = currentUser._id || currentUser.id || 'default';
-            setUserId(currentUserId);
-          } catch (parseError) {
-            console.error("Error parsing current user:", parseError);
-            currentUserId = 'default';
-            setUserId(currentUserId);
+        // Try to get wedding as owner first
+        let weddingId = '';
+        let wed = await fetch('/api/weddings/owner', { headers: { Authorization: `Bearer ${token}` } });
+        
+        if (wed.ok) {
+          const w = await wed.json();
+          weddingId = w._id;
+        } else {
+          // If not owner, try as participant
+          const participantWed = await fetch('/api/weddings/by-participant', { headers: { Authorization: `Bearer ${token}` } });
+          if (participantWed.ok) {
+            const participantWeddings = await participantWed.json();
+            if (participantWeddings.length > 0) {
+              weddingId = participantWeddings[0]._id; // Use the first wedding they're participating in
+            }
+          }
+        }
+        
+        if (weddingId) {
+          setWeddingId(weddingId);
+          
+          // Load comparisons from server
+          console.log('Loading venue comparisons for wedding:', weddingId);
+          const comparisonsRes = await fetch(`/api/comparisons/venue/${weddingId}`, { 
+            headers: { Authorization: `Bearer ${token}` } 
+          });
+          
+          console.log('Venue comparisons response status:', comparisonsRes.status);
+          if (comparisonsRes.ok) {
+            const serverData = await comparisonsRes.json();
+            console.log('Loaded venue comparisons:', serverData);
+            console.log('Number of venues loaded:', serverData.venues?.length || 0);
+            console.log('Guest counts loaded:', serverData.guestCounts);
+            
+            setVenues(serverData.venues || []);
+            setGuestCount(serverData.guestCounts?.guestCount || 100);
+            setAdultGuests(serverData.guestCounts?.adultGuests || 80);
+            setChildGuests(serverData.guestCounts?.childGuests || 20);
+          } else {
+            const errorText = await comparisonsRes.text();
+            console.log('Failed to load venue comparisons:', errorText);
+            console.log('Response status:', comparisonsRes.status);
           }
         } else {
-          setUserId(currentUserId);
-        }
-
-        // Fetch wedding data for meal pricing settings
-        const weddingRes = await fetch("/api/weddings/owner", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (weddingRes.ok) {
-          const wedding = await weddingRes.json();
-          setWeddingData(wedding);
-        }
-
-        // Load saved venues from localStorage with user-specific key
-        const storageKey = `venueComparisons_${currentUserId}`;
-        const savedVenues = localStorage.getItem(storageKey);
-        if (savedVenues) {
-          try {
-            const parsedVenues = JSON.parse(savedVenues);
-            setVenues(parsedVenues);
-          } catch (parseError) {
-            console.error("Error parsing saved venues:", parseError);
-            // If parsing fails, try the old key as fallback
-            const oldSavedVenues = localStorage.getItem('venueComparisons');
-            if (oldSavedVenues) {
-              try {
-                const parsedOldVenues = JSON.parse(oldSavedVenues);
-                setVenues(parsedOldVenues);
-              } catch (oldParseError) {
-                console.error("Error parsing old saved venues:", oldParseError);
-              }
-            }
-          }
-        }
-
-        // Load guest counts
-        const savedGuestCounts = localStorage.getItem(`${storageKey}_guestCounts`);
-        if (savedGuestCounts) {
-          try {
-            const { guestCount: savedGuestCount, adultGuests: savedAdultGuests, childGuests: savedChildGuests } = JSON.parse(savedGuestCounts);
-            setGuestCount(savedGuestCount || 100);
-            setAdultGuests(savedAdultGuests || 80);
-            setChildGuests(savedChildGuests || 20);
-          } catch (error) {
-            console.error("Error loading saved guest counts:", error);
-            // Try fallback to old storage key
-            const oldSavedGuestCounts = localStorage.getItem('venueComparisons_guestCounts');
-            if (oldSavedGuestCounts) {
-              try {
-                const { guestCount: savedGuestCount, adultGuests: savedAdultGuests, childGuests: savedChildGuests } = JSON.parse(oldSavedGuestCounts);
-                setGuestCount(savedGuestCount || 100);
-                setAdultGuests(savedAdultGuests || 80);
-                setChildGuests(savedChildGuests || 20);
-              } catch (oldError) {
-                console.error("Error loading old saved guest counts:", oldError);
-              }
-            }
-          }
-        }
-        
-        // Check if there are saved venues and show success message
-        if (savedVenues) {
-          try {
-            const parsedVenues = JSON.parse(savedVenues);
-            if (parsedVenues.length > 0) {
-              setSaveStatus('saved');
-              setTimeout(() => {
-                setSaveStatus('idle');
-              }, 3000);
-            }
-          } catch (error) {
-            console.error("Error checking saved venues:", error);
-          }
+          console.log('No wedding found for user');
+          setNoWeddingFound(true);
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error loading venue comparisons:", error);
       } finally {
         setLoading(false);
-        isInitialLoadRef.current = false;
       }
     }
-
-    fetchData();
-  }, []); // Remove userId dependency
-
-  // Save venues to localStorage whenever they change
-  useEffect(() => {
-    if (userId && venues.length > 0 && !isInitialLoadRef.current) {
-      const storageKey = `venueComparisons_${userId}`;
-      try {
-        localStorage.setItem(storageKey, JSON.stringify(venues));
-        // Also save guest counts
-        localStorage.setItem(`${storageKey}_guestCounts`, JSON.stringify({
-          guestCount,
-          adultGuests,
-          childGuests
-        }));
-        
-        // Show auto-save feedback briefly
-        if (saveStatus === 'idle') {
-          setSaveStatus('saved');
-          // Clear any existing timeout
-          if (autoSaveTimeoutRef.current) {
-            clearTimeout(autoSaveTimeoutRef.current);
-          }
-          autoSaveTimeoutRef.current = setTimeout(() => {
-            setSaveStatus('idle');
-          }, 1500);
-        }
-      } catch (error) {
-        console.error("Error saving venues:", error);
-        setSaveStatus('error');
-      }
-    }
-  }, [venues, userId, guestCount, adultGuests, childGuests]); // Remove saveStatus dependency
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (autoSaveTimeoutRef.current) {
-        clearTimeout(autoSaveTimeoutRef.current);
-      }
-    };
+    init();
   }, []);
+
+  // Removed auto-save on change
 
   // Manual save function
   const handleSave = async () => {
-    if (!userId) {
+    if (!weddingId) {
+      console.error('No wedding ID available for saving');
       setSaveStatus('error');
       return;
     }
@@ -209,22 +116,55 @@ export default function VenueComparisonPage() {
     setSaveStatus('saving');
     
     try {
-      const storageKey = `venueComparisons_${userId}`;
-      localStorage.setItem(storageKey, JSON.stringify(venues));
-      localStorage.setItem(`${storageKey}_guestCounts`, JSON.stringify({
-        guestCount,
-        adultGuests,
-        childGuests
-      }));
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No token available for saving');
+        setSaveStatus('error');
+        return;
+      }
       
-      setSaveStatus('saved');
+      const saveData = {
+        weddingID: weddingId,
+        venues,
+        guestCounts: {
+          guestCount,
+          adultGuests,
+          childGuests
+        }
+      };
+      
+      console.log('Saving venue data:', saveData);
+      console.log('Number of venues to save:', venues.length);
+      
+      const response = await fetch('/api/comparisons/venue', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(saveData),
+      });
+      
+      console.log('Save response status:', response.status);
+      console.log('Save response headers:', response.headers);
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Save successful:', result);
+        setSaveStatus('saved');
+      } else {
+        const errorText = await response.text();
+        console.error('Failed to save venue comparisons:', errorText);
+        console.error('Response status:', response.status);
+        setSaveStatus('error');
+      }
       
       // Reset save status after 2 seconds
       setTimeout(() => {
         setSaveStatus('idle');
       }, 2000);
     } catch (error) {
-      console.error("Error saving venues:", error);
+      console.error("Error saving venues to server:", error);
       setSaveStatus('error');
       
       // Reset error status after 3 seconds
@@ -234,8 +174,10 @@ export default function VenueComparisonPage() {
     }
   };
 
+  // Removed debounced auto-save effect
+
   // Calculate meal cost for a venue
-  const calculateMealCost = (venue: Venue, guestCount: number, adultCount: number, childCount: number) => {
+  const calculateMealCost = (venue: Venue, guestCount: number, childCount: number) => {
     const { basePrice = 0, childDiscount = 0, reservePrice = 0, reserveThreshold = 100, lightingAndSoundPrice = 0, extrasPrice = 0 } = venue;
     
     let totalCost = 0;
@@ -292,7 +234,7 @@ export default function VenueComparisonPage() {
       totalPrice: 0,
       costPerPerson: 0
     };
-    setVenues(prev => [...prev, newVenue]);
+    setVenues(prev => [newVenue, ...prev]);
   };
 
   const updateVenue = (id: string, updates: Partial<Venue>) => {
@@ -300,7 +242,7 @@ export default function VenueComparisonPage() {
       if (venue.id === id) {
         const updated = { ...venue, ...updates };
         // Recalculate costs
-        const { totalCost, costPerPerson } = calculateMealCost(updated, guestCount, adultGuests, childGuests);
+        const { totalCost, costPerPerson } = calculateMealCost(updated, guestCount, childGuests);
         return { ...updated, totalPrice: totalCost, costPerPerson };
       }
       return venue;
@@ -319,7 +261,7 @@ export default function VenueComparisonPage() {
     // Recalculate all venues
     setVenues(prev => prev.map(venue => {
       if (venue) {
-        const { totalCost, costPerPerson } = calculateMealCost(venue, total, adults, children);
+        const { totalCost, costPerPerson } = calculateMealCost(venue, total, children);
         return { ...venue, totalPrice: totalCost, costPerPerson };
       }
       return venue;
@@ -334,6 +276,19 @@ export default function VenueComparisonPage() {
     );
   }
 
+  if (noWeddingFound) {
+    return (
+      <div style={{ textAlign: 'center', padding: '50px' }}>
+        <div style={{ fontSize: '18px', marginBottom: '20px', color: '#666' }}>
+          לא נמצא חתונה עבורך
+        </div>
+        <div style={{ color: '#999' }}>
+          עליך להיות בעל חתונה או משתתף בחתונה כדי לגשת להשוואת אולמות
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page-container">
       <h1 className="text-center mb-xl">
@@ -341,13 +296,7 @@ export default function VenueComparisonPage() {
       </h1>
 
       {/* Guest Count Settings */}
-      <div style={{ 
-        background: '#f1f8e9', 
-        padding: '20px', 
-        borderRadius: '8px',
-        marginBottom: '30px',
-       
-      }}>
+      <div className="card">
         <h2 style={{ margin: '0 0 20px 0', color: '#33691e' }}>👥 הגדרת מספר אורחים לחישוב</h2>
         
         <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
@@ -403,96 +352,85 @@ export default function VenueComparisonPage() {
             />
           </div>
         </div>
+        
+        {/* Save Guest Counts Button */}
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <button
+            onClick={handleSave}
+            style={{
+              background: saveStatus === 'saving' ? '#ff9800' : saveStatus === 'saved' ? '#4caf50' : saveStatus === 'error' ? '#f44336' : '#2196F3',
+              color: 'white',
+              border: 'none',
+              padding: '10px 20px',
+              borderRadius: '6px',
+              fontSize: '14px',
+              cursor: saveStatus === 'saving' ? 'not-allowed' : 'pointer',
+              fontWeight: 'bold'
+            }}
+            disabled={saveStatus === 'saving'}
+          >
+            {saveStatus === 'saving' ? '🔄 שומר...' : saveStatus === 'saved' ? '✅ נשמר!' : saveStatus === 'error' ? '❌ שגיאה' : '💾 שמור הגדרות אורחים'}
+          </button>
+        </div>
       </div>
 
-             {/* Add Venue Button and Save Status */}
-       <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-         <button
-           onClick={addVenue}
-           style={{
-             background: '#4caf50',
-             color: 'white',
-             border: 'none',
-             padding: '12px 24px',
-             borderRadius: '6px',
-             fontSize: '16px',
-             cursor: 'pointer',
-             fontWeight: 'bold',
-             marginBottom: '15px'
-           }}
-         >
-           ➕ הוסף אולם/גן אירועים להשוואה
-         </button>
-         
-         {/* Auto-save status */}
-         <div style={{ 
-           fontSize: '14px', 
-           color: saveStatus === 'saved' ? '#4caf50' : '#666', 
-           marginBottom: '15px',
-           padding: '8px 16px',
-           background: saveStatus === 'saved' ? '#e8f5e8' : '#f5f5f5',
-           borderRadius: '4px',
-           display: 'inline-block',
-           transition: 'all 0.3s ease'
-         }}>
-           {saveStatus === 'saved' ? '✅ נשמר אוטומטית!' : '💾 שמירה אוטומטית פעילה - השינויים נשמרים אוטומטית'}
-         </div>
-         
-         {/* Manual Save Button */}
-         {userId && venues.length > 0 && (
-           <div>
-             <button
-               onClick={handleSave}
-               style={{
-                 background: saveStatus === 'saving' ? '#4caf50' : saveStatus === 'saved' ? '#66bb6a' : '#2196F3',
-                 color: 'white',
-                 border: 'none',
-                 padding: '10px 20px',
-                 borderRadius: '6px',
-                 fontSize: '14px',
-                 cursor: saveStatus === 'saving' ? 'not-allowed' : 'pointer',
-                 fontWeight: 'bold',
-                 opacity: saveStatus === 'saving' ? 0.7 : 1,
-                 transition: 'all 0.3s ease'
-               }}
-               disabled={saveStatus === 'saving'}
-             >
-               {saveStatus === 'saving' ? '🔄 שומר...' : saveStatus === 'saved' ? '✅ נשמר!' : '💾 שמור '}
-             </button>
-             {saveStatus === 'error' && (
-               <div style={{ color: '#f44336', marginTop: '8px', fontSize: '12px' }}>
-                 ❌ שמירת השינויים נכשלה. אנא נסה שוב.
-               </div>
-             )}
-           </div>
-         )}
-       </div>
+      {/* Add Venue Button */}
+      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+        <button
+          onClick={addVenue}
+          style={{
+            background: '#4caf50',
+            color: 'white',
+            border: 'none',
+            padding: '12px 24px',
+            borderRadius: '6px',
+            fontSize: '16px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            marginBottom: '15px'
+          }}
+        >
+          ➕ הוסף אולם/גן אירועים להשוואה
+        </button>
+      </div>
 
       {/* Venues Comparison */}
       <div style={{ display: 'grid', gap: '30px' }}>
-        {venues.map((venue, index) => (
-          <div key={venue.id} style={{ 
-            background: 'white', 
-            padding: '20px', 
-            borderRadius: '8px',
-          
-        
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ margin: 0, color: '#333' }}>אולם/גן אירועים #{index + 1}</h3>
-              <button
-                onClick={() => removeVenue(venue.id)}
-                style={{
-                  background: '#f44336',
-                  color: 'white',
-                  border: 'none',
-                  padding: '8px 12px',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-              >
-                🗑️ הסר
-              </button>
+                 {venues.map((venue, index) => (
+           <div key={venue.id} className="card">
+             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+               <h3 style={{ margin: 0, color: '#333' }}>אולם/גן אירועים #{venues.length - index}</h3>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  onClick={handleSave}
+                  style={{
+                    background: saveStatus === 'saving' ? '#ff9800' : saveStatus === 'saved' ? '#4caf50' : saveStatus === 'error' ? '#f44336' : '#2196F3',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 12px',
+                    borderRadius: '4px',
+                    cursor: saveStatus === 'saving' ? 'not-allowed' : 'pointer',
+                    fontWeight: 'bold',
+                    fontSize: '12px'
+                  }}
+                  disabled={saveStatus === 'saving'}
+                >
+                  {saveStatus === 'saving' ? '🔄 שומר...' : saveStatus === 'saved' ? '✅ נשמר!' : saveStatus === 'error' ? '❌ שגיאה' : '💾 שמור'}
+                </button>
+                <button
+                  onClick={() => removeVenue(venue.id)}
+                  style={{
+                    background: '#f44336',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 12px',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  🗑️ הסר
+                </button>
+              </div>
             </div>
 
             {/* Basic Information */}
@@ -549,7 +487,7 @@ export default function VenueComparisonPage() {
 
             {/* Meal Pricing */}
             <div style={{ 
-              background: '#fffef7', 
+              background: '#ffffff', 
               padding: '20px', 
               borderRadius: '8px',
               marginBottom: '20px',
@@ -559,7 +497,7 @@ export default function VenueComparisonPage() {
               
               {/* Pricing Explanation */}
               <div style={{ 
-                background: '#f2ebe2', 
+               
                 padding: '12px', 
                 borderRadius: '6px',
                 marginBottom: '15px',
@@ -652,9 +590,9 @@ export default function VenueComparisonPage() {
               <div style={{ 
                 marginTop: '15px',
                 padding: '15px',
-                background: '#f8f9fa',
+              
                 borderRadius: '6px',
-                border: '1px solid #e9ecef'
+            
               }}>
                 <h5 style={{ margin: '0 0 10px 0', color: '#495057', fontSize: '14px' }}>📅 תאריכים וימים למחיר</h5>
                 <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
@@ -686,13 +624,7 @@ export default function VenueComparisonPage() {
               </div>
 
                {/* Cost Summary */}
-               <div style={{ 
-                 marginTop: '15px',
-                 padding: '15px',
-                 background: 'white',
-                 borderRadius: '6px',
-                 border: '1px solid #eee'
-               }}>
+               <div className="card">
                  <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
                    <div style={{ textAlign: 'center' }}>
                      <div style={{ fontSize: '12px', color: '#666' }}>סה"כ עלות מנות</div>
@@ -803,13 +735,7 @@ export default function VenueComparisonPage() {
 
       {/* Comparison Summary */}
       {venues.length > 1 && (
-        <div style={{ 
-          background: '#e1f5fe', 
-          padding: '20px', 
-          borderRadius: '8px',
-          marginTop: '30px',
-          border: '1px solid #81d4fa'
-        }}>
+        <div className="card">
           <h2 style={{ margin: '0 0 20px 0', color: '#0277bd' }}>📊 סיכום השוואה</h2>
           
           <div style={{ overflowX: 'auto' }}>
@@ -830,12 +756,10 @@ export default function VenueComparisonPage() {
               <tbody>
                 {venues
                   .filter(venue => venue.name.trim())
-                  .sort((a, b) => a.totalPrice - b.totalPrice)
                   .map((venue, index) => (
-                    <tr key={venue.id} style={{ backgroundColor: index === 0 ? '#e8f5e8' : 'white' }}>
+                    <tr key={venue.id} style={{ backgroundColor: 'white' }}>
                       <td style={{ border: '1px solid #ddd', padding: '12px', fontWeight: 'bold' }}>
                         {venue.name}
-                        {index === 0 && <span style={{ color: '#4caf50', marginRight: '8px' }}>🥇</span>}
                       </td>
                       <td style={{ border: '1px solid #ddd', padding: '12px' }}>
                         {(venue.basePrice || 0).toLocaleString()} ₪

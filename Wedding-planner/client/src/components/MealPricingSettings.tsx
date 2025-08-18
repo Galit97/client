@@ -30,13 +30,7 @@ export default function MealPricingSettings({
   const [isEditing, setIsEditing] = useState(false);
 
   return (
-    <div style={{
-      background: '#f2ebe2',
-      padding: '20px',
-      borderRadius: '8px',
-      marginBottom: '30px',
-     
-    }}>
+    <div className="card" style={{ marginBottom: '30px' }}>
       <h3 style={{ margin: '0 0 20px 0', color: '#e65100' }}>
         🍽️ מחירי מנות - חישוב עלויות האירוע
       </h3>

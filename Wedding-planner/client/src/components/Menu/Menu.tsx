@@ -41,7 +41,10 @@ export default function Menu({ onSelect, onLogout }: MenuProps) {
     setIsMobileMenuOpen(false);
   };
 
-  const toggleDropdown = (dropdownName: string) => {
+  const toggleDropdown = (dropdownName: string, event?: React.MouseEvent) => {
+    if (event) {
+      event.stopPropagation();
+    }
     setActiveDropdown(activeDropdown === dropdownName ? null : dropdownName);
   };
 
@@ -176,9 +179,9 @@ export default function Menu({ onSelect, onLogout }: MenuProps) {
             <React.Fragment key={item.id}>
               <li>
                 {item.type === 'dropdown' ? (
-                  <div style={{ position: 'relative' }}>
+                  <div style={{ position: 'relative', zIndex: 1001 }}>
                     <button
-                      onClick={() => toggleDropdown(item.id)}
+                      onClick={(e) => toggleDropdown(item.id, e)}
                       style={{
                         background: "none",
                         border: "none",
@@ -197,24 +200,27 @@ export default function Menu({ onSelect, onLogout }: MenuProps) {
                         ▼
                       </span>
                     </button>
-                    {activeDropdown === item.id && (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          top: '100%',
-                          right: 0,
-                          background: 'white',
-                          border: '1px solid #ddd',
-                          borderRadius: '4px',
-                       
-                          minWidth: '200px',
-                          zIndex: 1000
-                        }}
-                      >
+                                         {activeDropdown === item.id && (
+                       <div
+                         className="card"
+                         style={{
+                           position: 'absolute',
+                           top: '100%',
+                           right: 0,
+                           minWidth: '200px',
+                           zIndex: 1000,
+                           marginTop: '5px',
+                           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                           border: 'none'
+                         }}
+                       >
                         {item.items?.map((subItem) => (
                           <button
                             key={subItem.id}
-                            onClick={subItem.onClick}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              subItem.onClick();
+                            }}
                             style={{
                               width: '100%',
                               background: 'none',
@@ -314,7 +320,7 @@ export default function Menu({ onSelect, onLogout }: MenuProps) {
               {item.type === 'dropdown' ? (
                 <div>
                   <button
-                    onClick={() => toggleDropdown(item.id)}
+                    onClick={(e) => toggleDropdown(item.id, e)}
                     style={{
                       width: "100%",
                       background: "none",
@@ -341,7 +347,10 @@ export default function Menu({ onSelect, onLogout }: MenuProps) {
                       {item.items?.map((subItem) => (
                         <button
                           key={subItem.id}
-                          onClick={subItem.onClick}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            subItem.onClick();
+                          }}
                           style={{
                             width: "100%",
                             background: "none",

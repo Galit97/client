@@ -644,20 +644,20 @@ export default function VendorsListPage() {
   }
 
   return (
-    <div className="page-container">
+    <div className="page-container ">
       <h1 className="text-center mb-xl">
         ניהול ספקים
       </h1>
 
       {/* Help Section */}
-      <div className="alert info mb-xl">
-        <h4 className="mb-md">💡 איך לנהל ספקים:</h4>
+      <div className="card"> 
+        <h4 className="mb-md ">💡 איך לנהל ספקים:</h4>
         <div className="text-secondary">
           <div><strong>סטטוס:</strong> ממתין → אושר → שולם</div>
           <div><strong>סוג ספק:</strong> בחר את סוג השירות שהספק מספק</div>
           <div><strong>קישורים:</strong> הוסף קישורים לחוזים והצעות</div>
           <div><strong>סינון ומיון:</strong> השתמש בפילטרים כדי למצוא ספקים ספציפיים</div>
-        </div>
+        </div>   
       </div>
 
       {/* Manual Calculation Section */}

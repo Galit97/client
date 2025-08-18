@@ -31,7 +31,7 @@ export default function FirstPage() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #A8D5BA 0%, #F4C2C2 50%, #C8A2C8 100%)',
+      background: '#ffffff',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -39,28 +39,25 @@ export default function FirstPage() {
       padding: '20px'
     }}>
       <div style={{
-        background: 'rgba(255, 255, 255, 0.95)',
-        borderRadius: '24px',
-        padding: '60px 40px',
+        background: '#ffffff',
+        borderRadius: '16px',
+        padding: '40px 30px',
         textAlign: 'center',
         maxWidth: '600px',
-        width: '100%',
-     
-        border: '2px solid rgba(255, 255, 255, 0.3)',
-        backdropFilter: 'blur(10px)'
+        width: '100%'
       }}>
         {/* Logo/Icon */}
         <div style={{
-          width: '120px',
-          height: '120px',
+          width: '80px',
+          height: '80px',
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, #A8D5BA, #F4C2C2, #C8A2C8)',
-          margin: '0 auto 30px',
+          background: '#f8f9fa',
+          margin: '0 auto 20px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '48px',
-        
+          fontSize: '32px',
+          border: '2px solid #e9ecef'
         }}>
           💒
         </div>
@@ -69,58 +66,54 @@ export default function FirstPage() {
         <h1 style={{
           margin: '0 0 15px',
           color: '#333',
-          fontSize: '36px',
-          fontWeight: 'bold',
-          background: 'linear-gradient(135deg, #A8D5BA, #C8A2C8)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text'
+          fontSize: '32px',
+          fontWeight: 'bold'
         }}>
           ברוכים הבאים
         </h1>
 
         <h2 style={{
-          margin: '0 0 40px',
+          margin: '0 0 30px',
           color: '#666',
-          fontSize: '20px',
+          fontSize: '18px',
           fontWeight: '400'
         }}>
-          לתכנון החתונה המושלמת שלכם
+         תכננו את החתונה שלכם בקלות ובפשטות
         </h2>
 
         {/* Features */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-          gap: '20px',
-          marginBottom: '40px'
+          gap: '15px',
+          marginBottom: '30px'
         }}>
           <div style={{
-            padding: '20px',
+            padding: '15px',
             borderRadius: '12px',
-            background: 'rgba(168, 213, 186, 0.1)',
-            border: '1px solid rgba(168, 213, 186, 0.3)'
+            background: '#f8f9fa',
+            border: '1px solid #e9ecef'
           }}>
-            <div style={{ fontSize: '24px', marginBottom: '10px' }}>📋</div>
+            <div style={{ fontSize: '20px', marginBottom: '8px' }}>📋</div>
             <div style={{ fontSize: '14px', fontWeight: '600', color: '#333' }}>ניהול משימות</div>
           </div>
           <div style={{
-            padding: '20px',
+            padding: '15px',
             borderRadius: '12px',
-            background: 'rgba(244, 194, 194, 0.1)',
-            border: '1px solid rgba(244, 194, 194, 0.3)'
+            background: '#f8f9fa',
+            border: '1px solid #e9ecef'
           }}>
-            <div style={{ fontSize: '24px', marginBottom: '10px' }}>👥</div>
+            <div style={{ fontSize: '20px', marginBottom: '8px' }}>👥</div>
             <div style={{ fontSize: '14px', fontWeight: '600', color: '#333' }}>רשימת אורחים</div>
           </div>
           <div style={{
-            padding: '20px',
+            padding: '15px',
             borderRadius: '12px',
-            background: 'rgba(200, 162, 200, 0.1)',
-            border: '1px solid rgba(200, 162, 200, 0.3)'
+            background: '#f8f9fa',
+            border: '1px solid #e9ecef'
           }}>
-            <div style={{ fontSize: '24px', marginBottom: '10px' }}>💰</div>
-            <div style={{ fontSize: '14px', fontWeight: '600', color: '#333' }}>ניהול תקציב</div>
+            <div style={{ fontSize: '20px', marginBottom: '8px' }}>💰</div>
+            <div style={{ fontSize: '14px', fontWeight: '600', color: '#333' }}>ניהול תקציב בזמן אמת</div>
           </div>
         </div>
 
@@ -128,31 +121,30 @@ export default function FirstPage() {
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: '15px',
+          gap: '12px',
           maxWidth: '300px',
           margin: '0 auto'
         }}>
           <button 
             onClick={() => setLoginOpen(true)}
             style={{
-              background: 'linear-gradient(135deg, #a7d6ba, #b8e6b8)',
+              background: '#ffffff',
               color: '#333',
-              border: 'none',
-              borderRadius: '12px',
-              padding: '16px 24px',
-              fontSize: '18px',
+              border: '2px solid #333',
+              borderRadius: '8px',
+              padding: '14px 20px',
+              fontSize: '16px',
               fontWeight: '600',
               cursor: 'pointer',
-              transition: 'all 0.3s ease',
-         
+              transition: 'all 0.3s ease'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-3px)';
-            
+              e.currentTarget.style.background = '#f8f9fa';
+              e.currentTarget.style.transform = 'translateY(-2px)';
             }}
             onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#ffffff';
               e.currentTarget.style.transform = 'translateY(0)';
-       
             }}
           >
             התחברות
@@ -161,24 +153,23 @@ export default function FirstPage() {
           <button 
             onClick={() => setRegisterOpen(true)}
             style={{
-              background: 'linear-gradient(135deg, #f4c2c2, #c8a2c8)',
+              background: '#ffffff',
               color: '#333',
-              border: 'none',
-              borderRadius: '12px',
-              padding: '16px 24px',
-              fontSize: '18px',
+              border: '2px solid #333',
+              borderRadius: '8px',
+              padding: '14px 20px',
+              fontSize: '16px',
               fontWeight: '600',
               cursor: 'pointer',
-              transition: 'all 0.3s ease',
-            
+              transition: 'all 0.3s ease'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-3px)';
-           
+              e.currentTarget.style.background = '#f8f9fa';
+              e.currentTarget.style.transform = 'translateY(-2px)';
             }}
             onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#ffffff';
               e.currentTarget.style.transform = 'translateY(0)';
-           
             }}
           >
             יצירת משתמש חדש
@@ -187,9 +178,9 @@ export default function FirstPage() {
 
         {/* Footer */}
         <div style={{
-          marginTop: '40px',
-          paddingTop: '30px',
-          borderTop: '1px solid rgba(0, 0, 0, 0.1)'
+          marginTop: '30px',
+          paddingTop: '20px',
+          borderTop: '1px solid #e9ecef'
         }}>
           <p style={{
             margin: 0,

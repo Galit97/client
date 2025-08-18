@@ -349,7 +349,7 @@ const BudgetPage: React.FC = () => {
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
-      
+        border: '1px solid black'
        
       }}>
         <h2 style={{ margin: '0 0 20px 0', color: '#333' }}>📊 מעקב תקציב לאורך זמן</h2>
@@ -368,7 +368,7 @@ const BudgetPage: React.FC = () => {
 
       {/* Meal Pricing by Guest Status */}
       <div style={{ 
-        background: '#e1f5fe', 
+        background: '#ffffff', 
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
@@ -382,7 +382,7 @@ const BudgetPage: React.FC = () => {
              background: 'white', 
              padding: '15px', 
              borderRadius: '4px',
-         
+             border: '1px solid black'
            }}>
              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                <div style={{ 
@@ -415,7 +415,7 @@ const BudgetPage: React.FC = () => {
              background: 'white', 
              padding: '15px', 
              borderRadius: '4px',
-         
+             border: '1px solid black'
            }}>
              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                <div style={{ 
@@ -448,7 +448,7 @@ const BudgetPage: React.FC = () => {
              background: 'white', 
              padding: '15px', 
              borderRadius: '4px',
-            
+             border: '1px solid black'
            }}>
              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                <div style={{ 
@@ -481,7 +481,7 @@ const BudgetPage: React.FC = () => {
              background: 'white', 
              padding: '15px', 
              borderRadius: '4px',
-         
+             border: '1px solid black'
            }}>
              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                <div style={{ 
@@ -513,7 +513,7 @@ const BudgetPage: React.FC = () => {
 
       {/* Real Calculation Results - Based on Confirmed Guests */}
       <div style={{ 
-        background: '#f1f8e9', 
+        background: '#ffffff', 
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
@@ -526,7 +526,7 @@ const BudgetPage: React.FC = () => {
             background: 'white', 
             padding: '20px', 
             borderRadius: '8px',
-            
+            border: '1px solid black'
           }}>
             <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                              <div style={{ textAlign: 'center' }}>
@@ -564,7 +564,7 @@ const BudgetPage: React.FC = () => {
 
       {/* Event Total Cost (Vendors + Meal Cost for Confirmed Guests) */}
       <div style={{ 
-        background: '#fffef7', 
+        background: '#ffffff', 
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
@@ -572,19 +572,19 @@ const BudgetPage: React.FC = () => {
       }}>
                  <h2 style={{ margin: '0 0 20px 0', color: '#ff9800' }}>💰 מחירי מנות - חישוב עלויות האירוע</h2>
                  <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
-           <div style={{ background: 'white', padding: '15px', borderRadius: '8px' }}>
+           <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid black' }}>
              <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>סה"כ הוצאות ספקים</div>
              <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#F4C2C2' }}>{totalExpenses.toLocaleString()} ₪</div>
            </div>
-           <div style={{ background: 'white', padding: '15px', borderRadius: '8px', }}>
+           <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid black' }}>
              <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>עלות מנות (מאשרים)</div>
              <div style={{ fontSize: '22px', fontWeight: 'bold', color: '#A8D5BA' }}>{confirmedMealCost.toLocaleString()} ₪</div>
            </div>
-           <div style={{ background: 'white', padding: '15px', borderRadius: '8px' }}>
+           <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid black' }}>
              <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>סה"כ עלות אירוע</div>
              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#D4A574' }}>{eventTotalCost.toLocaleString()} ₪</div>
            </div>
-           <div style={{ background: 'white', padding: '15px', borderRadius: '8px' }}>
+           <div style={{ background: 'white', padding: '15px', borderRadius: '8px', border: '1px solid black' }}>
              <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>עלות לאיש (מאשרים)</div>
              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#C8A2C8' }}>{eventCostPerPerson.toLocaleString()} ₪</div>
            </div>
@@ -593,7 +593,7 @@ const BudgetPage: React.FC = () => {
 
       {/* Manual Calculation - Custom Estimation */}
       <div style={{ 
-        background: '#fff8e1', 
+        background: '#ffffff', 
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
@@ -605,7 +605,7 @@ const BudgetPage: React.FC = () => {
           background: 'white', 
           padding: '20px', 
           borderRadius: '8px',
-         
+          border: '1px solid black',
           marginBottom: '20px'
         }}>
             <h3 style={{ margin: '0 0 15px 0', color: '#333' }}>הכנס מספרי אורחים לבדיקה (עלות מנות + ספקים)</h3>
@@ -712,7 +712,7 @@ const BudgetPage: React.FC = () => {
             {(() => {
               const mealCost = calculateManualMealCost();
               return mealCost && mealCost.totalGuests && mealCost.totalGuests > 0 ? (
-                <div style={{ marginTop: '15px', padding: '15px', background: 'white', borderRadius: '4px' }}>
+                <div style={{ marginTop: '15px', padding: '15px', background: 'white', borderRadius: '4px', border: '1px solid black' }}>
                   <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
                     פירוט החישוב (מנות + ספקים):
                   </div>
@@ -750,7 +750,7 @@ const BudgetPage: React.FC = () => {
         padding: '20px', 
         borderRadius: '8px',
         marginBottom: '30px',
-      
+        border: '1px solid black'
       
       }}>
         <h2 style={{ margin: '0 0 20px 0', color: '#333' }}>🥧 התפלגות הוצאות לפי נושאים</h2>
@@ -779,7 +779,7 @@ const BudgetPage: React.FC = () => {
         background: 'white', 
         padding: '20px', 
         borderRadius: '8px',
-      
+        border: '1px solid black'
       
       }}>
         <h2 style={{ margin: '0 0 20px 0', color: '#333' }}>📋 רשימת ספקים והוצאות</h2>

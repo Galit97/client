@@ -101,11 +101,11 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
           background: 'white',
           borderRadius: '16px',
           padding: '40px',
-          maxWidth: '400px',
-          width: '90%',
-          position: 'relative',
-         
-        
+          maxWidth: '500px',
+          width: '100%',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+          position: 'relative'
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -145,22 +145,22 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <div style={{
-            width: '60px',
-            height: '60px',
+            width: '70px',
+            height: '70px',
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #A8D5BA, #F4C2C2)',
+            background: 'linear-gradient(135deg, #F4C2C2, #C8A2C8)',
             margin: '0 auto 15px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '24px'
+            fontSize: '28px'
           }}>
             💒
           </div>
           <h2 style={{
             margin: 0,
             color: '#333',
-            fontSize: '24px',
+            fontSize: '26px',
             fontWeight: 'bold'
           }}>
             ברוכים הבאים
@@ -221,7 +221,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
                 boxSizing: 'border-box'
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = '#A8D5BA';
+                e.target.style.borderColor = '#F4C2C2';
             
               }}
               onBlur={(e) => {
@@ -260,7 +260,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
                 boxSizing: 'border-box'
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = '#A8D5BA';
+                e.target.style.borderColor = '#F4C2C2';
         
               }}
               onBlur={(e) => {
@@ -278,7 +278,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
                 style={{
                   background: 'none',
                 
-                  color: '#a7d6ba',
+                  color: '#f4c2c2',
                   fontSize: '12px',
                   cursor: forgotPasswordLoading ? 'not-allowed' : 'pointer',
                   textDecoration: 'underline',
@@ -295,11 +295,11 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
             type="submit" 
             disabled={isLoading}
             style={{
-              background: 'linear-gradient(135deg, #a7d6ba, #b8e6b8)',
+              background: 'linear-gradient(135deg, #f4c2c2, #c8a2c8)',
               color: '#333',
             
               borderRadius: '8px',
-              padding: '14px 20px',
+              padding: '16px 20px',
               fontSize: '16px',
               fontWeight: '600',
               cursor: isLoading ? 'not-allowed' : 'pointer',
@@ -340,7 +340,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
             <span 
               onClick={handleSwitchToRegister}
               style={{
-                color: '#a7d6ba',
+                color: '#f4c2c2',
                 cursor: 'pointer',
                 fontWeight: '600',
                 textDecoration: 'underline'

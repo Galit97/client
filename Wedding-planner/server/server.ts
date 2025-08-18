@@ -9,6 +9,7 @@ import CheckListRoutes from "./routes/checkListRoutes";
 import weddingRoutes from "./routes/weddingRoutes";
 import uploadRoutes from "./routes/uploadRoutes";
 import listRoutes from "./routes/listRoutes";
+import comparisonRoutes from "./routes/comparisonRoutes";
 import path from "path";
 
 dotenv.config();
@@ -39,6 +40,7 @@ app.use("/api/checklists", CheckListRoutes);
 app.use("/api/weddings", weddingRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/lists", listRoutes);
+app.use("/api/comparisons", comparisonRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running");

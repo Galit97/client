@@ -367,9 +367,10 @@ export default function CheckListPage() {
 
       {/* Help Section */}
       <div style={{
-        background: '#e3f2fd',
+        background: '#ffffff',
         padding: '15px',
         borderRadius: '8px',
+        border: '1px solid black',
         marginBottom: '20px',
    
       }}>
@@ -388,6 +389,7 @@ export default function CheckListPage() {
         padding: '20px',
         borderRadius: '8px',
         marginBottom: '30px',
+        border: '1px solid black'
      
       }}>
         <h3 style={{ marginTop: 0, marginBottom: '15px' }}>הוסף משימה חדשה</h3>
@@ -492,6 +494,7 @@ export default function CheckListPage() {
         padding: '15px',
         borderRadius: '8px',
         marginBottom: '20px',
+        border: '1px solid black'
        
       }}>
         <h4 style={{ margin: '0 0 15px 0' }}>סינון ומיון</h4>
@@ -565,7 +568,7 @@ export default function CheckListPage() {
       </div>
 
       {/* Task List */}
-      <div style={{ background: 'white', borderRadius: '8px', overflow: 'hidden' }}>
+      <div style={{ background: 'white', borderRadius: '8px', overflow: 'hidden', border: '1px solid black' }}>
         <div style={{ 
           background: '#f5f5f5', 
           padding: '15px 20px', 
@@ -740,7 +743,7 @@ export default function CheckListPage() {
           padding: '15px',
           background: '#e8f5e8',
           borderRadius: '8px',
-          border: '1px solid #4CAF50'
+        
         }}>
           <h4 style={{ margin: '0 0 10px 0' }}>📊 סיכום צ'קליסט</h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>

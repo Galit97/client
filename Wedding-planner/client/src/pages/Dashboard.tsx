@@ -261,7 +261,7 @@ const Dashboard: React.FC = () => {
       <div className="card text-center mb-xl" style={{ 
         background: 'linear-gradient(135deg, #c8e6d1 0%, #d4f0d4 25%, #f8d7da 50%, #e0c8e0 75%, #c8e6d1 100%)',
         color: '#333',
-        border: '1px solid #e9ecef',
+        border: '1px solid black',
         boxShadow: '0 4px 15px rgba(200, 230, 209, 0.3)',
         position: 'relative',
         overflow: 'hidden'
@@ -349,16 +349,16 @@ const Dashboard: React.FC = () => {
          <div className="card">
            <div className="flex-between mb-lg">
                           <div style={{ 
-                width: '25px', 
-                height: '25px', 
+                width: '50px', 
+                height: '50px', 
                 borderRadius: '50%', 
-                background: 'linear-gradient(135deg, #f8d7da, #e0c8e0)',
+                background: 'linear-gradient(135deg, #c8e6d1, #f8d7da)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginLeft: '8px'
+                marginLeft: '15px'
               }}>
-               <span style={{ fontSize: '12px' }}>🏢</span>
+               <span style={{ fontSize: '24px' }}>🏢</span>
              </div>
              <div>
                <h3 style={{ margin: '0', color: '#333', fontSize: '16px' }}>ספקים</h3>
@@ -448,7 +448,7 @@ const Dashboard: React.FC = () => {
           background: 'white', 
           padding: '25px', 
           borderRadius: '12px',
-  
+          border: '1px solid black'
          
         }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
@@ -507,7 +507,7 @@ const Dashboard: React.FC = () => {
           background: 'white', 
           padding: '25px', 
           borderRadius: '12px',
-     
+          border: '1px solid black'
       
         }}>
           <h3 style={{ 
@@ -563,7 +563,7 @@ const Dashboard: React.FC = () => {
           background: 'white', 
           padding: '25px', 
           borderRadius: '12px',
-      
+          border: '1px solid black'
        
         }}>
           <h3 style={{ 
@@ -581,10 +581,9 @@ const Dashboard: React.FC = () => {
               {upcomingTasks.map((task) => (
                                  <div key={task._id} style={{ 
                    padding: '15px', 
-                                       border: '1px solid #f2ebe2', 
                    borderRadius: '8px', 
                    marginBottom: '10px',
-                                       background: task.dueDate && new Date(task.dueDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? '#f2ebe2' : '#fafafa'
+                                       background: task.dueDate && new Date(task.dueDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? '#faf8f5' : '#fefefe'
                  }}>
                    <div style={{ 
                      fontWeight: 'bold', 
@@ -617,55 +616,14 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* High Priority Tasks */}
-      {highPriorityTasks.length > 0 && (
-                 <div style={{ 
-           background: '#ffffff', 
-           padding: '25px', 
-           borderRadius: '12px',
-           marginBottom: '30px',
-          
-         }}>
-          <h3 style={{ 
-            margin: '0 0 20px 0', 
-            color: '#666',
-            display: 'flex',
-            alignItems: 'center'
-          }}>
-            <span style={{ marginLeft: '10px' }}>🚨</span>
-            משימות בעדיפות גבוהה ({highPriorityTasks.length})
-          </h3>
-          
-          <div style={{ display: 'grid', gap: '15px',backgroundColor: 'ffffe6', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
-            {highPriorityTasks.map((task) => (
-              <div key={task._id} style={{ 
-                padding: '15px', 
-                background: 'white', 
-                borderRadius: '8px', 
-             
-              }}>
-                                 <div style={{ fontWeight: 'bold', color: '#e65100', marginBottom: '5px' }}>
-                   {task.task}
-                 </div>
-                 <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>
-                   {task.notes || 'אין הערות'}
-                 </div>
-                {task.dueDate && (
-                                     <div style={{ fontSize: '12px', color: '#ff9800', fontWeight: 'bold' }}>
-                    תאריך יעד: {new Date(task.dueDate).toLocaleDateString('he-IL')}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+     
 
       {/* Quick Stats */}
       <div style={{ 
         background: 'white', 
         padding: '25px', 
         borderRadius: '12px',
+        border: '1px solid black'
       }}>
         <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>📊 סטטיסטיקות מהירות</h3>
         

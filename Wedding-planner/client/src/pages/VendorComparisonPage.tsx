@@ -72,84 +72,66 @@ export default function VendorComparisonPage() {
   const [search, setSearch] = useState('');
   const [weddingId, setWeddingId] = useState<string>('');
   const [userId, setUserId] = useState<string>('');
+  const [noWeddingFound, setNoWeddingFound] = useState(false);
 
   useEffect(() => {
     async function init() {
       const token = localStorage.getItem('token');
       if (!token) { setLoading(false); return; }
       try {
-        // Get current user info for personalized storage
-        const currentUserRaw = localStorage.getItem("currentUser");
-        let currentUserId = 'default';
-        if (currentUserRaw) {
-          try {
-            const currentUser = JSON.parse(currentUserRaw);
-            currentUserId = currentUser._id || currentUser.id || 'default';
-            setUserId(currentUserId);
-          } catch (parseError) {
-            console.error("Error parsing current user:", parseError);
-            currentUserId = 'default';
-            setUserId(currentUserId);
-          }
-        } else {
-          setUserId(currentUserId);
-        }
-
-        // get wedding id for persistence key
-        const wed = await fetch('/api/weddings/owner', { headers: { Authorization: `Bearer ${token}` } });
+        // Try to get wedding as owner first
+        let weddingId = '';
+        let wed = await fetch('/api/weddings/owner', { headers: { Authorization: `Bearer ${token}` } });
+        
         if (wed.ok) {
           const w = await wed.json();
-          setWeddingId(w._id);
-          
-          // Use user-specific storage keys
-          const storageKey = `vendorComparisons_${currentUserId}`;
-          const typesStorageKey = `vendorComparisonTypes_${currentUserId}`;
-          
-          // If no user ID, use wedding ID as fallback
-          const fallbackStorageKey = currentUserId === 'default' ? `vendorComparisons:${w._id}` : storageKey;
-          const fallbackTypesStorageKey = currentUserId === 'default' ? `vendorComparisonTypes:${w._id}` : typesStorageKey;
-          
-          const saved = localStorage.getItem(storageKey) || localStorage.getItem(fallbackStorageKey);
-          const savedTypes = localStorage.getItem(typesStorageKey) || localStorage.getItem(fallbackTypesStorageKey);
-          
-          if (saved) {
-            try {
-              setExtraComparisons(JSON.parse(saved));
-            } catch (parseError) {
-              console.error("Error parsing saved vendor comparisons:", parseError);
-              // Try fallback to old storage key
-              const oldSaved = localStorage.getItem('vendorComparisons');
-              if (oldSaved) {
-                try {
-                  setExtraComparisons(JSON.parse(oldSaved));
-                } catch (oldParseError) {
-                  console.error("Error parsing old saved vendor comparisons:", oldParseError);
-                }
-              }
-            }
-          }
-          if (savedTypes) {
-            try {
-              setSelectedTypes(JSON.parse(savedTypes));
-            } catch (parseError) {
-              console.error("Error parsing saved vendor comparison types:", parseError);
-              // Try fallback to old storage key
-              const oldSavedTypes = localStorage.getItem('vendorComparisonTypes');
-              if (oldSavedTypes) {
-                try {
-                  setSelectedTypes(JSON.parse(oldSavedTypes));
-                } catch (oldParseError) {
-                  console.error("Error parsing old saved vendor comparison types:", oldParseError);
-                }
-              }
+          weddingId = w._id;
+        } else {
+          // If not owner, try as participant
+          const participantWed = await fetch('/api/weddings/by-participant', { headers: { Authorization: `Bearer ${token}` } });
+          if (participantWed.ok) {
+            const participantWeddings = await participantWed.json();
+            if (participantWeddings.length > 0) {
+              weddingId = participantWeddings[0]._id; // Use the first wedding they're participating in
             }
           }
         }
-        // vendors
-        const res = await fetch('/api/vendors', { headers: { Authorization: `Bearer ${token}` } });
-        if (res.ok) setVendors(await res.json());
-        else setVendors([]);
-      } catch {
+        
+        if (weddingId) {
+          setWeddingId(weddingId);
+          
+          // Load comparisons from server
+          console.log('Loading vendor comparisons for wedding:', weddingId);
+          const comparisonsRes = await fetch(`/api/comparisons/vendor/${weddingId}`, { 
+            headers: { Authorization: `Bearer ${token}` } 
+          });
+          
+          console.log('Vendor comparisons response status:', comparisonsRes.status);
+          if (comparisonsRes.ok) {
+            const serverComparisons = await comparisonsRes.json();
+            console.log('Loaded vendor comparisons:', serverComparisons);
+            setExtraComparisons(serverComparisons);
+            
+            // Set selected types based on server data
+            const keys = Object.keys(serverComparisons) as VendorType[];
+            if (keys.length > 0) {
+              setSelectedTypes(keys);
+            }
+          } else {
+            console.log('Failed to load vendor comparisons:', await comparisonsRes.text());
+          }
+          
+          // Load vendors for this wedding
+          const res = await fetch('/api/vendors', { headers: { Authorization: `Bearer ${token}` } });
+          if (res.ok) setVendors(await res.json());
+          else setVendors([]);
+        } else {
+          console.log('No wedding found for user');
+          setVendors([]);
+          setNoWeddingFound(true);
+        }
+      } catch (error) {
+        console.error("Error loading vendor comparisons:", error);
         setVendors([]);
       } finally {
         setLoading(false);
@@ -160,22 +142,7 @@ export default function VendorComparisonPage() {
 
   // removed seeding of default comparison rows
 
-  // persist
-  useEffect(() => {
-    if (!userId || !weddingId) return;
-    const storageKey = `vendorComparisons_${userId}`;
-    const fallbackStorageKey = userId === 'default' ? `vendorComparisons:${weddingId}` : storageKey;
-    
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(extraComparisons));
-      // Also save to fallback key if using default user
-      if (userId === 'default') {
-        localStorage.setItem(fallbackStorageKey, JSON.stringify(extraComparisons));
-      }
-    } catch (error) {
-      console.error("Error saving vendor comparisons:", error);
-    }
-  }, [extraComparisons, userId, weddingId]);
+  // Removed manual save function and auto-save useEffect - now saving automatically when adding comparisons
 
   // keep selected types in sync with existing comparisons (and persist)
   useEffect(() => {
@@ -186,30 +153,47 @@ export default function VendorComparisonPage() {
     }
   }, [extraComparisons, userId]);
 
-  useEffect(() => {
-    if (!userId || !weddingId) return;
-    const typesStorageKey = `vendorComparisonTypes_${userId}`;
-    const fallbackTypesStorageKey = userId === 'default' ? `vendorComparisonTypes:${weddingId}` : typesStorageKey;
-    
-    try {
-      localStorage.setItem(typesStorageKey, JSON.stringify(selectedTypes));
-      // Also save to fallback key if using default user
-      if (userId === 'default') {
-        localStorage.setItem(fallbackTypesStorageKey, JSON.stringify(selectedTypes));
-      }
-    } catch (error) {
-      console.error("Error saving vendor comparison types:", error);
-    }
-  }, [selectedTypes, userId, weddingId]);
+
 
   const availableTypes = useMemo(() => allTypes, []);
 
-  const handleAddComparison = (type: VendorType, entry: Omit<ExtraComparison, 'id'>) => {
+  const handleAddComparison = async (type: VendorType, entry: Omit<ExtraComparison, 'id'>) => {
     setExtraComparisons(prev => {
       const list = prev[type] || [];
       const id = `${type}-${Date.now()}-${Math.round(Math.random() * 1e6)}`;
       return { ...prev, [type]: [...list, { id, ...entry }] };
     });
+    
+    // Auto-save to server after adding
+    try {
+      const token = localStorage.getItem('token');
+      if (!token || !weddingId) return;
+      
+      const updatedComparisons = {
+        ...extraComparisons,
+        [type]: [...(extraComparisons[type] || []), { id: `${type}-${Date.now()}-${Math.round(Math.random() * 1e6)}`, ...entry }]
+      };
+      
+      const response = await fetch('/api/comparisons/vendor', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          weddingID: weddingId,
+          comparisons: updatedComparisons
+        }),
+      });
+      
+      if (response.ok) {
+        console.log('Vendor comparison saved successfully after adding');
+      } else {
+        console.error('Failed to save vendor comparison after adding:', await response.text());
+      }
+    } catch (error) {
+      console.error("Error saving vendor comparison after adding:", error);
+    }
   };
 
   const handleRemoveComparison = (type: VendorType, id: string) => {
@@ -225,6 +209,19 @@ export default function VendorComparisonPage() {
   if (loading) {
     return (
       <div style={{ textAlign: 'center', padding: 50 }}>טוען...</div>
+    );
+  }
+
+  if (noWeddingFound) {
+    return (
+      <div style={{ textAlign: 'center', padding: '50px' }}>
+        <div style={{ fontSize: '18px', marginBottom: '20px', color: '#666' }}>
+          לא נמצא חתונה עבורך
+        </div>
+        <div style={{ color: '#999' }}>
+          עליך להיות בעל חתונה או משתתף בחתונה כדי לגשת להשוואת ספקים
+        </div>
+      </div>
     );
   }
 

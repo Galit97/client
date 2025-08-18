@@ -561,13 +561,7 @@ export default function GuestListPage() {
       </div>
 
       {/* Excel Import/Export Section */}
-      <div style={{
-        background: '#ffffff',
-        padding: '15px',
-        borderRadius: '8px',
-        marginBottom: '20px',
-    
-      }}>
+      <div className="card">
         <h4 style={{ margin: '0 0 15px 0', color: '#856404' }}>📊 ייבוא וייצוא אקסל</h4>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <button
@@ -664,13 +658,7 @@ export default function GuestListPage() {
       </div>
 
       {/* Add Guest Form */}
-      <div style={{
-        background: '#ffffff',
-        padding: '20px',
-        borderRadius: '8px',
-        marginBottom: '30px',
-       
-      }}>
+      <div className="card">
         <h3 style={{ marginTop: 0, marginBottom: '15px' }}>הוסף מוזמן חדש</h3>
         <form onSubmit={addGuest} style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
           <div>

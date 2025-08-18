@@ -651,13 +651,7 @@ export default function WeddingPage() {
       </div>
 
       {/* Wedding Form */}
-      <div style={{
-        background: '#ffffff',
-        padding: '20px',
-        borderRadius: '8px',
-        marginBottom: '30px',
-       
-      }}>
+      <div className="card">
         <h3 style={{ marginTop: 0, marginBottom: '20px' }}>פרטי האירוע</h3>
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
@@ -854,15 +848,7 @@ export default function WeddingPage() {
                 {wedding.participants.map((p) => (
                   <div
                     key={p.id}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '8px 12px',
-                      background: 'white',
-                      borderRadius: '4px',
-                      border: '1px solid #ddd'
-                    }}
+                    className="card"
                   >
                     <span style={{ fontWeight: 'bold' }}>{p.name}</span>
                     <button
@@ -912,13 +898,7 @@ export default function WeddingPage() {
       </div>
 
       {/* Meal Pricing Section */}
-      <div style={{
-        background: '#ffffff',
-        padding: '20px',
-        borderRadius: '8px',
-        marginBottom: '30px',
-      
-      }}>
+      <div className="card">
         <h3 style={{ margin: '0 0 20px 0', color: '#e65100' }}>
           🍽️ מחירי מנות - חישוב עלויות האירוע
         </h3>
@@ -1015,14 +995,7 @@ export default function WeddingPage() {
           </div>
           
           {!isEditingMealPricing && (
-            <div style={{ 
-              marginBottom: '15px', 
-              padding: '10px 15px', 
-              background: '#ffffff', 
-              borderRadius: '4px', 
-             
-              textAlign: 'center'
-            }}>
+            <div className="card">
               <div style={{ fontSize: '14px', color: '#2e7d32', fontWeight: 'bold' }}>
                 🔒 השדות נעולים לעריכה
               </div>
@@ -1237,13 +1210,7 @@ export default function WeddingPage() {
 
 
         {/* Guest Status Based Pricing */}
-        <div style={{ 
-      background: '#f5f5f5',
-          padding: '15px', 
-          borderRadius: '4px',
-          marginTop: '20px',
-         
-        }}>
+        <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
             <h4 style={{ margin: '0', color: '#1976d2' }}>👥 מחירי מנות לפי סטטוס מוזמנים</h4>
             <button
@@ -1291,12 +1258,7 @@ export default function WeddingPage() {
           
           <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
             {/* Confirmed Guests */}
-            <div style={{ 
-              background: 'white', 
-              padding: '15px', 
-              borderRadius: '4px',
-              border: '2px solid #4caf50'
-            }}>
+            <div className="card">
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                 <div style={{ 
                   width: '12px', 
@@ -1324,12 +1286,7 @@ export default function WeddingPage() {
             </div>
 
             {/* Maybe Guests */}
-            <div style={{ 
-              background: 'white', 
-              padding: '15px', 
-              borderRadius: '4px',
-              border: '2px solid #ff9800'
-            }}>
+            <div className="card">
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                 <div style={{ 
                   width: '12px', 
@@ -1357,12 +1314,7 @@ export default function WeddingPage() {
             </div>
 
             {/* Pending Guests */}
-            <div style={{ 
-              background: 'white', 
-              padding: '15px', 
-              borderRadius: '4px',
-              border: '2px solid #9e9e9e'
-            }}>
+            <div className="card">
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                 <div style={{ 
                   width: '12px', 
@@ -1390,12 +1342,7 @@ export default function WeddingPage() {
             </div>
 
             {/* Total */}
-            <div style={{ 
-              background: 'white', 
-              padding: '15px', 
-              borderRadius: '4px',
-              border: '2px solid #2196F3'
-            }}>
+            <div className="card">
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                 <div style={{ 
                   width: '12px', 
@@ -1480,24 +1427,12 @@ export default function WeddingPage() {
       </div>
 
       {/* Manual Calculation - Custom Estimation */}
-      <div style={{ 
-        background: '#f2ebe2', 
-        padding: '20px', 
-        borderRadius: '8px',
-        marginBottom: '30px',
-      
-      }}>
+      <div className="card">
         <h3 style={{ margin: '0 0 20px 0', color: '#e65100' }}>
           🧮 חישוב ידני - אומדן מותאם אישית - מחירי מנות
         </h3>
         
-        <div style={{ 
-          background: 'white', 
-          padding: '20px', 
-          borderRadius: '8px',
-    
-          marginBottom: '20px'
-        }}>
+        <div className="card">
           <h4 style={{ margin: '0 0 15px 0', color: '#333' }}>הכנס מספרי אורחים לבדיקה</h4>
           
           <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
@@ -1539,12 +1474,7 @@ export default function WeddingPage() {
 
         {/* Manual Calculation Results */}
         {manualCalculation.adultGuests > 0 || manualCalculation.childGuests > 0 ? (
-          <div style={{ 
-            background: '#ffffff', 
-            padding: '20px', 
-            borderRadius: '8px',
-          
-          }}>
+          <div className="card">
             <h4 style={{ margin: '0 0 15px 0', color: '#2e7d32' }}>תוצאות החישוב</h4>
             
             <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
@@ -1582,7 +1512,7 @@ export default function WeddingPage() {
 
             {/* Detailed Breakdown */}
             {calculateManualMealCost().totalGuests > 0 && (
-              <div style={{ marginTop: '15px', padding: '15px', background: 'white', borderRadius: '4px' }}>
+              <div style={{ marginTop: '15px', padding: '15px', background: 'white', borderRadius: '4px', border: '1px solid black' }}>
                 <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
                   פירוט החישוב:
                 </div>
@@ -1612,11 +1542,7 @@ export default function WeddingPage() {
 
       {/* Wedding Summary */}
       {wedding.weddingName && (
-        <div style={{
-          background: 'white',
-          padding: '20px',
-          borderRadius: '8px'
-        }}>
+        <div className="card">
           <h3 style={{ margin: '0 0 20px 0', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
             📋 סיכום האירוע
           </h3>
