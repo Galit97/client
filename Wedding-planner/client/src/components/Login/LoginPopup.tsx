@@ -87,7 +87,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0,0,0,0.20)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -98,7 +98,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
     >
       <div 
         style={{
-          background: 'white',
+          background: '#FFFFFF',
           borderRadius: '16px',
           padding: '40px',
           maxWidth: '500px',
@@ -121,7 +121,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
          
             fontSize: '24px',
             cursor: 'pointer',
-            color: '#666',
+            color: '#475569',
             width: '30px',
             height: '30px',
             display: 'flex',
@@ -131,12 +131,12 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
             transition: 'all 0.3s ease'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#F4C2C2';
-            e.currentTarget.style.color = '#333';
+            e.currentTarget.style.backgroundColor = '#EFF5FB';
+            e.currentTarget.style.color = '#0F172A';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.color = '#666';
+            e.currentTarget.style.color = '#475569';
           }}
         >
           ✕
@@ -148,7 +148,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
             width: '70px',
             height: '70px',
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #F4C2C2, #C8A2C8)',
+            background: 'linear-gradient(135deg, #1E5A78, #2C6B8B)',
             margin: '0 auto 15px',
             display: 'flex',
             alignItems: 'center',
@@ -159,7 +159,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
           </div>
           <h2 style={{
             margin: 0,
-            color: '#333',
+            color: '#0F172A',
             fontSize: '26px',
             fontWeight: 'bold'
           }}>
@@ -167,7 +167,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
           </h2>
           <p style={{
             margin: '8px 0 0',
-            color: '#666',
+            color: '#475569',
             fontSize: '14px'
           }}>
             התחבר לחשבון שלך
@@ -196,7 +196,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
             <label style={{
               display: 'block',
               marginBottom: '8px',
-              color: '#333',
+              color: '#0F172A',
               fontSize: '14px',
               fontWeight: '500'
             }}>
@@ -214,18 +214,18 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
               style={{
                 width: '100%',
                 padding: '12px 16px',
-              
+                border: '1px solid #E5E7EB',
                 borderRadius: '8px',
                 fontSize: '14px',
                 transition: 'all 0.3s ease',
                 boxSizing: 'border-box'
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = '#F4C2C2';
+                e.target.style.borderColor = '#1E5A78';
             
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = '#E0E0E0';
+                e.target.style.borderColor = '#E5E7EB';
              
               }}
             />
@@ -235,7 +235,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
             <label style={{
               display: 'block',
               marginBottom: '8px',
-              color: '#333',
+              color: '#0F172A',
               fontSize: '14px',
               fontWeight: '500'
             }}>
@@ -253,18 +253,18 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
               style={{
                 width: '100%',
                 padding: '12px 16px',
-             
+                border: '1px solid #E5E7EB',
                 borderRadius: '8px',
                 fontSize: '14px',
                 transition: 'all 0.3s ease',
                 boxSizing: 'border-box'
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = '#F4C2C2';
+                e.target.style.borderColor = '#1E5A78';
         
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = '#E0E0E0';
+                e.target.style.borderColor = '#E5E7EB';
              
               }}
             />
@@ -278,7 +278,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
                 style={{
                   background: 'none',
                 
-                  color: '#f4c2c2',
+                  color: '#1E5A78',
                   fontSize: '12px',
                   cursor: forgotPasswordLoading ? 'not-allowed' : 'pointer',
                   textDecoration: 'underline',
@@ -295,8 +295,8 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
             type="submit" 
             disabled={isLoading}
             style={{
-              background: 'linear-gradient(135deg, #f4c2c2, #c8a2c8)',
-              color: '#333',
+              background: 'linear-gradient(135deg, #1E5A78, #2C6B8B)',
+              color: '#FFFFFF',
             
               borderRadius: '8px',
               padding: '16px 20px',
@@ -329,18 +329,18 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
           textAlign: 'center',
           marginTop: '25px',
           paddingTop: '20px',
-          borderTop: '1px solid #E0E0E0'
+          borderTop: '1px solid #E5E7EB'
         }}>
           <p style={{
             margin: 0,
-            color: '#666',
+            color: '#475569',
             fontSize: '13px'
           }}>
             אין לך חשבון?{' '}
             <span 
               onClick={handleSwitchToRegister}
               style={{
-                color: '#f4c2c2',
+                color: '#1E5A78',
                 cursor: 'pointer',
                 fontWeight: '600',
                 textDecoration: 'underline'

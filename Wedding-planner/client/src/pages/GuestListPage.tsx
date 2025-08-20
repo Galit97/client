@@ -538,7 +538,7 @@ export default function GuestListPage() {
         textAlign: 'center', 
         marginBottom: '30px',
         color: '#333',
-        borderBottom: '2px solid #ddd',
+        borderBottom: '2px solid #E5E7EB',
         paddingBottom: '10px'
       }}>
         רשימת מוזמנים
@@ -566,16 +566,7 @@ export default function GuestListPage() {
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <button
             onClick={downloadTemplate}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#a7d6ba',
-              color: '#333',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: 'bold'
-            }}
+           className='button'
           >
             📥 הורד תבנית אקסל
           </button>
@@ -583,32 +574,13 @@ export default function GuestListPage() {
           <button
             onClick={exportToExcel}
             disabled={guests.length === 0}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: guests.length === 0 ? '#6c757d' : '#d4a574',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: guests.length === 0 ? 'not-allowed' : 'pointer',
-              fontSize: '14px',
-              fontWeight: 'bold'
-            }}
+           className='button'
           >
             📤 ייצא לאקסל ({guests.length} מוזמנים)
           </button>
           
           <label
-            style={{
-              padding: '8px 16px',
-              backgroundColor: importing ? '#6c757d' : '#d4a574',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: importing ? 'not-allowed' : 'pointer',
-              fontSize: '14px',
-              fontWeight: 'bold',
-              display: 'inline-block'
-            }}
+           className='button'
           >
             {importing ? '⏳ מייבא...' : '📁 ייבא מאקסל'}
             <input
@@ -662,7 +634,7 @@ export default function GuestListPage() {
         <h3 style={{ marginTop: 0, marginBottom: '15px' }}>הוסף מוזמן חדש</h3>
         <form onSubmit={addGuest} style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
               שם פרטי *
             </label>
             <input
@@ -670,12 +642,12 @@ export default function GuestListPage() {
               value={newGuest.firstName}
               onChange={e => setNewGuest({ ...newGuest, firstName: e.target.value })}
               required
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
             />
           </div>
           
           <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
               שם משפחה *
             </label>
             <input
@@ -683,24 +655,24 @@ export default function GuestListPage() {
               value={newGuest.lastName}
               onChange={e => setNewGuest({ ...newGuest, lastName: e.target.value })}
               required
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
             />
           </div>
           
           <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
               מספר טלפון
             </label>
             <input
              
               value={newGuest.phone}
               onChange={e => setNewGuest({ ...newGuest, phone: e.target.value })}
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
             />
           </div>
           
           <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
               מספר מקומות שמורים *
             </label>
             <input
@@ -711,13 +683,13 @@ export default function GuestListPage() {
               value={newGuest.seatsReserved}
               onChange={e => setNewGuest({ ...newGuest, seatsReserved: Number(e.target.value) })}
               required
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
             />
-            <small style={{ color: '#666', fontSize: '12px' }}>מספר האנשים שיגיעו עם המוזמן</small>
+            <small style={{ color: '#475569', fontSize: '12px' }}>מספר האנשים שיגיעו עם המוזמן</small>
           </div>
           
           <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
               מספר שולחן
             </label>
             <input
@@ -726,25 +698,15 @@ export default function GuestListPage() {
             
               value={newGuest.tableNumber}
               onChange={e => setNewGuest({ ...newGuest, tableNumber: Number(e.target.value) })}
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
             />
-            <small style={{ color: '#666', fontSize: '12px' }}>אופציונלי - לשיבוץ בשולחנות</small>
+            <small style={{ color: '#475569', fontSize: '12px' }}>אופציונלי - לשיבוץ בשולחנות</small>
           </div>
           
           <div style={{ display: 'flex', alignItems: 'end' }}>
             <button 
               type="submit"
-              style={{
-                padding: '12px 24px',
-                backgroundColor: '#a7d6ba',
-                color: '#333',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '16px',
-                fontWeight: 'bold',
-                width: '100%'
-              }}
+          className='button'
             >
               הוסף מוזמן
             </button>

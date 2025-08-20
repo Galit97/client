@@ -98,7 +98,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0,0,0,0.20)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -110,7 +110,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
     >
       <div 
         style={{
-          background: 'white',
+          background: '#FFFFFF',
           borderRadius: '16px',
           padding: '40px',
           maxWidth: '500px',
@@ -135,7 +135,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
       
             fontSize: '24px',
             cursor: 'pointer',
-            color: '#666',
+            color: '#475569',
             width: '30px',
             height: '30px',
             display: 'flex',
@@ -145,12 +145,12 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
             transition: 'all 0.3s ease'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#F4C2C2';
-            e.currentTarget.style.color = '#333';
+            e.currentTarget.style.backgroundColor = '#EFF5FB';
+            e.currentTarget.style.color = '#0F172A';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.color = '#666';
+            e.currentTarget.style.color = '#475569';
           }}
         >
           ✕
@@ -162,7 +162,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
             width: '70px',
             height: '70px',
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #F4C2C2, #C8A2C8)',
+            background: 'linear-gradient(135deg, #1E5A78, #2C6B8B)',
             margin: '0 auto 15px',
             display: 'flex',
             alignItems: 'center',
@@ -173,7 +173,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
           </div>
           <h2 style={{
             margin: 0,
-            color: '#333',
+            color: '#0F172A',
             fontSize: '26px',
             fontWeight: 'bold'
           }}>
@@ -181,7 +181,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
           </h2>
           <p style={{
             margin: '8px 0 0',
-            color: '#666',
+            color: '#475569',
             fontSize: '14px'
           }}>
             הצטרף אלינו לתכנון החתונה המושלמת
@@ -196,7 +196,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
               <label style={{
                 display: 'block',
                 marginBottom: '8px',
-                color: '#333',
+                color: '#0F172A',
                 fontSize: '14px',
                 fontWeight: '500'
               }}>
@@ -211,7 +211,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-                
+                  border: '1px solid #E5E7EB',
                   borderRadius: '8px',
                   fontSize: '14px',
                   transition: 'all 0.3s ease',
@@ -246,18 +246,18 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-             
+                  border: '1px solid #E5E7EB',
                   borderRadius: '8px',
                   fontSize: '14px',
                   transition: 'all 0.3s ease',
                   boxSizing: 'border-box'
                 }}
                 onFocus={(e) => {
-                  e.target.style.borderColor = '#F4C2C2';
+                  e.target.style.borderColor = '#1E5A78';
            
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = '#E0E0E0';
+                  e.target.style.borderColor = '#E5E7EB';
                
                 }}
               />
@@ -268,7 +268,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
             <label style={{
               display: 'block',
               marginBottom: '8px',
-              color: '#333',
+              color: '#0F172A',
               fontSize: '14px',
               fontWeight: '500'
             }}>
@@ -284,18 +284,18 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
               style={{
                 width: '100%',
                 padding: '12px 16px',
-               
+                border: '1px solid #E5E7EB',
                 borderRadius: '8px',
                 fontSize: '14px',
                 transition: 'all 0.3s ease',
                 boxSizing: 'border-box'
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = '#F4C2C2';
+                e.target.style.borderColor = '#1E5A78';
                
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = '#E0E0E0';
+                e.target.style.borderColor = '#E5E7EB';
               
               }}
             />
@@ -307,7 +307,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
               <label style={{
                 display: 'block',
                 marginBottom: '8px',
-                color: '#333',
+                color: '#0F172A',
                 fontSize: '14px',
                 fontWeight: '500'
               }}>
@@ -323,18 +323,18 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-                
+                  border: '1px solid #E5E7EB',
                   borderRadius: '8px',
                   fontSize: '14px',
                   transition: 'all 0.3s ease',
                   boxSizing: 'border-box'
                 }}
                 onFocus={(e) => {
-                  e.target.style.borderColor = '#F4C2C2';
+                  e.target.style.borderColor = '#1E5A78';
                
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = '#E0E0E0';
+                  e.target.style.borderColor = '#E5E7EB';
               
                 }}
               />
@@ -343,7 +343,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
               <label style={{
                 display: 'block',
                 marginBottom: '8px',
-                color: '#333',
+                color: '#0F172A',
                 fontSize: '14px',
                 fontWeight: '500'
               }}>
@@ -359,18 +359,18 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
                 style={{
                   width: '100%',
                   padding: '12px 16px',
-               
+                  border: '1px solid #E5E7EB',
                   borderRadius: '8px',
                   fontSize: '14px',
                   transition: 'all 0.3s ease',
                   boxSizing: 'border-box'
                 }}
                 onFocus={(e) => {
-                  e.target.style.borderColor = '#F4C2C2';
+                  e.target.style.borderColor = '#1E5A78';
                
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = '#E0E0E0';
+                  e.target.style.borderColor = '#E5E7EB';
                 
                 }}
               />
@@ -381,7 +381,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
             <label style={{
               display: 'block',
               marginBottom: '8px',
-              color: '#333',
+              color: '#0F172A',
               fontSize: '14px',
               fontWeight: '500'
             }}>
@@ -395,20 +395,20 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
               style={{
                 width: '100%',
                 padding: '12px 16px',
-             
+                border: '1px solid #E5E7EB',
                 borderRadius: '8px',
                 fontSize: '14px',
                 transition: 'all 0.3s ease',
                 boxSizing: 'border-box',
-                backgroundColor: 'white',
+                backgroundColor: '#FFFFFF',
                 cursor: 'pointer'
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = '#F4C2C2';
+                e.target.style.borderColor = '#1E5A78';
          
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = '#E0E0E0';
+                e.target.style.borderColor = '#E5E7EB';
             
               }}
             >
@@ -427,7 +427,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
             <label style={{
               display: 'block',
               marginBottom: '8px',
-              color: '#333',
+              color: '#0F172A',
               fontSize: '14px',
               fontWeight: '500'
             }}>
@@ -440,12 +440,12 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
               style={{
                 width: '100%',
                 padding: '12px 16px',
-              
+                border: '1px solid #E5E7EB',
                 borderRadius: '8px',
                 fontSize: '14px',
                 transition: 'all 0.3s ease',
                 boxSizing: 'border-box',
-                backgroundColor: '#f9f9f9'
+                backgroundColor: '#FAFAFA'
               }}
             />
           </div>
@@ -453,19 +453,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
           <button 
             type="submit" 
             disabled={isLoading}
-            style={{
-              background: 'linear-gradient(135deg, #f4c2c2, #c8a2c8)',
-              color: '#333',
-            
-              borderRadius: '8px',
-              padding: '16px 20px',
-              fontSize: '16px',
-              fontWeight: '600',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              transition: 'all 0.3s ease',
-              marginTop: '10px',
-              opacity: isLoading ? 0.7 : 1
-            }}
+            className='button'
             onMouseEnter={(e) => {
               if (!isLoading) {
                 e.currentTarget.style.transform = 'translateY(-2px)';
@@ -488,18 +476,18 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
           textAlign: 'center',
           marginTop: '25px',
           paddingTop: '20px',
-          borderTop: '1px solid #E0E0E0'
+          borderTop: '1px solid #E5E7EB'
         }}>
           <p style={{
             margin: 0,
-            color: '#666',
+            color: '#475569',
             fontSize: '13px'
           }}>
             כבר יש לך חשבון?{' '}
             <span 
               onClick={handleSwitchToLogin}
               style={{
-                color: '#f4c2c2',
+                color: '#1E5A78',
                 cursor: 'pointer',
                 fontWeight: '600',
                 textDecoration: 'underline'

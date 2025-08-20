@@ -47,16 +47,7 @@ export default function MealPricingSettings({
           <button
             type="button"
             onClick={() => setIsEditing(!isEditing)}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: isEditing ? '#f44336' : '#4CAF50',
-              color: 'white',
-           
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: 'bold'
-            }}
+            className='button'
           >
             {isEditing ? '❌ ביטול עריכה' : '✏️ ערוך הגדרות'}
           </button>
@@ -121,14 +112,7 @@ export default function MealPricingSettings({
         </div>
         
         {!isEditing && (
-          <div style={{ 
-            marginBottom: '15px', 
-            padding: '10px 15px', 
-            background: '#e8f5e8', 
-            borderRadius: '4px', 
-          
-            textAlign: 'center'
-          }}>
+          <div className='button'>
             <div style={{ fontSize: '14px', color: '#2e7d32', fontWeight: 'bold' }}>
               🔒 השדות נעולים לעריכה
             </div>
@@ -278,7 +262,7 @@ export default function MealPricingSettings({
               style={{ 
                 width: '100%', 
                 padding: '8px', 
-                border: '1px solid #ddd', 
+                border: '1px solid #E5E7EB', 
                 borderRadius: '4px',
                 backgroundColor: isEditing ? 'white' : '#f5f5f5',
                 cursor: isEditing ? 'text' : 'not-allowed'
@@ -321,7 +305,7 @@ export default function MealPricingSettings({
               style={{ 
                 width: '100%', 
                 padding: '8px', 
-                border: '1px solid #ddd', 
+                border: '1px solid #E5E7EB', 
                 borderRadius: '4px',
                 backgroundColor: isEditing ? 'white' : '#f5f5f5',
                 cursor: isEditing ? 'text' : 'not-allowed'

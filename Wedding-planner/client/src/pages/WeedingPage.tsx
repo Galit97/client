@@ -794,7 +794,7 @@ export default function WeddingPage() {
               }
             }}
             disabled={creatingInvite || !wedding._id}
-            style={{ padding: '8px 16px', border: '1px solid #d4a574', background: creatingInvite ? '#ccc' : '#d4a574', color: 'white', borderRadius: 4, cursor: creatingInvite ? 'not-allowed' : 'pointer' }}
+          className='button'
           >
             {creatingInvite ? 'יוצר קישור...' : 'צור קישור להזמנת שותף'}
           </button>
@@ -880,16 +880,7 @@ export default function WeddingPage() {
             <button
               type="submit"
               disabled={saving}
-              style={{
-                padding: '12px 24px',
-                backgroundColor: saving ? '#ccc' : '#a7d6ba',
-                color: '#333',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: saving ? 'not-allowed' : 'pointer',
-                fontSize: '16px',
-                fontWeight: 'bold'
-              }}
+          className='button'
             >
               {saving ? 'שומר...' : 'שמור אירוע'}
             </button>
@@ -915,16 +906,7 @@ export default function WeddingPage() {
             <button
               type="button"
               onClick={() => setIsEditingMealPricing(!isEditingMealPricing)}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: isEditingMealPricing ? '#f4c2c2' : '#a7d6ba',
-                color: '#333',
-             
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: 'bold'
-              }}
+              className='button'
             >
               {isEditingMealPricing ? '❌ ביטול עריכה' : '✏️ ערוך הגדרות'}
             </button>
@@ -979,16 +961,7 @@ export default function WeddingPage() {
                 });
               }}
               disabled={saving}
-              style={{
-                padding: '6px 12px',
-                backgroundColor: saving ? '#ccc' : '#ff9800',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: saving ? 'not-allowed' : 'pointer',
-                fontSize: '12px',
-                fontWeight: 'bold'
-              }}
+            className='button'
             >
               {saving ? 'שומר...' : '💾 שמור '}
             </button>
@@ -1241,16 +1214,7 @@ export default function WeddingPage() {
                   console.error('Error refreshing guest counts:', error);
                 }
               }}
-              style={{
-                padding: '8px 16px',
-                backgroundColor: '#2196F3',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: 'bold'
-              }}
+            className='button'
             >
               🔄 רענן ספירת מוזמנים
             </button>
@@ -1407,16 +1371,7 @@ export default function WeddingPage() {
               saveWeddingData();
             }}
             disabled={saving}
-            style={{
-              padding: '12px 24px',
-              backgroundColor: saving ? '#ccc' : '#d4a574',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: saving ? 'not-allowed' : 'pointer',
-              fontSize: '16px',
-              fontWeight: 'bold'
-            }}
+          className='button'
           >
             {saving ? 'שומר...' : '💾 שמור הגדרות מחירי מנות'}
           </button>

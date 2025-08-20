@@ -314,11 +314,11 @@ export default function VenueComparisonPage() {
                 const children = total - adults;
                 updateGuestCounts(total, adults, children);
               }}
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
             />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
               מבוגרים
             </label>
             <input
@@ -331,11 +331,11 @@ export default function VenueComparisonPage() {
                 const children = guestCount - adults;
                 updateGuestCounts(guestCount, adults, children);
               }}
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
             />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
               ילדים (עד גיל 12)
             </label>
             <input
@@ -348,7 +348,7 @@ export default function VenueComparisonPage() {
                 const adults = guestCount - children;
                 updateGuestCounts(guestCount, adults, children);
               }}
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
             />
           </div>
         </div>
@@ -357,16 +357,7 @@ export default function VenueComparisonPage() {
         <div style={{ textAlign: 'center', marginTop: '20px' }}>
           <button
             onClick={handleSave}
-            style={{
-              background: saveStatus === 'saving' ? '#ff9800' : saveStatus === 'saved' ? '#4caf50' : saveStatus === 'error' ? '#f44336' : '#2196F3',
-              color: 'white',
-              border: 'none',
-              padding: '10px 20px',
-              borderRadius: '6px',
-              fontSize: '14px',
-              cursor: saveStatus === 'saving' ? 'not-allowed' : 'pointer',
-              fontWeight: 'bold'
-            }}
+           className='button'
             disabled={saveStatus === 'saving'}
           >
             {saveStatus === 'saving' ? '🔄 שומר...' : saveStatus === 'saved' ? '✅ נשמר!' : saveStatus === 'error' ? '❌ שגיאה' : '💾 שמור הגדרות אורחים'}
@@ -379,7 +370,7 @@ export default function VenueComparisonPage() {
         <button
           onClick={addVenue}
           style={{
-            background: '#4caf50',
+            background: '#256281',
             color: 'white',
             border: 'none',
             padding: '12px 24px',
@@ -399,12 +390,12 @@ export default function VenueComparisonPage() {
                  {venues.map((venue, index) => (
            <div key={venue.id} className="card">
              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-               <h3 style={{ margin: 0, color: '#333' }}>אולם/גן אירועים #{venues.length - index}</h3>
+               <h3 style={{ margin: 0, color: '#0F172A' }}>אולם/גן אירועים #{venues.length - index}</h3>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button
                   onClick={handleSave}
                   style={{
-                    background: saveStatus === 'saving' ? '#ff9800' : saveStatus === 'saved' ? '#4caf50' : saveStatus === 'error' ? '#f44336' : '#2196F3',
+                    background: saveStatus === 'saving' ? '#ff9800' : saveStatus === 'saved' ? '#4caf50' : saveStatus === 'error' ? '#f44336' : '#256281',
                     color: 'white',
                     border: 'none',
                     padding: '8px 12px',
@@ -436,7 +427,7 @@ export default function VenueComparisonPage() {
             {/* Basic Information */}
             <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', marginBottom: '20px' }}>
               <div>
-                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
                   שם האולם/גן אירועים *
                 </label>
                 <input
@@ -444,7 +435,7 @@ export default function VenueComparisonPage() {
                   value={venue.name}
                   onChange={(e) => updateVenue(venue.id, { name: e.target.value })}
                   placeholder="שם האולם"
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
                 />
               </div>
               <div>
@@ -736,12 +727,12 @@ export default function VenueComparisonPage() {
       {/* Comparison Summary */}
       {venues.length > 1 && (
         <div className="card">
-          <h2 style={{ margin: '0 0 20px 0', color: '#0277bd' }}>📊 סיכום השוואה</h2>
+          <h2 style={{ margin: '0 0 20px 0', color: '#1E5A78' }}>📊 סיכום השוואה</h2>
           
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ backgroundColor: '#f5f5f5' }}>
+                <tr style={{ backgroundColor: '#EFF5FB' }}>
                   <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>שם האולם</th>
                   <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>מחיר מנה בסיסי</th>
                   <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>תאורה והגברה</th>
@@ -757,7 +748,7 @@ export default function VenueComparisonPage() {
                 {venues
                   .filter(venue => venue.name.trim())
                   .map((venue, index) => (
-                    <tr key={venue.id} style={{ backgroundColor: 'white' }}>
+                    <tr key={venue.id} style={{ backgroundColor: '#FFFFFF' }}>
                       <td style={{ border: '1px solid #ddd', padding: '12px', fontWeight: 'bold' }}>
                         {venue.name}
                       </td>
@@ -778,14 +769,14 @@ export default function VenueComparisonPage() {
                       </td>
                       <td style={{ border: '1px solid #ddd', padding: '12px', fontSize: '12px' }}>
                         <div>{venue.pricingDates || '-'}</div>
-                        <div style={{ color: '#666' }}>{venue.pricingDays || '-'}</div>
+                        <div style={{ color: '#475569' }}>{venue.pricingDays || '-'}</div>
                       </td>
                       <td style={{ border: '1px solid #ddd', padding: '12px' }}>
                         {venue.phone || '-'}
                       </td>
                       <td style={{ border: '1px solid #ddd', padding: '12px' }}>
                         {venue.website ? (
-                          <a href={venue.website} target="_blank" rel="noopener noreferrer" style={{ color: '#2196F3' }}>
+                          <a href={venue.website} target="_blank" rel="noopener noreferrer" style={{ color: '#1E5A78' }}>
                             קישור
                           </a>
                         ) : '-'}
@@ -802,10 +793,10 @@ export default function VenueComparisonPage() {
         <div style={{ 
           textAlign: 'center', 
           padding: '50px', 
-          color: '#666',
-          background: '#f9f9f9',
+          color: '#475569',
+          background: '#FAFAFA',
           borderRadius: '8px',
-          border: '1px solid #ddd'
+          border: '1px solid #E5E7EB'
         }}>
           <div style={{ fontSize: '18px', marginBottom: '10px' }}>אין אולמות להשוואה</div>
           <div>לחץ על "הוסף אולם/גן אירועים להשוואה" כדי להתחיל</div>

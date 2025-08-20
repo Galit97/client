@@ -259,10 +259,10 @@ const Dashboard: React.FC = () => {
 
       {/* Countdown Timer */}
       <div className="card text-center mb-xl" style={{ 
-        background: 'linear-gradient(135deg, #c8e6d1 0%, #d4f0d4 25%, #f8d7da 50%, #e0c8e0 75%, #c8e6d1 100%)',
-        color: '#333',
-        border: '1px solid black',
-        boxShadow: '0 4px 15px rgba(200, 230, 209, 0.3)',
+        background: 'linear-gradient(135deg, #EDF8F4 0%, #EFF5FB 25%, #FCF3F7 50%, #FAFAFA 75%, #EDF8F4 100%)',
+        color: '#0F172A',
+        border: '1px solid #CBD5E1',
+        boxShadow: '0 4px 15px rgba(237, 248, 244, 0.3)',
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -301,20 +301,21 @@ const Dashboard: React.FC = () => {
                width: '50px', 
                height: '50px', 
                borderRadius: '50%', 
-               background: 'linear-gradient(135deg, #c8e6d1, #d4f0d4)',
+               background: 'linear-gradient(135deg, #EDF8F4, #EFF5FB)',
                display: 'flex',
                alignItems: 'center',
                justifyContent: 'center',
-               marginLeft: '15px'
+               marginLeft: '15px',
+               border: '1px solid #CBD5E1'
              }}>
                <span style={{ fontSize: '24px' }}>✓</span>
              </div>
              <div>
-               <h3 style={{ margin: '0', color: '#333' }}>משימות כולל</h3>
-               <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
+               <h3 style={{ margin: '0', color: '#0F172A' }}>משימות כולל</h3>
+               <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
                  צ'קליסט, ספקים, מוזמנים
                </p>
-               <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '12px' }}>
+               <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '12px' }}>
                  {completedItems} מתוך {totalItems} הושלמו
                </p>
              </div>
@@ -323,14 +324,14 @@ const Dashboard: React.FC = () => {
            <div style={{ 
              width: '100%', 
              height: '8px', 
-             background: '#f0f0f0', 
+             background: '#FAFAFA', 
              borderRadius: '4px',
              overflow: 'hidden'
            }}>
              <div style={{ 
                width: `${taskProgress}%`, 
                height: '100%', 
-               background: 'linear-gradient(135deg, #c8e6d1, #d4f0d4)',
+               background: 'linear-gradient(135deg, #EDF8F4, #EFF5FB)',
                transition: 'width 0.3s ease'
              }}></div>
            </div>
@@ -339,7 +340,7 @@ const Dashboard: React.FC = () => {
              marginTop: '15px', 
              fontSize: '28px', 
              fontWeight: 'bold', 
-             color: '#c8e6d1' 
+             color: '#1E5A78' 
            }}>
              {taskProgress.toFixed(0)}%
            </div>
@@ -352,7 +353,7 @@ const Dashboard: React.FC = () => {
                 width: '50px', 
                 height: '50px', 
                 borderRadius: '50%', 
-                background: 'linear-gradient(135deg, #c8e6d1, #f8d7da)',
+                background: 'linear-gradient(135deg, #EDF8F4, #FCF3F7)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -361,8 +362,8 @@ const Dashboard: React.FC = () => {
                <span style={{ fontSize: '24px' }}>🏢</span>
              </div>
              <div>
-               <h3 style={{ margin: '0', color: '#333', fontSize: '16px' }}>ספקים</h3>
-               <p style={{ margin: '2px 0 0 0', color: '#666', fontSize: '12px' }}>
+               <h3 style={{ margin: '0', color: '#0F172A', fontSize: '16px' }}>ספקים</h3>
+               <p style={{ margin: '2px 0 0 0', color: '#475569', fontSize: '12px' }}>
                  {confirmedVendors} מתוך {totalVendors} אושרו
                </p>
              </div>
@@ -371,14 +372,14 @@ const Dashboard: React.FC = () => {
                      <div style={{ 
              width: '100%', 
              height: '8px', 
-             background: '#f0f0f0', 
+             background: '#FAFAFA', 
              borderRadius: '4px',
              overflow: 'hidden'
            }}>
              <div style={{ 
                width: `${vendorProgress}%`, 
                height: '100%', 
-               background: 'linear-gradient(90deg, #f8d7da, #e0c8e0)',
+               background: 'linear-gradient(90deg, #FCF3F7, #FAFAFA)',
                transition: 'width 0.3s ease'
              }}></div>
            </div>
@@ -387,7 +388,7 @@ const Dashboard: React.FC = () => {
              marginTop: '10px', 
              fontSize: '24px', 
              fontWeight: 'bold', 
-             color: '#f8d7da' 
+             color: '#1E5A78' 
            }}>
              {vendorProgress.toFixed(0)}%
            </div>
@@ -400,7 +401,7 @@ const Dashboard: React.FC = () => {
                width: '50px', 
                height: '50px', 
                borderRadius: '50%', 
-               background: 'linear-gradient(135deg, #c8e6d1, #f8d7da)',
+               background: 'linear-gradient(135deg, #EDF8F4, #FCF3F7)',
                display: 'flex',
                alignItems: 'center',
                justifyContent: 'center',
@@ -409,11 +410,11 @@ const Dashboard: React.FC = () => {
               <span style={{ fontSize: '24px' }}>👥</span>
             </div>
                          <div>
-               <h3 style={{ margin: '0', color: '#333' }}>מוזמנים</h3>
-               <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
+               <h3 style={{ margin: '0', color: '#0F172A' }}>מוזמנים</h3>
+               <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
                  {confirmedGuests} מתוך {totalGuests} אישרו הגעה
                </p>
-               <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '12px' }}>
+               <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '12px' }}>
                  סה"כ מוזמנים: {totalReservedPlaces}
                </p>
              </div>
@@ -422,14 +423,14 @@ const Dashboard: React.FC = () => {
                      <div style={{ 
              width: '100%', 
              height: '8px', 
-             background: '#f0f0f0', 
+             background: '#FAFAFA', 
              borderRadius: '4px',
              overflow: 'hidden'
            }}>
              <div style={{ 
                width: `${guestProgress}%`, 
                height: '100%', 
-               background: 'linear-gradient(90deg, #c8e6d1, #f8d7da)',
+               background: 'linear-gradient(90deg, #EDF8F4, #FCF3F7)',
                transition: 'width 0.3s ease'
              }}></div>
            </div>
@@ -438,17 +439,17 @@ const Dashboard: React.FC = () => {
              marginTop: '10px', 
              fontSize: '24px', 
              fontWeight: 'bold', 
-             color: '#c8e6d1' 
+             color: '#1E5A78' 
            }}>
              {guestProgress.toFixed(0)}%
            </div>
         </div>
         {/* Event Cost Summary */}
         <div style={{ 
-          background: 'white', 
+          background: '#FFFFFF', 
           padding: '25px', 
           borderRadius: '12px',
-          border: '1px solid black'
+          border: '1px solid #CBD5E1'
          
         }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
@@ -456,7 +457,7 @@ const Dashboard: React.FC = () => {
                width: '50px', 
                height: '50px', 
                borderRadius: '50%', 
-               background: 'linear-gradient(135deg, #d4f0d4, #e0c8e0)',
+               background: 'linear-gradient(135deg, #EFF5FB, #FAFAFA)',
                display: 'flex',
                alignItems: 'center',
                justifyContent: 'center',
@@ -465,30 +466,30 @@ const Dashboard: React.FC = () => {
               <span style={{ fontSize: '24px' }}>💰</span>
             </div>
             <div>
-              <h3 style={{ margin: '0', color: '#333' }}>חישוב עלויות האירוע</h3>
-              <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
+              <h3 style={{ margin: '0', color: '#0F172A' }}>חישוב עלויות האירוע</h3>
+              <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
                 עלות לאיש (מאשרים): {costPerPerson.toLocaleString()} ₪
               </p>
-              <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
+              <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
                 עלות לאיש (מוזמנים): {costPerPersonInvited.toLocaleString()} ₪
               </p>
             </div>
           </div>
           <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
             <div>
-              <div style={{ fontSize: '12px', color: '#666' }}>סה"כ ספקים</div>
+              <div style={{ fontSize: '12px', color: '#475569' }}>סה"כ ספקים</div>
               <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#c62828' }}>{totalVendorExpenses.toLocaleString()} ₪</div>
             </div>
             <div>
-              <div style={{ fontSize: '12px', color: '#666' }}>עלות מנות (מאשרים)</div>
+              <div style={{ fontSize: '12px', color: '#475569' }}>עלות מנות (מאשרים)</div>
               <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#2e7d32' }}>{confirmedMealCost.toLocaleString()} ₪</div>
             </div>
             <div>
-              <div style={{ fontSize: '12px', color: '#666' }}>עלות מנות (מוזמנים)</div>
+              <div style={{ fontSize: '12px', color: '#475569' }}>עלות מנות (מוזמנים)</div>
               <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#4caf50' }}>{totalInvitedMealCost.toLocaleString()} ₪</div>
             </div>
             <div>
-              <div style={{ fontSize: '12px', color: '#666' }}>סה"כ עלות אירוע</div>
+              <div style={{ fontSize: '12px', color: '#475569' }}>סה"כ עלות אירוע</div>
               <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#f57f17' }}>{eventTotalCost.toLocaleString()} ₪</div>
             </div>
           </div>
@@ -504,15 +505,15 @@ const Dashboard: React.FC = () => {
       }}>
         {/* Recent Activities */}
         <div style={{ 
-          background: 'white', 
+          background: '#FFFFFF', 
           padding: '25px', 
           borderRadius: '12px',
-          border: '1px solid black'
+          border: '1px solid #CBD5E1'
       
         }}>
           <h3 style={{ 
             margin: '0 0 20px 0', 
-            color: '#333',
+            color: '#0F172A',
             display: 'flex',
             alignItems: 'center'
           }}>
@@ -528,18 +529,18 @@ const Dashboard: React.FC = () => {
                  
                   borderRadius: '8px', 
                   marginBottom: '10px',
-                  background: '#f8fbff'
+                  background: '#EFF5FB'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
                     <span style={{ fontSize: '20px', marginLeft: '10px' }}>{activity.icon}</span>
-                    <div style={{ fontWeight: 'bold', color: '#1976D2' }}>
+                    <div style={{ fontWeight: 'bold', color: '#1E5A78' }}>
                       {activity.title}
                     </div>
                   </div>
-                  <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>
+                  <div style={{ fontSize: '14px', color: '#475569', marginBottom: '5px' }}>
                     {activity.description}
                   </div>
-                  <div style={{ fontSize: '12px', color: '#999' }}>
+                  <div style={{ fontSize: '12px', color: '#475569' }}>
                     {new Date(activity.timestamp).toLocaleString('he-IL', {
                       year: 'numeric',
                       month: '2-digit',
@@ -552,7 +553,7 @@ const Dashboard: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div style={{ textAlign: 'center', color: '#666', fontStyle: 'italic', padding: '20px' }}>
+            <div style={{ textAlign: 'center', color: '#475569', fontStyle: 'italic', padding: '20px' }}>
               אין פעולות אחרונות
             </div>
           )}
@@ -560,15 +561,15 @@ const Dashboard: React.FC = () => {
 
         {/* Upcoming Tasks from Checklist */}
         <div style={{ 
-          background: 'white', 
+          background: '#FFFFFF', 
           padding: '25px', 
           borderRadius: '12px',
-          border: '1px solid black'
+          border: '1px solid #CBD5E1'
        
         }}>
           <h3 style={{ 
             margin: '0 0 20px 0', 
-            color: '#333',
+            color: '#0F172A',
             display: 'flex',
             alignItems: 'center'
           }}>
@@ -587,7 +588,7 @@ const Dashboard: React.FC = () => {
                  }}>
                    <div style={{ 
                      fontWeight: 'bold', 
-                     color: task.dueDate && new Date(task.dueDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? '#e65100' : '#333',
+                     color: task.dueDate && new Date(task.dueDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? '#e65100' : '#0F172A',
                      marginBottom: '5px',
                      display: 'flex',
                      alignItems: 'center'
@@ -595,10 +596,10 @@ const Dashboard: React.FC = () => {
                      {task.dueDate && new Date(task.dueDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) && <span style={{ marginLeft: '5px' }}>🔥</span>}
                      {task.task}
                    </div>
-                   <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>
+                   <div style={{ fontSize: '14px', color: '#475569', marginBottom: '5px' }}>
                      {task.notes || 'אין הערות'}
                    </div>
-                   <div style={{ fontSize: '12px', color: '#999' }}>
+                   <div style={{ fontSize: '12px', color: '#475569' }}>
                      {task.dueDate && (
                        <span style={{ marginRight: '10px' }}>
                          תאריך יעד: {new Date(task.dueDate).toLocaleDateString('he-IL')}
@@ -609,7 +610,7 @@ const Dashboard: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div style={{ textAlign: 'center', color: '#666', fontStyle: 'italic', padding: '20px' }}>
+            <div style={{ textAlign: 'center', color: '#475569', fontStyle: 'italic', padding: '20px' }}>
               אין משימות לביצוע
             </div>
           )}
@@ -620,40 +621,40 @@ const Dashboard: React.FC = () => {
 
       {/* Quick Stats */}
       <div style={{ 
-        background: 'white', 
+        background: '#FFFFFF', 
         padding: '25px', 
         borderRadius: '12px',
-        border: '1px solid black'
+        border: '1px solid #CBD5E1'
       }}>
-        <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>📊 סטטיסטיקות מהירות</h3>
+        <h3 style={{ margin: '0 0 20px 0', color: '#0F172A' }}>📊 סטטיסטיקות מהירות</h3>
         
         <div style={{ display: 'grid', gap: '20px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#4CAF50' }}>
               {totalItems}
             </div>
-            <div style={{ fontSize: '14px', color: '#666' }}>סה"כ פריטים</div>
+            <div style={{ fontSize: '14px', color: '#475569' }}>סה"כ פריטים</div>
           </div>
           
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#2196F3' }}>
               {totalVendors}
             </div>
-            <div style={{ fontSize: '14px', color: '#666' }}>סה"כ ספקים</div>
+            <div style={{ fontSize: '14px', color: '#475569' }}>סה"כ ספקים</div>
           </div>
           
                      <div style={{ textAlign: 'center' }}>
                             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ff9800' }}>
                {totalReservedPlaces}
              </div>
-             <div style={{ fontSize: '14px', color: '#666' }}>סה"כ מוזמנים</div>
+             <div style={{ fontSize: '14px', color: '#475569' }}>סה"כ מוזמנים</div>
            </div>
           
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#9C27B0' }}>
               {highPriorityTasks.length}
             </div>
-            <div style={{ fontSize: '14px', color: '#666' }}>משימות דחופות</div>
+            <div style={{ fontSize: '14px', color: '#475569' }}>משימות דחופות</div>
           </div>
         </div>
       </div>

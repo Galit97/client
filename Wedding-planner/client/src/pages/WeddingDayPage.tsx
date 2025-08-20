@@ -96,7 +96,7 @@ export default function WeddingDayPage() {
         ) : (
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {items.map(it => (
-              <li key={it.id} style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto auto', gap: 8, alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #eee' }}>
+              <li key={it.id} style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto auto', gap: 8, alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #E5E7EB' }}>
                 <input type="checkbox" checked={!!it.done} onChange={() => toggle(it.id)} />
                 <input className="input" value={it.text} onChange={e => update(it.id, e.target.value)} />
                 <button className="btn-icon" title="מחק" onClick={() => remove(it.id)}>🗑️</button>

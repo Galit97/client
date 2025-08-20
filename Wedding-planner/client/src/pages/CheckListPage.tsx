@@ -359,7 +359,7 @@ export default function CheckListPage() {
         textAlign: 'center', 
         marginBottom: '30px',
         color: '#333',
-        borderBottom: '2px solid #ddd',
+        borderBottom: '2px solid #E5E7EB',
         paddingBottom: '10px'
       }}>
         צ'קליסט אירוע
@@ -470,17 +470,7 @@ export default function CheckListPage() {
           <div style={{ display: 'flex', alignItems: 'end' }}>
             <button 
               type="submit"
-              style={{
-                padding: '12px 24px',
-                backgroundColor: '#a7d6ba',
-                color: '#333',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '16px',
-                fontWeight: 'bold',
-                width: '100%'
-              }}
+             className='button'
             >
               הוסף משימה
             </button>
@@ -572,7 +562,7 @@ export default function CheckListPage() {
         <div style={{ 
           background: '#f5f5f5', 
           padding: '15px 20px', 
-          borderBottom: '1px solid #ddd',
+          borderBottom: '1px solid #E5E7EB',
           fontWeight: 'bold'
         }}>
           <div style={{ display: 'grid', gridTemplateColumns: '30px 2fr 1fr 1fr 1fr 1fr 1fr', gap: '10px' }}>

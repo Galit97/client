@@ -56,7 +56,7 @@ export default function Menu({ onSelect, onLogout }: MenuProps) {
     },
     {
       id: "eventSettings",
-      label: "הגדרות האירוע",
+      label: "האירוע שלנו",
       onClick: () => handleMenuItemClick("eventSettings"),
     },
     {
@@ -229,7 +229,7 @@ export default function Menu({ onSelect, onLogout }: MenuProps) {
                               textAlign: 'right',
                               fontSize: '14px',
                               cursor: 'pointer',
-                              color: '#333',
+                              color: '#0F172A',
                               display: 'block',
                               borderBottom: '1px solid #eee'
                             }}
@@ -306,7 +306,7 @@ export default function Menu({ onSelect, onLogout }: MenuProps) {
         }}
       >
         <div style={{ marginBottom: "30px" }}>
-          <h3 style={{ margin: "0 0 10px 0", color: "#333" }}>תפריט</h3>
+          <h3 style={{ margin: "0 0 10px 0", color: "#0F172A" }}>תפריט</h3>
           {currentUserName && (
             <p style={{ margin: "0", color: "#666", fontSize: "14px" }}>
               שלום, {currentUserName}

@@ -3,18 +3,18 @@
 /* ===== CSS VARIABLES ===== */
 :root {
   /* Colors */
-  --color-primary: #333333;
-  --color-secondary: #666666;
-  --color-accent: #999999;
-  --color-white: #ffffff;
+  --color-primary: #0F172A;
+  --color-secondary: #475569;
+  --color-accent: #475569;
+  --color-white: #FFFFFF;
   --color-black: #000000;
-  --color-gray-light: #f5f5f5;
-  --color-gray-medium: #e0e0e0;
-  --color-gray-dark: #cccccc;
-  --color-beige: #f5f5dc;
-  --color-cancel: #f4c2c2;
-  --color-approve: #a7d6ba;
-  --color-brown-pastel: #d4a574;
+  --color-gray-light: #FAFAFA;
+  --color-gray-medium: #E5E7EB;
+  --color-gray-dark: #CBD5E1;
+  --color-beige: #FAFAFA;
+  --color-cancel: #475569;
+  --color-approve: #256281;
+  --color-brown-pastel: #256281;
   
   /* Typography */
   --font-family: 'Arial', sans-serif;
@@ -60,7 +60,7 @@ body {
   font-size: var(--font-size-base);
   line-height: 1.5;
   color: var(--color-primary);
-  background-color: #ffffff;
+  background-color: #FFFFFF;
   direction: rtl;
 }
 
@@ -118,6 +118,19 @@ p {
   justify-content: center;
 }
 
+.button {
+  background: linear-gradient(135deg, #1E5A78, #2C6B8B);
+  color: #FFFFFF;
+  border-radius: 8px;
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  opacity: 1;
+}
+
 .flex-between {
   display: flex;
   align-items: center;
@@ -132,7 +145,7 @@ p {
 /* ===== CARDS ===== */
 .card {
   background: var(--color-white);
-  border: 1px solid black;
+ border: 1px solid #CBD5E1;
   border-radius: var(--border-radius-md);
   padding: var(--spacing-xl);
 }
@@ -285,12 +298,12 @@ p {
   text-decoration: none;
   cursor: pointer;
   transition: all var(--transition-fast);
-  background-color: var(--color-brown-pastel);
+  background-color: var(--color-approve);
   color: var(--color-white);
 }
 
 .btn:hover {
-  background-color: var(--color-secondary);
+  background-color: #2C6B8B;
 }
 
 .btn:active {
@@ -316,22 +329,22 @@ p {
 
 .btn.secondary {
   background-color: var(--color-cancel);
-  color: var(--color-primary);
+  color: var(--color-white);
   border-color: var(--border-color);
 }
 
 .btn.secondary:hover {
-  background-color: var(--color-gray-light);
+  background-color: #64748B;
 }
 
 .btn.outline {
   background-color: transparent;
-  color: var(--color-brown-pastel);
-  border-color: var(--color-brown-pastel);
+  color: var(--color-approve);
+  border-color: var(--color-approve);
 }
 
 .btn.outline:hover {
-  background-color: var(--color-brown-pastel);
+  background-color: var(--color-approve);
   color: var(--color-white);
 }
 
@@ -344,20 +357,20 @@ p {
 
 .btn-danger {
   background-color: var(--color-cancel);
-  color: var(--color-primary);
+  color: var(--color-white);
 }
 
 .btn-danger:hover {
-  background-color: var(--color-secondary);
+  background-color: #64748B;
 }
 
 .btn-success {
   background-color: var(--color-approve);
-  color: var(--color-primary);
+  color: var(--color-white);
 }
 
 .btn-success:hover {
-  background-color: var(--color-secondary);
+  background-color: #2C6B8B;
 }
 
 /* ===== NEW BUTTON CLASSES ===== */
@@ -374,11 +387,11 @@ p {
   cursor: pointer;
   transition: all var(--transition-fast);
   background-color: var(--color-cancel);
-  color: var(--color-primary);
+  color: var(--color-white);
 }
 
 .cancel-btn:hover {
-  background-color: var(--color-gray-light);
+  background-color: #64748B;
 }
 
 .cancel-btn:active {
@@ -398,11 +411,11 @@ p {
   cursor: pointer;
   transition: all var(--transition-fast);
   background-color: var(--color-approve);
-  color: var(--color-primary);
+  color: var(--color-white);
 }
 
 .ok-btn:hover {
-  background-color: var(--color-secondary);
+  background-color: #2C6B8B;
 }
 
 .ok-btn:active {
@@ -421,12 +434,12 @@ p {
   text-decoration: none;
   cursor: pointer;
   transition: all var(--transition-fast);
-  background-color: var(--color-brown-pastel);
+  background-color: var(--color-approve);
   color: var(--color-white);
 }
 
 .button:hover {
-  background-color: var(--color-secondary);
+  background-color: #2C6B8B;
 }
 
 .button:active {
@@ -493,7 +506,7 @@ p {
 
 .alert.info {
   border: none;
-  background-color:  linear-gradient(135deg, #cce7ff 0%, #d4f5d4 25%, #f5f0e6 50%, #cce7ff 100%);
+  background-color:  linear-gradient(135deg, #EFF5FB 0%, #EDF8F4 25%, #FAFAFA 50%, #EFF5FB 100%);
   border-radius: 10px;
 }
 

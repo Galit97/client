@@ -71,7 +71,7 @@ export default function ImportantThingsPage() {
         ) : (
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {items.map((it, idx) => (
-              <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', borderBottom: '1px solid #eee' }}>
+              <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', borderBottom: '1px solid #E5E7EB' }}>
                 <input type="checkbox" checked={!!it.done} onChange={() => toggle(idx)} />
                 <input className="input" value={it.text} onChange={e => update(idx, e.target.value)} />
                 <button className="btn-icon" title="מחק" onClick={() => remove(idx)}>🗑️</button>

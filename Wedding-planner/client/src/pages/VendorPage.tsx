@@ -821,12 +821,12 @@ export default function VendorsListPage() {
               value={newVendor.vendorName}
               onChange={(e) => setNewVendor({ ...newVendor, vendorName: e.target.value })}
               required
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
             />
           </div>
           
           <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
               מחיר (₪) *
             </label>
             <input
@@ -836,7 +836,7 @@ export default function VendorsListPage() {
               value={newVendor.price}
               onChange={(e) => setNewVendor({ ...newVendor, price: Number(e.target.value) })}
               required
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
             />
           </div>
           
@@ -880,14 +880,14 @@ export default function VendorsListPage() {
           </div>
           
           <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
               סוג ספק *
             </label>
             <select
               value={newVendor.type}
               onChange={(e) => setNewVendor({ ...newVendor, type: e.target.value as VendorType })}
               required
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
             >
               <option value="music">מוזיקה</option>
               <option value="food">אוכל</option>
@@ -913,13 +913,13 @@ export default function VendorsListPage() {
           </div>
           
           <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
               סטטוס
             </label>
             <select
               value={newVendor.status}
               onChange={(e) => setNewVendor({ ...newVendor, status: e.target.value as VendorStatus })}
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
             >
               <option value="Pending">ממתין</option>
               <option value="Confirmed">אושר</option>
@@ -928,19 +928,19 @@ export default function VendorsListPage() {
           </div>
           
           <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
               הערות
             </label>
             <input
               placeholder="פרטים נוספים על הספק"
               value={newVendor.notes}
               onChange={(e) => setNewVendor({ ...newVendor, notes: e.target.value })}
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
             />
           </div>
           
           <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
               העלאת חוזה
             </label>
             <input
@@ -957,10 +957,10 @@ export default function VendorsListPage() {
                   }
                 }
               }}
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
             />
             {newVendor.contractFile && (
-              <small style={{ color: '#666', fontSize: '12px' }}>
+              <small style={{ color: '#475569', fontSize: '12px' }}>
                 קובץ נבחר: {newVendor.contractFile}
               </small>
             )}
@@ -984,10 +984,10 @@ export default function VendorsListPage() {
                   }
                 }
               }}
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
             />
             {newVendor.fileURL && (
-              <small style={{ color: '#666', fontSize: '12px' }}>
+              <small style={{ color: '#475569', fontSize: '12px' }}>
                 קובץ נבחר: {newVendor.fileURL}
               </small>
             )}
@@ -996,17 +996,7 @@ export default function VendorsListPage() {
           <div style={{ display: 'flex', alignItems: 'end' }}>
             <button 
               type="submit"
-                          style={{
-              padding: '12px 24px',
-              backgroundColor: '#a7d6ba',
-              color: '#333',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '16px',
-              fontWeight: 'bold',
-              width: '100%'
-            }}
+            className='button'
             >
               הוסף ספק
             </button>
@@ -1019,7 +1009,7 @@ export default function VendorsListPage() {
         <h4 style={{ margin: '0 0 12px 0' }}>סינון ומיון</h4>
         {filteredAndSortedVendors.length > 0 && (
           <div style={{
-            background: '#e8f5e8',
+            background: '#EDF8F4',
             padding: '10px',
             borderRadius: '6px',
             marginBottom: '12px',
