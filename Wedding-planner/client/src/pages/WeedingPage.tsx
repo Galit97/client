@@ -1337,20 +1337,19 @@ export default function WeddingPage() {
           {/* Total Meal Cost Summary */}
           {calculateMealCostByStatus().total?.totalCost && typeof calculateMealCostByStatus().total?.totalCost === 'number' && (
             <div style={{ 
-              marginTop: '20px', 
-              padding: '15px', 
-              background: '#4caf50', 
+              background: 'linear-gradient(135deg, #cce7ff 0%, #d4f5d4 25%, #f5f0e6 50%, #cce7ff 100%)',
+              padding: '15px',
               borderRadius: '8px',
-              border: '2px solid #2e7d32',
+              marginBottom: '20px',
               textAlign: 'center'
             }}>
-              <h4 style={{ margin: '0 0 10px 0', color: 'white', fontSize: '18px' }}>
+              <h4 style={{ margin: '0 0 10px 0', color: 'black', fontSize: '18px' }}>
                 💰 סה"כ עלות מנות לכל המוזמנים
               </h4>
-              <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'white', marginBottom: '5px' }}>
+              <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'black', marginBottom: '5px' }}>
                 {calculateMealCostByStatus().total?.totalCost?.toLocaleString?.() ?? 0} ₪
               </div>
-              <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.9)' }}>
+              <div style={{ fontSize: '14px', color: 'black' }}>
                 ממוצע: {(calculateMealCostByStatus().total?.costPerPerson ?? 0).toFixed(0)} ₪ לאיש
               </div>
             </div>

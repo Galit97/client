@@ -367,11 +367,11 @@ export default function CheckListPage() {
 
       {/* Help Section */}
       <div style={{
-        background: '#ffffff',
-        padding: '15px',
-        borderRadius: '8px',
-        border: '1px solid black',
-        marginBottom: '20px',
+       background: 'linear-gradient(135deg, #cce7ff 0%, #d4f5d4 25%, #f5f0e6 50%, #cce7ff 100%)',
+       padding: '15px',
+       borderRadius: '8px',
+       marginBottom: '20px',
+      
    
       }}>
         <h4 style={{ margin: '0 0 10px 0', color: '#1976d2' }}>💡 איך להשתמש בצ'קליסט:</h4>
