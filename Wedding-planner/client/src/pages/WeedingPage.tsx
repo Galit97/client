@@ -389,11 +389,11 @@ export default function WeddingPage() {
 
   function getStatusColor(status: WeddingStatus) {
     switch (status) {
-      case 'Planning': return '#ff9800';
-      case 'Confirmed': return '#4CAF50';
-      case 'Cancelled': return '#f44336';
-      case 'Finished': return '#2196F3';
-      case 'Postponed': return '#9C27B0';
+          case 'Planning': return '#3b82f6';
+    case 'Confirmed': return '#3b82f6';
+    case 'Cancelled': return '#ef4444';
+    case 'Finished': return '#3b82f6';
+    case 'Postponed': return '#3b82f6';
       default: return '#ddd';
     }
   }
@@ -630,25 +630,10 @@ export default function WeddingPage() {
         borderBottom: '2px solid #ddd',
         paddingBottom: '10px'
       }}>
-        האירוע שלנו
+       הגדרות האירוע
       </h1>
 
-      {/* Help Section */}
-      <div style={{
-      background: 'linear-gradient(135deg, #cce7ff 0%, #d4f5d4 25%, #f5f0e6 50%, #cce7ff 100%)',
-        padding: '15px',
-        borderRadius: '8px',
-        marginBottom: '20px',
-      
-      }}>
-        <h4 style={{ margin: '0 0 10px 0', color: '#1976d2' }}>💡 איך לנהל את האירוע:</h4>
-        <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#333' }}>
-          <div><strong>פרטי האירוע:</strong> מלא את כל הפרטים החשובים על האירוע</div>
-          <div><strong>שותפים:</strong> הוסף שותפים לאירוע שיוכלו לנהל יחד איתך</div>
-          <div><strong>סטטוס:</strong> עדכן את הסטטוס לפי התקדמות התכנון</div>
-          <div><strong>תקציב:</strong> הגדר תקציב לאירוע לניהול הוצאות</div>
-        </div>
-      </div>
+ 
 
       {/* Wedding Form */}
       <div className="card">
@@ -833,7 +818,7 @@ export default function WeddingPage() {
                 style={{ 
                   padding: '8px 16px', 
                   border: '1px solid #a7d6ba', 
-                  background: selectedParticipantId ? '#a7d6ba' : '#ccc',
+                  background: selectedParticipantId ? '#3b82f6' : '#ccc',
                   color: '#333',
                   borderRadius: '4px',
                   cursor: selectedParticipantId ? 'pointer' : 'not-allowed'
@@ -857,7 +842,7 @@ export default function WeddingPage() {
                       style={{ 
                         padding: '4px 8px', 
                         border: '1px solid #f4c2c2', 
-                        background: '#f4c2c2',
+                        background: '#ef4444',
                         color: '#333',
                         borderRadius: '4px',
                         cursor: 'pointer',
@@ -943,12 +928,12 @@ export default function WeddingPage() {
             padding: '8px 12px', 
             background: '#f2ebe2', 
             borderRadius: '4px', 
-            border: '1px solid #ff9800',
+            border: '1px solid #3b82f6',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center'
           }}>
-            <div style={{ fontSize: '12px', color: '#e65100' }}>
+            <div style={{ fontSize: '12px', color: '#1d5a78' }}>
               <strong>💡 טיפ:</strong> השינויים נשמרים אוטומטית תוך 2 שניות מהשינוי האחרון
             </div>
             <button
@@ -969,10 +954,10 @@ export default function WeddingPage() {
           
           {!isEditingMealPricing && (
             <div className="card">
-              <div style={{ fontSize: '14px', color: '#2e7d32', fontWeight: 'bold' }}>
+              <div style={{ fontSize: '14px', color: '#1d5a78', fontWeight: 'bold' }}>
                 🔒 השדות נעולים לעריכה
               </div>
-              <div style={{ fontSize: '12px', color: '#2e7d32', marginTop: '5px' }}>
+              <div style={{ fontSize: '12px', color: '#1d5a78', marginTop: '5px' }}>
                 לחץ על "✏️ ערוך הגדרות" כדי לאפשר עריכה
               </div>
             </div>
@@ -1228,10 +1213,10 @@ export default function WeddingPage() {
                   width: '12px', 
                   height: '12px', 
                   borderRadius: '50%', 
-                  backgroundColor: '#4caf50', 
+                  backgroundColor: '#3b82f6', 
                   marginRight: '8px' 
                 }}></div>
-                <h5 style={{ margin: '0', color: '#4caf50', fontWeight: 'bold' }}>מאשרי הגעה</h5>
+                <h5 style={{ margin: '0', color: '#1d5a78', fontWeight: 'bold' }}>מאשרי הגעה</h5>
               </div>
               <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '5px' }}>
                 {guestCounts.confirmed}
@@ -1239,7 +1224,7 @@ export default function WeddingPage() {
               <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>מוזמנים</div>
               {calculateMealCostByStatus().confirmed?.totalCost && typeof calculateMealCostByStatus().confirmed?.totalCost === 'number' && (
                 <>
-                  <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#4caf50' }}>
+                  <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1d5a78' }}>
                     {calculateMealCostByStatus().confirmed?.totalCost?.toLocaleString?.() ?? 0} ₪
                   </div>
                   <div style={{ fontSize: '12px', color: '#666' }}>
@@ -1256,10 +1241,10 @@ export default function WeddingPage() {
                   width: '12px', 
                   height: '12px', 
                   borderRadius: '50%', 
-                  backgroundColor: '#ff9800', 
+                  backgroundColor: '#3b82f6', 
                   marginRight: '8px' 
                 }}></div>
-                <h5 style={{ margin: '0', color: '#ff9800', fontWeight: 'bold' }}>מתלבטים</h5>
+                <h5 style={{ margin: '0', color: '#1d5a78', fontWeight: 'bold' }}>מתלבטים</h5>
               </div>
               <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '5px' }}>
                 {guestCounts.maybe}
@@ -1267,7 +1252,7 @@ export default function WeddingPage() {
               <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>מוזמנים</div>
               {calculateMealCostByStatus().maybe?.totalCost && typeof calculateMealCostByStatus().maybe?.totalCost === 'number' && (
                 <>
-                  <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#ff9800' }}>
+                  <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1d5a78' }}>
                     {calculateMealCostByStatus().maybe?.totalCost?.toLocaleString?.() ?? 0} ₪
                   </div>
                   <div style={{ fontSize: '12px', color: '#666' }}>
@@ -1337,7 +1322,7 @@ export default function WeddingPage() {
           {/* Total Meal Cost Summary */}
           {calculateMealCostByStatus().total?.totalCost && typeof calculateMealCostByStatus().total?.totalCost === 'number' && (
             <div style={{ 
-              background: 'linear-gradient(135deg, #cce7ff 0%, #d4f5d4 25%, #f5f0e6 50%, #cce7ff 100%)',
+              
               padding: '15px',
               borderRadius: '8px',
               marginBottom: '20px',
@@ -1429,7 +1414,7 @@ export default function WeddingPage() {
         {/* Manual Calculation Results */}
         {manualCalculation.adultGuests > 0 || manualCalculation.childGuests > 0 ? (
           <div className="card">
-            <h4 style={{ margin: '0 0 15px 0', color: '#2e7d32' }}>תוצאות החישוב</h4>
+            <h4 style={{ margin: '0 0 15px 0', color: '#1d5a78' }}>תוצאות החישוב</h4>
             
             <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
               <div style={{ textAlign: 'center' }}>
@@ -1458,7 +1443,7 @@ export default function WeddingPage() {
               </div>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>סה"כ עלות מנות</div>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#2e7d32' }}>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1d5a78' }}>
                   {calculateManualMealCost().totalCost.toLocaleString()} ₪
                 </div>
               </div>
@@ -1591,11 +1576,11 @@ export default function WeddingPage() {
           {/* Meal Pricing Summary */}
           {wedding.mealPricing && (
             <div style={{ marginTop: '20px', padding: '15px', background: '#', borderRadius: '4px'}}>
-              <h4 style={{ margin: '0 0 15px 0', color: '#e65100' }}>🍽️ עלויות מנות</h4>
+              <h4 style={{ margin: '0 0 15px 0', color: '#1d5a78' }}>🍽️ עלויות מנות</h4>
               
               {/* Basic Pricing */}
               <div style={{ marginBottom: '15px' }}>
-                <h5 style={{ margin: '0 0 10px 0', color: '#e65100', fontSize: '14px' }}>מחירים בסיסיים</h5>
+                <h5 style={{ margin: '0 0 10px 0', color: '#1d5a78', fontSize: '14px' }}>מחירים בסיסיים</h5>
                 <div style={{ display: 'grid', gap: '8px', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))' }}>
                   <div>
                     <strong style={{ color: '#666', fontSize: '12px' }}>מחיר מנה</strong>
@@ -1615,7 +1600,7 @@ export default function WeddingPage() {
               {/* Bulk Pricing */}
               {wedding.mealPricing.bulkPrice > 0 && (
                 <div style={{ marginBottom: '15px' }}>
-                  <h5 style={{ margin: '0 0 10px 0', color: '#e65100', fontSize: '14px' }}>מחירי התחייבות</h5>
+                  <h5 style={{ margin: '0 0 10px 0', color: '#1d5a78', fontSize: '14px' }}>מחירי התחייבות</h5>
                   <div style={{ display: 'grid', gap: '8px', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))' }}>
                     <div>
                       <strong style={{ color: '#666', fontSize: '12px' }}>מספר התחייבות</strong>
@@ -1636,7 +1621,7 @@ export default function WeddingPage() {
               {/* Reserve Pricing */}
               {wedding.mealPricing.reservePrice > 0 && (
                 <div style={{ marginBottom: '15px' }}>
-                  <h5 style={{ margin: '0 0 10px 0', color: '#e65100', fontSize: '14px' }}>מחירי רזרבה</h5>
+                  <h5 style={{ margin: '0 0 10px 0', color: '#1d5a78', fontSize: '14px' }}>מחירי רזרבה</h5>
                   <div style={{ display: 'grid', gap: '8px', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))' }}>
                     <div>
                       <strong style={{ color: '#666', fontSize: '12px' }}>סף כמות רזרבה</strong>
@@ -1656,8 +1641,8 @@ export default function WeddingPage() {
 
               {/* Calculation Results */}
               {mealCalculation.totalCost > 0 && (
-                <div style={{ marginTop: '15px', padding: '10px', background: '#e8f5e8', borderRadius: '4px', border: '1px solid #4caf50' }}>
-                  <h5 style={{ margin: '0 0 10px 0', color: '#2e7d32', fontSize: '14px' }}>תוצאות החישוב</h5>
+                <div style={{ marginTop: '15px', padding: '10px', background: '#eff6ff', borderRadius: '4px', border: '1px solid #3b82f6' }}>
+                  <h5 style={{ margin: '0 0 10px 0', color: '#1d5a78', fontSize: '14px' }}>תוצאות החישוב</h5>
                   <div style={{ display: 'grid', gap: '8px', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))' }}>
                     <div>
                       <strong style={{ color: '#666', fontSize: '12px' }}>סה"כ אורחים</strong>
@@ -1677,7 +1662,7 @@ export default function WeddingPage() {
                     </div>
                     <div>
                       <strong style={{ color: '#666', fontSize: '12px' }}>סה"כ עלות מנות</strong>
-                      <div style={{ marginTop: '2px', fontSize: '14px', fontWeight: 'bold', color: '#2e7d32' }}>
+                      <div style={{ marginTop: '2px', fontSize: '14px', fontWeight: 'bold', color: '#1d5a78' }}>
                         {mealCalculation.totalCost.toLocaleString()} ₪
                       </div>
                     </div>

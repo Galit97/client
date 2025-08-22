@@ -292,12 +292,12 @@ export default function VenueComparisonPage() {
   return (
     <div className="page-container">
       <h1 className="text-center mb-xl">
-        🏰 השוואת מחירי אולמות וגני אירועים
+         השוואת מחירי אולמות וגני אירועים
       </h1>
 
       {/* Guest Count Settings */}
       <div className="card">
-        <h2 style={{ margin: '0 0 20px 0', color: '#33691e' }}>👥 הגדרת מספר אורחים לחישוב</h2>
+        <h2 style={{ margin: '0 0 20px 0', color: '#1d5a78' }}> הגדרת מספר אורחים לחישוב</h2>
         
         <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
           <div>
@@ -385,6 +385,71 @@ export default function VenueComparisonPage() {
         </button>
       </div>
 
+      {/* Comparison Summary */}
+      {venues.length > 1 && (
+        <div className="card">
+          <h2 style={{ margin: '0 0 20px 0', color: '#1E5A78' }}> סיכום השוואה</h2>
+          
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ backgroundColor: '#EFF5FB' }}>
+                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>שם האולם</th>
+                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>מחיר מנה בסיסי</th>
+                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>תאורה והגברה</th>
+                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>תוספות</th>
+                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>סה"כ עלות</th>
+                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>עלות לאיש</th>
+                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>תאריכים</th>
+                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>טלפון</th>
+                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>אתר</th>
+                </tr>
+              </thead>
+              <tbody>
+                {venues
+                  .filter(venue => venue.name.trim())
+                  .map((venue, index) => (
+                    <tr key={venue.id} style={{ backgroundColor: '#FFFFFF' }}>
+                      <td style={{ border: '1px solid #ddd', padding: '12px', fontWeight: 'bold' }}>
+                        {venue.name}
+                      </td>
+                      <td style={{ border: '1px solid #ddd', padding: '12px' }}>
+                        {(venue.basePrice || 0).toLocaleString()} ₪
+                      </td>
+                      <td style={{ border: '1px solid #ddd', padding: '12px' }}>
+                        {(venue.lightingAndSoundPrice || 0).toLocaleString()} ₪
+                      </td>
+                      <td style={{ border: '1px solid #ddd', padding: '12px' }}>
+                        {(venue.extrasPrice || 0).toLocaleString()} ₪
+                      </td>
+                      <td style={{ border: '1px solid #ddd', padding: '12px', fontWeight: 'bold' }}>
+                        {(venue.totalPrice || 0).toLocaleString()} ₪
+                      </td>
+                      <td style={{ border: '1px solid #ddd', padding: '12px' }}>
+                        {(venue.costPerPerson || 0).toFixed(0)} ₪
+                      </td>
+                      <td style={{ border: '1px solid #ddd', padding: '12px', fontSize: '12px' }}>
+                        <div>{venue.pricingDates || '-'}</div>
+                        <div style={{ color: '#475569' }}>{venue.pricingDays || '-'}</div>
+                      </td>
+                      <td style={{ border: '1px solid #ddd', padding: '12px' }}>
+                        {venue.phone || '-'}
+                      </td>
+                      <td style={{ border: '1px solid #ddd', padding: '12px' }}>
+                        {venue.website ? (
+                          <a href={venue.website} target="_blank" rel="noopener noreferrer" style={{ color: '#1E5A78' }}>
+                            קישור
+                          </a>
+                        ) : '-'}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* Venues Comparison */}
       <div style={{ display: 'grid', gap: '30px' }}>
                  {venues.map((venue, index) => (
@@ -395,7 +460,7 @@ export default function VenueComparisonPage() {
                 <button
                   onClick={handleSave}
                   style={{
-                    background: saveStatus === 'saving' ? '#ff9800' : saveStatus === 'saved' ? '#4caf50' : saveStatus === 'error' ? '#f44336' : '#256281',
+                    background: saveStatus === 'saving' ? '#3b82f6' : saveStatus === 'saved' ? '#3b82f6' : saveStatus === 'error' ? '#ef4444' : '#3b82f6',
                     color: 'white',
                     border: 'none',
                     padding: '8px 12px',
@@ -411,7 +476,7 @@ export default function VenueComparisonPage() {
                 <button
                   onClick={() => removeVenue(venue.id)}
                   style={{
-                    background: '#f44336',
+                    background: '#ef4444',
                     color: 'white',
                     border: 'none',
                     padding: '8px 12px',
@@ -484,22 +549,9 @@ export default function VenueComparisonPage() {
               marginBottom: '20px',
           
             }}>
-              <h4 style={{ margin: '0 0 15px 0', color: '#f9a825' }}>🍽️ מחירי מנות</h4>
+              <h4 style={{ margin: '0 0 15px 0', color: '#1d5a78' }}>🍽️ מחירי מנות</h4>
               
-              {/* Pricing Explanation */}
-              <div style={{ 
-               
-                padding: '12px', 
-                borderRadius: '6px',
-                marginBottom: '15px',
-             
-                fontSize: '14px',
-                color: '#e65100'
-              }}>
-                <strong>💡 איך עובד מחיר הרזרבה:</strong><br/>
-                • עד <strong>סף מחיר רזרבה</strong> - כל אורח משלם <strong>מחיר מנה בסיסי</strong><br/>
-                • מעל <strong>סף מחיר רזרבה</strong> - אורחים נוספים משלמים <strong>מחיר רזרבה</strong> 
-              </div>
+            
               
               <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                 <div>
@@ -619,31 +671,31 @@ export default function VenueComparisonPage() {
                  <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
                    <div style={{ textAlign: 'center' }}>
                      <div style={{ fontSize: '12px', color: '#666' }}>סה"כ עלות מנות</div>
-                     <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#A8D5BA' }}>
+                     <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#1d5a78' }}>
                        {((venue.totalPrice || 0) - (venue.lightingAndSoundPrice || 0) - (venue.extrasPrice || 0)).toLocaleString()} ₪
                      </div>
                    </div>
                    <div style={{ textAlign: 'center' }}>
                      <div style={{ fontSize: '12px', color: '#666' }}>תאורה והגברה</div>
-                     <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#FFB74D' }}>
+                     <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#1d5a78' }}>
                        {(venue.lightingAndSoundPrice || 0).toLocaleString()} ₪
                      </div>
                    </div>
                    <div style={{ textAlign: 'center' }}>
                      <div style={{ fontSize: '12px', color: '#666' }}>תוספות</div>
-                     <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#FF8A65' }}>
+                     <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#1d5a78' }}>
                        {(venue.extrasPrice || 0).toLocaleString()} ₪
                      </div>
                    </div>
                    <div style={{ textAlign: 'center' }}>
                      <div style={{ fontSize: '12px', color: '#666' }}>סה"כ עלות כוללת</div>
-                     <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#4CAF50' }}>
+                     <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#1d5a78' }}>
                        {(venue.totalPrice || 0).toLocaleString()} ₪
                      </div>
                    </div>
                    <div style={{ textAlign: 'center' }}>
                      <div style={{ fontSize: '12px', color: '#666' }}>עלות לאיש</div>
-                     <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#D4A574' }}>
+                     <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#1d5a78' }}>
                        {(venue.costPerPerson || 0).toFixed(0)} ₪
                      </div>
                    </div>
@@ -723,71 +775,6 @@ export default function VenueComparisonPage() {
           </div>
         ))}
       </div>
-
-      {/* Comparison Summary */}
-      {venues.length > 1 && (
-        <div className="card">
-          <h2 style={{ margin: '0 0 20px 0', color: '#1E5A78' }}>📊 סיכום השוואה</h2>
-          
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ backgroundColor: '#EFF5FB' }}>
-                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>שם האולם</th>
-                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>מחיר מנה בסיסי</th>
-                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>תאורה והגברה</th>
-                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>תוספות</th>
-                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>סה"כ עלות</th>
-                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>עלות לאיש</th>
-                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>תאריכים</th>
-                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>טלפון</th>
-                  <th style={{ border: '1px solid #ddd', padding: '12px', textAlign: 'right' }}>אתר</th>
-                </tr>
-              </thead>
-              <tbody>
-                {venues
-                  .filter(venue => venue.name.trim())
-                  .map((venue, index) => (
-                    <tr key={venue.id} style={{ backgroundColor: '#FFFFFF' }}>
-                      <td style={{ border: '1px solid #ddd', padding: '12px', fontWeight: 'bold' }}>
-                        {venue.name}
-                      </td>
-                      <td style={{ border: '1px solid #ddd', padding: '12px' }}>
-                        {(venue.basePrice || 0).toLocaleString()} ₪
-                      </td>
-                      <td style={{ border: '1px solid #ddd', padding: '12px' }}>
-                        {(venue.lightingAndSoundPrice || 0).toLocaleString()} ₪
-                      </td>
-                      <td style={{ border: '1px solid #ddd', padding: '12px' }}>
-                        {(venue.extrasPrice || 0).toLocaleString()} ₪
-                      </td>
-                      <td style={{ border: '1px solid #ddd', padding: '12px', fontWeight: 'bold' }}>
-                        {(venue.totalPrice || 0).toLocaleString()} ₪
-                      </td>
-                      <td style={{ border: '1px solid #ddd', padding: '12px' }}>
-                        {(venue.costPerPerson || 0).toFixed(0)} ₪
-                      </td>
-                      <td style={{ border: '1px solid #ddd', padding: '12px', fontSize: '12px' }}>
-                        <div>{venue.pricingDates || '-'}</div>
-                        <div style={{ color: '#475569' }}>{venue.pricingDays || '-'}</div>
-                      </td>
-                      <td style={{ border: '1px solid #ddd', padding: '12px' }}>
-                        {venue.phone || '-'}
-                      </td>
-                      <td style={{ border: '1px solid #ddd', padding: '12px' }}>
-                        {venue.website ? (
-                          <a href={venue.website} target="_blank" rel="noopener noreferrer" style={{ color: '#1E5A78' }}>
-                            קישור
-                          </a>
-                        ) : '-'}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
 
       {venues.length === 0 && (
         <div style={{ 

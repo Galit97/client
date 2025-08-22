@@ -6,11 +6,16 @@ export interface IGuest {
   weddingID: Types.ObjectId;     
   firstName: string;
   lastName: string;
-  phone?: string;
+  phone: string;
+  email?: string;
   status: GuestStatus;
   seatsReserved: number;
   tableNumber?: number;
   invitationSent: boolean;
+  dietaryRestrictions?: string;
+  group?: string;
+  side?: 'bride' | 'groom' | 'shared';
+  notes?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -34,6 +39,11 @@ const guestSchema = new Schema<IGuest>(
     },
     phone: {
       type: String,
+      required: true,
+      trim: true,
+    },
+    email: {
+      type: String,
       trim: true,
     },
     status: {
@@ -51,6 +61,24 @@ const guestSchema = new Schema<IGuest>(
     invitationSent: {
       type: Boolean,
       default: false,
+    },
+    dietaryRestrictions: {
+      type: String,
+      enum: ['רגיל', 'צמחוני', 'טבעוני', 'ללא גלוטן', 'אחר'],
+      default: 'רגיל',
+    },
+    group: {
+      type: String,
+      trim: true,
+    },
+    side: {
+      type: String,
+      enum: ['bride', 'groom', 'shared'],
+      default: 'shared',
+    },
+    notes: {
+      type: String,
+      trim: true,
     },
   },
   {

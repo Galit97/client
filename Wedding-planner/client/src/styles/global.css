@@ -2,7 +2,24 @@
 
 /* ===== CSS VARIABLES ===== */
 :root {
-  /* Colors */
+  /* Brand Colors */
+  --brand-primary: #1E5A78;
+  --brand-primary-hover: #2C6B8B;
+  
+  /* Surface Colors */
+  --surface-rose-50: #FCF3F7;
+  --surface-sage-50: #EDF8F4;
+  --surface-sky-50: #EFF5FB;
+  
+  /* Text Colors */
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  
+  /* Border Colors */
+  --border-strong: #CBD5E1;
+  --focus-ring: #1E5A78;
+  
+  /* Legacy Colors (keeping for backward compatibility) */
   --color-primary: #0F172A;
   --color-secondary: #475569;
   --color-accent: #475569;

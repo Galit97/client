@@ -9,11 +9,16 @@ type Guest = {
   weddingID: string;
   firstName: string;
   lastName: string;
-  phone?: string;
+  phone: string;
+  email?: string;
   status: GuestStatus;
   seatsReserved: number;
   tableNumber?: number;
   invitationSent: boolean;
+  dietaryRestrictions?: string;
+  group?: string;
+  side?: 'bride' | 'groom' | 'shared';
+  notes?: string;
 };
 
 type EditingGuest = {
@@ -21,8 +26,13 @@ type EditingGuest = {
   firstName: string;
   lastName: string;
   phone: string;
+  email?: string;
   seatsReserved: number;
-  tableNumber: number;
+  tableNumber?: number;
+  dietaryRestrictions?: string;
+  group?: string;
+  side?: 'bride' | 'groom' | 'shared';
+  notes?: string;
 };
 
 export default function GuestListPage() {
@@ -34,12 +44,18 @@ export default function GuestListPage() {
   const [editingGuest, setEditingGuest] = useState<EditingGuest | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'' | GuestStatus>('');
+  const [showAddGuestModal, setShowAddGuestModal] = useState(false);
   const [newGuest, setNewGuest] = useState({
     firstName: '',
     lastName: '',
     phone: '',
+    email: '',
     seatsReserved: 1,
     tableNumber: 0,
+    dietaryRestrictions: 'רגיל',
+    group: '',
+    side: 'shared' as 'bride' | 'groom' | 'shared',
+    notes: '',
   });
 
   // Excel functions
@@ -49,32 +65,52 @@ export default function GuestListPage() {
         'שם פרטי': 'ישראל',
         'שם משפחה': 'כהן',
         'מספר טלפון': '050-1234567',
+        'אימייל': 'israel@example.com',
         'מספר מקומות שמורים': 2,
         'מספר שולחן': 5,
+        'תזונה': 'רגיל',
+        'קבוצה': 'משפחה',
+        'מהצד של': 'כלה',
+        'הערות': 'אוהב מוזיקה',
         'סטטוס הזמנה': 'הוזמן'
       },
       {
         'שם פרטי': 'שרה',
         'שם משפחה': 'לוי',
         'מספר טלפון': '052-9876543',
+        'אימייל': 'sarah@example.com',
         'מספר מקומות שמורים': 1,
         'מספר שולחן': 3,
+        'תזונה': 'צמחוני',
+        'קבוצה': 'חברים',
+        'מהצד של': 'חתן',
+        'הערות': '',
         'סטטוס הזמנה': 'אושר'
       },
       {
         'שם פרטי': 'דוד',
         'שם משפחה': 'גולדברג',
         'מספר טלפון': '054-5551234',
+        'אימייל': 'david@example.com',
         'מספר מקומות שמורים': 4,
         'מספר שולחן': 8,
+        'תזונה': 'ללא גלוטן',
+        'קבוצה': 'עבודה',
+        'מהצד של': 'משותף',
+        'הערות': 'מגיע עם 3 ילדים',
         'סטטוס הזמנה': 'הוזמן'
       },
       {
         'שם פרטי': 'רחל',
         'שם משפחה': 'ברק',
         'מספר טלפון': '',
+        'אימייל': 'rachel@example.com',
         'מספר מקומות שמורים': 2,
         'מספר שולחן': 0,
+        'תזונה': 'טבעוני',
+        'קבוצה': 'משפחה',
+        'מהצד של': 'כלה',
+        'הערות': '',
         'סטטוס הזמנה': 'הוזמן'
       }
     ];
@@ -88,8 +124,13 @@ export default function GuestListPage() {
       { width: 15 }, // שם פרטי
       { width: 15 }, // שם משפחה
       { width: 18 }, // מספר טלפון
+      { width: 25 }, // אימייל
       { width: 22 }, // מספר מקומות שמורים
       { width: 15 }, // מספר שולחן
+      { width: 15 }, // תזונה
+      { width: 15 }, // קבוצה
+      { width: 15 }, // מהצד של
+      { width: 30 }, // הערות
       { width: 18 }  // סטטוס הזמנה
     ];
 
@@ -106,8 +147,13 @@ export default function GuestListPage() {
       'שם פרטי': guest.firstName,
       'שם משפחה': guest.lastName,
       'מספר טלפון': guest.phone || '',
+      'אימייל': guest.email || '',
       'מספר מקומות שמורים': guest.seatsReserved,
       'מספר שולחן': guest.tableNumber || '',
+      'תזונה': guest.dietaryRestrictions || 'רגיל',
+      'קבוצה': guest.group || '',
+      'מהצד של': guest.side === 'bride' ? 'כלה' : guest.side === 'groom' ? 'חתן' : 'משותף',
+      'הערות': guest.notes || '',
       'סטטוס הזמנה': getStatusText(guest.status)
     }));
 
@@ -119,10 +165,15 @@ export default function GuestListPage() {
     ws['!cols'] = [
       { width: 15 }, // שם פרטי
       { width: 15 }, // שם משפחה
-      { width: 15 }, // מספר טלפון
-      { width: 20 }, // מספר מקומות שמורים
+      { width: 18 }, // מספר טלפון
+      { width: 25 }, // אימייל
+      { width: 22 }, // מספר מקומות שמורים
       { width: 15 }, // מספר שולחן
-      { width: 15 }  // סטטוס הזמנה
+      { width: 15 }, // תזונה
+      { width: 15 }, // קבוצה
+      { width: 15 }, // מהצד של
+      { width: 30 }, // הערות
+      { width: 18 }  // סטטוס הזמנה
     ];
 
     XLSX.writeFile(wb, `רשימת_מוזמנים_${new Date().toLocaleDateString('he-IL')}.xlsx`);
@@ -152,22 +203,35 @@ export default function GuestListPage() {
         const firstName = row['שם פרטי'] || row['firstName'] || row['שם'] || row['name'] || '';
         const lastName = row['שם משפחה'] || row['lastName'] || row['משפחה'] || row['family'] || '';
         const phone = row['מספר טלפון'] || row['phone'] || row['טלפון'] || row['telephone'] || '';
+        const email = row['אימייל'] || row['email'] || row['אימייל'] || '';
         const seatsReserved = row['מספר מקומות שמורים'] || row['seatsReserved'] || row['מקומות'] || row['seats'] || row['מספר מוזמנים'] || row['guests'] || 1;
         const tableNumber = row['מספר שולחן'] || row['tableNumber'] || row['שולחן'] || row['table'] || 0;
+        const dietaryRestrictions = row['תזונה'] || row['dietaryRestrictions'] || 'רגיל';
+        const group = row['קבוצה'] || row['group'] || '';
+        const side = row['מהצד של'] || row['side'] || 'משותף';
+        const notes = row['הערות'] || row['notes'] || '';
         const status = row['סטטוס הזמנה'] || row['status'] || row['סטטוס'] || 'הוזמן';
 
         // Convert to proper types
         const parsedSeats = typeof seatsReserved === 'string' ? parseInt(seatsReserved) || 1 : seatsReserved || 1;
         const parsedTable = typeof tableNumber === 'string' ? parseInt(tableNumber) || 0 : tableNumber || 0;
 
-        console.log(`Row ${index + 1}:`, { firstName, lastName, phone, seatsReserved: parsedSeats, tableNumber: parsedTable, status }); // Debug log
+        // Convert side to English
+        const sideEnglish = side === 'כלה' ? 'bride' : side === 'חתן' ? 'groom' : 'shared';
+
+        console.log(`Row ${index + 1}:`, { firstName, lastName, phone, email, seatsReserved: parsedSeats, tableNumber: parsedTable, dietaryRestrictions, group, side: sideEnglish, notes, status }); // Debug log
 
         return {
           firstName: firstName.toString().trim(),
           lastName: lastName.toString().trim(),
           phone: phone.toString().trim(),
+          email: email.toString().trim(),
           seatsReserved: parsedSeats,
           tableNumber: parsedTable,
+          dietaryRestrictions: dietaryRestrictions.toString().trim(),
+          group: group.toString().trim(),
+          side: sideEnglish,
+          notes: notes.toString().trim(),
           status: getStatusFromText(status) as GuestStatus
         };
       });
@@ -324,7 +388,7 @@ export default function GuestListPage() {
 
         // Then fetch guests for this wedding
         console.log("Fetching guests for wedding:", weddingData._id);
-        const guestsRes = await fetch('/api/guests', {
+        const guestsRes = await fetch(`/api/guests/by-wedding/${weddingData._id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -398,7 +462,19 @@ export default function GuestListPage() {
       const created = await res.json();
       console.log("Guest created:", created);
       setGuests([...guests, created]);
-      setNewGuest({ firstName: '', lastName: '', phone: '', seatsReserved: 1, tableNumber: 0 });
+      setNewGuest({ 
+        firstName: '', 
+        lastName: '', 
+        phone: '', 
+        email: '',
+        seatsReserved: 1, 
+        tableNumber: 0,
+        dietaryRestrictions: 'רגיל',
+        group: '',
+        side: 'shared' as 'bride' | 'groom' | 'shared',
+        notes: ''
+      });
+      setShowAddGuestModal(false);
     } catch (error) {
       console.error("Error adding guest:", error);
       alert("שגיאה בהוספת מוזמן");
@@ -432,6 +508,10 @@ export default function GuestListPage() {
     if (!token) return;
 
     try {
+      console.log("=== CLIENT SIDE UPDATE DEBUG ===");
+      console.log("Updating guest with data:", guestData);
+      console.log("Data being sent to server:", JSON.stringify(guestData, null, 2));
+      
       const res = await fetch(`/api/guests/${guestData._id}`, {
         method: 'PUT',
         headers: { 
@@ -441,13 +521,25 @@ export default function GuestListPage() {
         body: JSON.stringify(guestData),
       });
 
+      console.log("Response status:", res.status);
+      console.log("Response ok:", res.ok);
+
       if (res.ok) {
         const updated = await res.json();
+        console.log("Updated guest from server:", updated);
+        console.log("=== END CLIENT SIDE UPDATE DEBUG ===");
         setGuests(guests.map(g => (g._id === guestData._id ? updated : g)));
         setEditingGuest(null);
+      } else {
+        const errorText = await res.text();
+        console.error("Error response:", errorText);
+        console.log("=== END CLIENT SIDE UPDATE DEBUG ===");
+        alert("שגיאה בעדכון מוזמן");
       }
     } catch (error) {
       console.error("Error updating guest:", error);
+      console.log("=== END CLIENT SIDE UPDATE DEBUG ===");
+      alert("שגיאה בעדכון מוזמן");
     }
   }
 
@@ -479,8 +571,13 @@ export default function GuestListPage() {
       firstName: guest.firstName,
       lastName: guest.lastName,
       phone: guest.phone || '',
+      email: guest.email || '',
       seatsReserved: guest.seatsReserved,
       tableNumber: guest.tableNumber || 0,
+      dietaryRestrictions: guest.dietaryRestrictions || 'רגיל',
+      group: guest.group || '',
+      side: guest.side || 'shared',
+      notes: guest.notes || '',
     });
   }
 
@@ -534,55 +631,145 @@ export default function GuestListPage() {
       fontFamily: 'Arial, sans-serif',
       direction: 'rtl'
     }}>
-      <h1 style={{ 
-        textAlign: 'center', 
-        marginBottom: '30px',
-        color: '#333',
-        borderBottom: '2px solid #E5E7EB',
-        paddingBottom: '10px'
-      }}>
-        רשימת מוזמנים
-      </h1>
-
-      {/* Help Section */}
       <div style={{
-        background: 'linear-gradient(135deg, #cce7ff 0%, #d4f5d4 25%, #f5f0e6 50%, #cce7ff 100%)',
-        padding: '15px',
-        borderRadius: '8px',
-        marginBottom: '20px',
-     
+        textAlign: 'center',
+        marginBottom: '30px',
+        padding: '20px',
+        background: '#fdf3f7',
+        borderRadius: '12px',
+        border: '1px solid #dee2e6'
       }}>
-        <h4 style={{ margin: '0 0 10px 0', color: '#1976d2' }}>💡 איך להשתמש ברשימת המוזמנים:</h4>
-        <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#333' }}>
-          <div><strong>מספר מקומות שמורים:</strong> כמה אנשים יגיעו עם המוזמן (לדוגמה: אם הזמנת זוג, הכנס 2)</div>
-          <div><strong>מספר שולחן:</strong> אופציונלי - לשיבוץ בשולחנות (לדוגמה: שולחן מספר 5)</div>
-          <div><strong>סטטוס הזמנה:</strong> הוזמן → אושר → הגיע (או נדחה אם המוזמן לא יכול להגיע)</div>
-        </div>
+        <h1 style={{ 
+          margin: '0',
+          fontSize: '32px',
+          fontWeight: 'bold',
+          color: '#495057',
+          textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
+        }}>
+          מוזמנים
+        </h1>
       </div>
+
+      {/* Summary */}
+      {guests.length > 0 && (
+        <div style={{
+          marginBottom: '20px',
+          padding: '15px',
+          background: '#ffffff',
+          borderRadius: '8px',
+          border: '1px solid #dee2e6'
+        }}>
+          <h4 style={{ margin: '0 0 10px 0' }}> סיכום רשימת המוזמנים</h4>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
+            <div><strong>סה"כ מוזמנים:</strong> {guests.length}</div>
+            <div><strong>סה"כ מקומות שמורים:</strong> {guests.reduce((sum, g) => sum + g.seatsReserved, 0)}</div>
+            <div><strong>אושרו להגיע:</strong> {guests.filter(g => g.status === 'Confirmed').length}</div>
+            <div><strong>נדחו:</strong> {guests.filter(g => g.status === 'Declined').length}</div>
+            <div><strong>הגיעו לאירוע:</strong> {guests.filter(g => g.status === 'Arrived').length}</div>
+            <div><strong>ממתינים לאישור:</strong> {guests.filter(g => g.status === 'Invited').length}</div>
+          </div>
+        </div>
+      )}
 
       {/* Excel Import/Export Section */}
       <div className="card">
-        <h4 style={{ margin: '0 0 15px 0', color: '#856404' }}>📊 ייבוא וייצוא אקסל</h4>
+        <h4 style={{ margin: '0 0 15px 0', color: '#856404' }}> ייבוא וייצוא אקסל</h4>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-          <button
-            onClick={downloadTemplate}
-           className='button'
+          <button 
+            onClick={downloadTemplate} 
+            style={{
+              padding: '12px 20px',
+              background: '#f8fafc',
+              color: '#1f2937',
+              border: '2px solid #e5e7eb',
+              borderRadius: '25px',
+              fontSize: '14px',
+              fontWeight: 'bold', 
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+              e.currentTarget.style.borderColor = '#d1d5db';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.borderColor = '#e5e7eb';
+            }}
           >
-            📥 הורד תבנית אקסל
+            📥 הורד תבנית
           </button>
-          
-          <button
-            onClick={exportToExcel}
+          <button 
+            onClick={exportToExcel} 
             disabled={guests.length === 0}
-           className='button'
+            style={{
+              padding: '12px 20px',
+              background: guests.length === 0 ? '#f3f4f6' : '#f8fafc',
+              color: guests.length === 0 ? '#9ca3af' : '#1f2937',
+              border: '2px solid #e5e7eb',
+              borderRadius: '25px',
+              fontSize: '14px',
+              fontWeight: 'bold', 
+              cursor: guests.length === 0 ? 'not-allowed' : 'pointer',
+              transition: 'all 0.2s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              opacity: guests.length === 0 ? 0.6 : 1
+            }}
+            onMouseEnter={(e) => {
+              if (guests.length > 0) {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                e.currentTarget.style.borderColor = '#d1d5db';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.borderColor = '#e5e7eb';
+            }}
           >
-            📤 ייצא לאקסל ({guests.length} מוזמנים)
+            📤 ייצא ({guests.length})
           </button>
-          
-          <label
-           className='button'
+          <label 
+            style={{
+              padding: '12px 20px',
+              background: importing ? '#f3f4f6' : '#f8fafc',
+              color: importing ? '#9ca3af' : '#1f2937',
+              border: '2px solid #e5e7eb',
+              borderRadius: '25px',
+              fontSize: '14px',
+              fontWeight: 'bold', 
+              cursor: importing ? 'not-allowed' : 'pointer',
+              transition: 'all 0.2s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              opacity: importing ? 0.6 : 1
+            }}
+            onMouseEnter={(e) => {
+              if (!importing) {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                e.currentTarget.style.borderColor = '#d1d5db';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.borderColor = '#e5e7eb';
+            }}
           >
-            {importing ? '⏳ מייבא...' : '📁 ייבא מאקסל'}
+            {importing ? '⏳ מייבא...' : '📁 ייבא'}
             <input
               type="file"
               accept=".xlsx,.xls"
@@ -592,126 +779,67 @@ export default function GuestListPage() {
             />
           </label>
         </div>
-        <div style={{ fontSize: '12px', color: '#856404', marginTop: '10px' }}>
-          <strong>הוראות ייבוא:</strong>
-          <ul style={{ margin: '5px 0', paddingRight: '20px' }}>
-            <li>הורד את התבנית ומיל אותה עם הנתונים שלך</li>
-            <li>הקובץ חייב להיות בפורמט .xlsx או .xls</li>
-            <li>עמודות חובה: שם פרטי, שם משפחה, מספר מקומות שמורים</li>
-            <li>עמודות אופציונליות: מספר טלפון, מספר שולחן, סטטוס הזמנה</li>
-            <li>סטטוס הזמנה אפשרי: הוזמן, אושר, נדחה, הגיע</li>
-            <li>מספר מקומות שמורים חייב להיות מספר גדול מ-0</li>
-          </ul>
-          {importing && (
-            <div style={{ 
-              marginTop: '10px', 
-              padding: '8px', 
-              backgroundColor: '#d1ecf1', 
-              border: '1px solid #bee5eb',
-              borderRadius: '4px',
-              color: '#0c5460'
-            }}>
-              ⏳ מייבא מוזמנים... אנא המתן
-            </div>
-          )}
-          {importMessage && (
-            <div style={{ 
-              marginTop: '10px', 
-              padding: '8px', 
-              backgroundColor: importMessage.includes('בהצלחה') ? '#d4edda' : '#f8d7da', 
-              border: `1px solid ${importMessage.includes('בהצלחה') ? '#c3e6cb' : '#f5c6cb'}`,
-              borderRadius: '4px',
-              color: importMessage.includes('בהצלחה') ? '#155724' : '#721c24'
-            }}>
-              {importMessage.includes('בהצלחה') ? '✅ ' : '❌ '}{importMessage}
-            </div>
-          )}
-        </div>
+        {importing && (
+          <div style={{ 
+            marginTop: '10px', 
+            padding: '8px', 
+            backgroundColor: '#d1ecf1', 
+            border: '1px solid #bee5eb',
+            borderRadius: '4px',
+            color: '#0c5460'
+          }}>
+            ⏳ מייבא מוזמנים... אנא המתן
+          </div>
+        )}
+        {importMessage && (
+          <div style={{ 
+            marginTop: '10px', 
+            padding: '8px', 
+            backgroundColor: importMessage.includes('בהצלחה') ? '#d4edda' : '#f8d7da', 
+            border: `1px solid ${importMessage.includes('בהצלחה') ? '#c3e6cb' : '#f5c6cb'}`,
+            borderRadius: '4px',
+            color: importMessage.includes('בהצלחה') ? '#155724' : '#721c24'
+          }}>
+            {importMessage.includes('בהצלחה') ? '✅ ' : '❌ '}{importMessage}
+          </div>
+        )}
       </div>
 
-      {/* Add Guest Form */}
-      <div className="card">
-        <h3 style={{ marginTop: 0, marginBottom: '15px' }}>הוסף מוזמן חדש</h3>
-        <form onSubmit={addGuest} style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
-              שם פרטי *
-            </label>
-            <input
-             
-              value={newGuest.firstName}
-              onChange={e => setNewGuest({ ...newGuest, firstName: e.target.value })}
-              required
-              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
-            />
-          </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
-              שם משפחה *
-            </label>
-            <input
-             
-              value={newGuest.lastName}
-              onChange={e => setNewGuest({ ...newGuest, lastName: e.target.value })}
-              required
-              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
-            />
-          </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
-              מספר טלפון
-            </label>
-            <input
-             
-              value={newGuest.phone}
-              onChange={e => setNewGuest({ ...newGuest, phone: e.target.value })}
-              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
-            />
-          </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
-              מספר מקומות שמורים *
-            </label>
-            <input
-              type="number"
-              min={1}
-              max={10}
-           
-              value={newGuest.seatsReserved}
-              onChange={e => setNewGuest({ ...newGuest, seatsReserved: Number(e.target.value) })}
-              required
-              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
-            />
-            <small style={{ color: '#475569', fontSize: '12px' }}>מספר האנשים שיגיעו עם המוזמן</small>
-          </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
-              מספר שולחן
-            </label>
-            <input
-              type="number"
-              min={0}
-            
-              value={newGuest.tableNumber}
-              onChange={e => setNewGuest({ ...newGuest, tableNumber: Number(e.target.value) })}
-              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
-            />
-            <small style={{ color: '#475569', fontSize: '12px' }}>אופציונלי - לשיבוץ בשולחנות</small>
-          </div>
-          
-          <div style={{ display: 'flex', alignItems: 'end' }}>
-            <button 
-              type="submit"
-          className='button'
-            >
-              הוסף מוזמן
-            </button>
-          </div>
-        </form>
+      {/* Add Guest Button */}
+      <div className="card" style={{ textAlign: 'center', padding: '20px' }}>
+        <button 
+          onClick={() => setShowAddGuestModal(true)}
+          style={{
+            padding: '12px 20px',
+            background: '#1d5a78',
+            color: '#ffffff',
+            border: '2px solid #3b82f6',
+            borderRadius: '25px',
+            fontSize: '14px',
+            fontWeight: 'bold', 
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            margin: '0 auto'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-1px)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
+            e.currentTarget.style.borderColor = '#2563eb';
+            e.currentTarget.style.background = '#164e63';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = 'none';
+            e.currentTarget.style.borderColor = '#3b82f6';
+            e.currentTarget.style.background = '#1d5a78';
+          }}
+        >
+          ➕ הוסיפו מוזמן חדש
+        </button>
       </div>
 
       {/* Guests Toolbar */}
@@ -748,11 +876,19 @@ export default function GuestListPage() {
                 <>
                   <div className="card-header">
                     <div style={{ display: 'flex', gap: 8 }}>
-                      <input className="input" placeholder="שם פרטי" value={editingGuest.firstName} onChange={e => setEditingGuest({ ...editingGuest, firstName: e.target.value })} />
+                      <input className="input" placeholder="שם פרטי" value={editingGuest.firstName} onChange={e => {
+                        console.log("Updating firstName from:", editingGuest.firstName, "to:", e.target.value);
+                        setEditingGuest({ ...editingGuest, firstName: e.target.value });
+                      }} />
                       <input className="input" placeholder="שם משפחה" value={editingGuest.lastName} onChange={e => setEditingGuest({ ...editingGuest, lastName: e.target.value })} />
                     </div>
                     <div style={{ display: 'flex', gap: 8 }}>
-                      <button className="btn-icon" title="שמור" onClick={() => updateGuest(editingGuest!)}>💾</button>
+                      <button className="btn-icon" title="שמור" onClick={() => {
+                        console.log("Save button clicked, current editingGuest:", editingGuest);
+                        if (editingGuest) {
+                          updateGuest(editingGuest);
+                        }
+                      }}>💾</button>
                       <button className="btn-icon" title="בטל" onClick={cancelEditing}>✖️</button>
                     </div>
                   </div>
@@ -762,14 +898,47 @@ export default function GuestListPage() {
                       <input className="input" placeholder="050-1234567" value={editingGuest.phone} onChange={e => setEditingGuest({ ...editingGuest, phone: e.target.value })} />
                     </div>
                     <div className="field">
-                      <label>מקומות</label>
-                      <input className="input" type="number" min={1} max={10} value={editingGuest.seatsReserved} onChange={e => setEditingGuest({ ...editingGuest, seatsReserved: Number(e.target.value) })} />
+                      <label>אימייל</label>
+                      <input className="input" placeholder="email@example.com" value={editingGuest.email || ''} onChange={e => setEditingGuest({ ...editingGuest, email: e.target.value })} />
                     </div>
                   </div>
                   <div className="card-row">
                     <div className="field">
+                      <label>מקומות</label>
+                      <input className="input" type="number" min={1} max={10} value={editingGuest.seatsReserved} onChange={e => setEditingGuest({ ...editingGuest, seatsReserved: Number(e.target.value) })} />
+                    </div>
+                    <div className="field">
                       <label>שולחן</label>
-                      <input className="input" type="number" min={0} value={editingGuest.tableNumber} onChange={e => setEditingGuest({ ...editingGuest, tableNumber: Number(e.target.value) })} />
+                      <input className="input" type="number" min={0} value={editingGuest.tableNumber || 0} onChange={e => setEditingGuest({ ...editingGuest, tableNumber: Number(e.target.value) })} />
+                    </div>
+                  </div>
+                  <div className="card-row">
+                    <div className="field">
+                      <label>תזונה</label>
+                      <select className="input" value={editingGuest.dietaryRestrictions || 'רגיל'} onChange={e => setEditingGuest({ ...editingGuest, dietaryRestrictions: e.target.value })}>
+                        <option value="רגיל">רגיל</option>
+                        <option value="צמחוני">צמחוני</option>
+                        <option value="טבעוני">טבעוני</option>
+                        <option value="ללא גלוטן">ללא גלוטן</option>
+                        <option value="אחר">אחר</option>
+                      </select>
+                    </div>
+                    <div className="field">
+                      <label>קבוצה</label>
+                      <input className="input" placeholder="משפחה, חברים..." value={editingGuest.group || ''} onChange={e => {
+                        console.log("Updating group from:", editingGuest.group, "to:", e.target.value);
+                        setEditingGuest({ ...editingGuest, group: e.target.value });
+                      }} />
+                    </div>
+                  </div>
+                  <div className="card-row">
+                    <div className="field">
+                      <label>מהצד של</label>
+                      <select className="input" value={editingGuest.side || 'shared'} onChange={e => setEditingGuest({ ...editingGuest, side: e.target.value as 'bride' | 'groom' | 'shared' })}>
+                        <option value="bride">כלה</option>
+                        <option value="groom">חתן</option>
+                        <option value="shared">משותף</option>
+                      </select>
                     </div>
                     <div className="field">
                       <label>סטטוס</label>
@@ -779,6 +948,12 @@ export default function GuestListPage() {
                         <button className="btn-icon" title="נדחה" onClick={() => updateStatus(editingGuest!._id, 'Declined')}>❌</button>
                         <button className="btn-icon" title="הגיע" onClick={() => updateStatus(editingGuest!._id, 'Arrived')}>🎉</button>
                       </div>
+                    </div>
+                  </div>
+                  <div className="card-row">
+                    <div className="field" style={{ gridColumn: '1 / -1' }}>
+                      <label>הערות</label>
+                      <textarea className="input" placeholder="הערות נוספות..." value={editingGuest.notes || ''} onChange={e => setEditingGuest({ ...editingGuest, notes: e.target.value })} rows={2} style={{ resize: 'vertical' }} />
                     </div>
                   </div>
                 </>
@@ -794,17 +969,37 @@ export default function GuestListPage() {
                                      <div className="card-row">
                      <div>
                        <div className="muted">טלפון</div>
-                       <div>{guest.phone || '-'}</div>
+                       <div>{guest.phone}</div>
                      </div>
                      <div>
-                       <div className="muted">מקומות</div>
-                       <div>{guest.seatsReserved}</div>
+                       <div className="muted">אימייל</div>
+                       <div>{guest.email || '-'}</div>
                      </div>
                    </div>
                                      <div className="card-row">
                      <div>
+                       <div className="muted">מקומות</div>
+                       <div>{guest.seatsReserved}</div>
+                     </div>
+                     <div>
                        <div className="muted">שולחן</div>
                        <div>{guest.tableNumber || '-'}</div>
+                     </div>
+                   </div>
+                                     <div className="card-row">
+                     <div>
+                       <div className="muted">תזונה</div>
+                       <div>{guest.dietaryRestrictions || 'רגיל'}</div>
+                     </div>
+                     <div>
+                       <div className="muted">קבוצה</div>
+                       <div>{guest.group || '-'}</div>
+                     </div>
+                   </div>
+                                     <div className="card-row">
+                     <div>
+                       <div className="muted">מהצד של</div>
+                       <div>{guest.side === 'bride' ? 'כלה' : guest.side === 'groom' ? 'חתן' : 'משותף'}</div>
                      </div>
                      <div>
                        <div className="muted">סטטוס</div>
@@ -815,6 +1010,14 @@ export default function GuestListPage() {
                        </div>
                      </div>
                    </div>
+                                     {guest.notes && (
+                     <div className="card-row">
+                       <div style={{ gridColumn: '1 / -1' }}>
+                         <div className="muted">הערות</div>
+                         <div style={{ fontStyle: 'italic', color: '#666' }}>{guest.notes}</div>
+                       </div>
+                     </div>
+                   )}
                                      <div className="card-row">
                      <div>
                        <div className="muted">שינוי סטטוס מהיר</div>
@@ -833,23 +1036,272 @@ export default function GuestListPage() {
         </div>
       )}
 
-      {/* Summary */}
-      {guests.length > 0 && (
+
+
+      {/* Add Guest Modal */}
+      {showAddGuestModal && (
         <div style={{
-          marginTop: '20px',
-          padding: '15px',
-          background: 'linear-gradient(135deg, #cce7ff 0%, #d4f5d4 25%, #f5f0e6 50%, #cce7ff 100%)',
-          borderRadius: '8px',
-         
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
         }}>
-          <h4 style={{ margin: '0 0 10px 0' }}>📊 סיכום רשימת המוזמנים</h4>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
-            <div><strong>סה"כ מוזמנים:</strong> {guests.length}</div>
-            <div><strong>סה"כ מקומות שמורים:</strong> {guests.reduce((sum, g) => sum + g.seatsReserved, 0)}</div>
-            <div><strong>אושרו להגיע:</strong> {guests.filter(g => g.status === 'Confirmed').length}</div>
-            <div><strong>נדחו:</strong> {guests.filter(g => g.status === 'Declined').length}</div>
-            <div><strong>הגיעו לאירוע:</strong> {guests.filter(g => g.status === 'Arrived').length}</div>
-            <div><strong>ממתינים לאישור:</strong> {guests.filter(g => g.status === 'Invited').length}</div>
+          <div style={{
+            background: 'white',
+            borderRadius: '12px',
+            padding: '20px',
+            maxWidth: '600px',
+            width: '90%',
+            maxHeight: '50vh',
+            overflowY: 'auto',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)'
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '15px'
+            }}>
+              <h2 style={{ margin: 0, color: '#0F172A' }}>הוספת מוזמן חדש</h2>
+              <button
+                onClick={() => setShowAddGuestModal(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: '#666'
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={addGuest} style={{ display: 'grid', gap: '12px' }}>
+              {/* Basic Info */}
+              <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
+                    שם פרטי *
+                  </label>
+                  <input
+                    value={newGuest.firstName}
+                    onChange={e => setNewGuest({ ...newGuest, firstName: e.target.value })}
+                    required
+                    style={{ width: '100%', padding: '10px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                  />
+                </div>
+                
+                <div>
+                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
+                    שם משפחה *
+                  </label>
+                  <input
+                    value={newGuest.lastName}
+                    onChange={e => setNewGuest({ ...newGuest, lastName: e.target.value })}
+                    required
+                    style={{ width: '100%', padding: '10px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                  />
+                </div>
+              </div>
+
+              {/* Contact Info */}
+              <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
+                    מספר טלפון *
+                  </label>
+                  <input
+                    value={newGuest.phone}
+                    onChange={e => setNewGuest({ ...newGuest, phone: e.target.value })}
+                    required
+                    style={{ width: '100%', padding: '10px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                  />
+                </div>
+                
+                <div>
+                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
+                    אימייל
+                  </label>
+                  <input
+                    type="email"
+                    value={newGuest.email}
+                    onChange={e => setNewGuest({ ...newGuest, email: e.target.value })}
+                    style={{ width: '100%', padding: '10px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                  />
+                </div>
+              </div>
+
+              {/* Event Details */}
+              <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
+                    מספר מקומות שמורים *
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={10}
+                    value={newGuest.seatsReserved}
+                    onChange={e => setNewGuest({ ...newGuest, seatsReserved: Number(e.target.value) })}
+                    required
+                    style={{ width: '100%', padding: '10px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                  />
+                  <small style={{ color: '#475569', fontSize: '11px' }}>מספר האנשים שיגיעו עם המוזמן</small>
+                </div>
+                
+                <div>
+                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
+                    מספר שולחן
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={newGuest.tableNumber}
+                    onChange={e => setNewGuest({ ...newGuest, tableNumber: Number(e.target.value) })}
+                    style={{ width: '100%', padding: '10px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                  />
+                  <small style={{ color: '#475569', fontSize: '11px' }}>אופציונלי - לשיבוץ בשולחנות</small>
+                </div>
+              </div>
+
+              {/* Dietary Restrictions */}
+              <div>
+                <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
+                  תזונה
+                </label>
+                <select
+                  value={newGuest.dietaryRestrictions}
+                  onChange={e => setNewGuest({ ...newGuest, dietaryRestrictions: e.target.value })}
+                  style={{ width: '100%', padding: '10px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                >
+                  <option value="רגיל">רגיל</option>
+                  <option value="צמחוני">צמחוני</option>
+                  <option value="טבעוני">טבעוני</option>
+                  <option value="ללא גלוטן">ללא גלוטן</option>
+                  <option value="אחר">אחר</option>
+                </select>
+              </div>
+
+              {/* Group and Side */}
+              <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
+                    קבוצה
+                  </label>
+                  <input
+                    value={newGuest.group}
+                    onChange={e => setNewGuest({ ...newGuest, group: e.target.value })}
+                    placeholder="משפחה, חברים, עבודה..."
+                    style={{ width: '100%', padding: '10px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                  />
+                </div>
+                
+                <div>
+                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
+                    מהצד של
+                  </label>
+                  <select
+                    value={newGuest.side}
+                    onChange={e => setNewGuest({ ...newGuest, side: e.target.value as 'bride' | 'groom' | 'shared' })}
+                    style={{ width: '100%', padding: '10px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                  >
+                    <option value="bride">כלה</option>
+                    <option value="groom">חתן</option>
+                    <option value="shared">משותף</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
+                  הערות
+                </label>
+                <textarea
+                  value={newGuest.notes}
+                  onChange={e => setNewGuest({ ...newGuest, notes: e.target.value })}
+                  placeholder="הערות נוספות על המוזמן..."
+                  rows={2}
+                  style={{ width: '100%', padding: '10px', border: '1px solid #E5E7EB', borderRadius: '6px', resize: 'vertical' }}
+                />
+              </div>
+
+              {/* Buttons */}
+              <div style={{ display: 'flex', gap: '15px', justifyContent: 'flex-end', marginTop: '15px' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowAddGuestModal(false)}
+                  style={{
+                    padding: '12px 20px',
+                    background: '#6b7280',
+                    color: '#ffffff',
+                    border: '2px solid #6b7280',
+                    borderRadius: '25px',
+                    fontSize: '14px',
+                    fontWeight: 'bold', 
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(107, 114, 128, 0.3)';
+                    e.currentTarget.style.borderColor = '#4b5563';
+                    e.currentTarget.style.background = '#4b5563';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                    e.currentTarget.style.borderColor = '#6b7280';
+                    e.currentTarget.style.background = '#6b7280';
+                  }}
+                >
+                  ביטול
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    padding: '12px 20px',
+                    background: '#1d5a78',
+                    color: '#ffffff',
+                    border: '2px solid #3b82f6',
+                    borderRadius: '25px',
+                    fontSize: '14px',
+                    fontWeight: 'bold', 
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
+                    e.currentTarget.style.borderColor = '#2563eb';
+                    e.currentTarget.style.background = '#164e63';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                    e.currentTarget.style.borderColor = '#3b82f6';
+                    e.currentTarget.style.background = '#1d5a78';
+                  }}
+                >
+                  הוסף מוזמן
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

@@ -6,6 +6,7 @@ export interface IWedding {
   ownerID: Types.ObjectId;          
   participants: Types.ObjectId[];   
   weddingDate: Date;
+  coupleName?: string;
   startTime?: string;
   location?: string;
   addressDetails?: string;
@@ -61,6 +62,10 @@ const weddingSchema = new Schema<IWedding>(
     weddingDate: {
       type: Date,
       required: true,
+    },
+    coupleName: {
+      type: String,
+      trim: true,
     },
     startTime: {
       type: String,

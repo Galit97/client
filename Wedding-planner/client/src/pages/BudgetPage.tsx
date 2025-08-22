@@ -317,7 +317,7 @@ const BudgetPage: React.FC = () => {
   return (
     <div className="page-container">
       <h1 className="text-center mb-xl">
-        📊 ניהול תקציב האירוע
+         ניהול תקציב האירוע
       </h1>
 
       {/* Summary Cards */}
@@ -352,7 +352,7 @@ const BudgetPage: React.FC = () => {
         border: '1px solid black'
        
       }}>
-        <h2 style={{ margin: '0 0 20px 0', color: '#333' }}>📊 מעקב תקציב לאורך זמן</h2>
+        <h2 style={{ margin: '0 0 20px 0', color: '#333' }}> מעקב תקציב לאורך זמן</h2>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={budgetTrackingData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -389,7 +389,7 @@ const BudgetPage: React.FC = () => {
                  width: '12px', 
                  height: '12px', 
                  borderRadius: '50%', 
-                 backgroundColor: '#EDF8F4', 
+                 backgroundColor: '#eff6ff', 
                  marginRight: '8px' 
                }}></div>
                <h5 style={{ margin: '0', color: '#1E5A78', fontWeight: 'bold' }}>מאשרי הגעה</h5>
@@ -422,7 +422,7 @@ const BudgetPage: React.FC = () => {
                  width: '12px', 
                  height: '12px', 
                  borderRadius: '50%', 
-                 backgroundColor: '#FCF3F7', 
+                 backgroundColor: '#dbeafe', 
                  marginRight: '8px' 
                }}></div>
                <h5 style={{ margin: '0', color: '#1E5A78', fontWeight: 'bold' }}>מתלבטים</h5>
@@ -488,7 +488,7 @@ const BudgetPage: React.FC = () => {
                  width: '12px', 
                  height: '12px', 
                  borderRadius: '50%', 
-                 backgroundColor: '#EFF5FB', 
+                 backgroundColor: '#bfdbfe', 
                  marginRight: '8px' 
                }}></div>
                <h5 style={{ margin: '0', color: '#1E5A78', fontWeight: 'bold' }}>סה"כ</h5>
@@ -519,7 +519,7 @@ const BudgetPage: React.FC = () => {
         marginBottom: '30px',
      
       }}>
-        <h2 style={{ margin: '0 0 20px 0', color: '#1E5A78' }}>📊 תוצאות חישוב אמיתיות - לפי מאשרי הגעה</h2>
+        <h2 style={{ margin: '0 0 20px 0', color: '#1E5A78' }}> תוצאות חישוב אמיתיות - לפי מאשרי הגעה</h2>
         
         {calculateMealCostByStatus().confirmed?.totalCost ? (
           <div style={{ 
@@ -650,7 +650,7 @@ const BudgetPage: React.FC = () => {
         {/* Manual Calculation Results (Meals + Vendors) */}
         {manualCalculation.adultGuests > 0 || manualCalculation.childGuests > 0 ? (
           <div style={{ 
-            background: '#f1f8e9', 
+            background: '#eff6ff', 
             padding: '20px', 
             borderRadius: '8px',
            
@@ -802,7 +802,7 @@ const BudgetPage: React.FC = () => {
                      <span style={{
                        padding: '4px 8px',
                        borderRadius: '4px',
-                       backgroundColor: status === 'Confirmed' ? '#A8D5BA' : 
+                       backgroundColor: status === 'Confirmed' ? '#bfdbfe' : 
                                       status === 'Pending' ? '#F7E7CE' : '#F4C2C2',
                        color: '#333',
                        fontSize: '12px'
