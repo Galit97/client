@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import shareIcon from "../assets/images/share.svg";
+import "../styles/Dashboard.css";
 
 type Task = {
   _id: string;
@@ -42,10 +44,19 @@ type MealPricing = {
 };
 
 type WeddingData = {
+  _id?: string;
   weddingDate: string;
   budget: number;
   totalGuests: number;
+  coupleName?: string;
+  weddingName?: string;
   mealPricing?: MealPricing;
+  participants?: Array<{
+    _id: string;
+    firstName: string;
+    lastName: string;
+    role?: string;
+  } | string>; // Can be either populated object or just ID string
 };
 
 type Activity = {
@@ -57,12 +68,20 @@ type Activity = {
   icon: string;
 };
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  onNavigate?: (section: string) => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const [weddingData, setWeddingData] = useState<WeddingData | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [guests, setGuests] = useState<Guest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showSharePopup, setShowSharePopup] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [coupleName, setCoupleName] = useState('');
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -82,6 +101,48 @@ const Dashboard: React.FC = () => {
         });
         if (weddingRes.ok) {
           const wedding = await weddingRes.json();
+          console.log('Wedding data from server:', wedding);
+          console.log('Participants from server:', wedding.participants);
+          
+          // If participants are just IDs, fetch user details
+          if (wedding.participants && wedding.participants.length > 0) {
+            const firstParticipant = wedding.participants[0];
+            if (typeof firstParticipant === 'string' || !firstParticipant.firstName) {
+              console.log('Participants are IDs, fetching user details...');
+              // Fetch all users to get names
+              const usersRes = await fetch("/api/users", {
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              if (usersRes.ok) {
+                const users = await usersRes.json();
+                console.log('All users:', users);
+                
+                // Map participant IDs to user objects
+                const populatedParticipants = wedding.participants.map((participantId: string | any) => {
+                  const id = typeof participantId === 'string' ? participantId : participantId._id;
+                  const user = users.find((u: any) => u._id === id);
+                  if (user) {
+                    return {
+                      _id: user._id,
+                      firstName: user.firstName,
+                      lastName: user.lastName,
+                      role: user.role || 'Member'
+                    };
+                  }
+                  return {
+                    _id: id,
+                    firstName: 'Unknown',
+                    lastName: 'User',
+                    role: 'Member'
+                  };
+                });
+                
+                wedding.participants = populatedParticipants;
+                console.log('Populated participants:', populatedParticipants);
+              }
+            }
+          }
+          
           setWeddingData(wedding);
         }
 
@@ -245,6 +306,122 @@ const Dashboard: React.FC = () => {
   const totalInvitedEventCost = totalVendorExpenses + totalInvitedMealCost;
   const costPerPersonInvited = totalGuests > 0 ? Math.round(totalInvitedEventCost / totalGuests) : 0;
 
+  // Function to get initials from name
+  const getInitials = (firstName: string, lastName: string) => {
+    if (!firstName && !lastName) return '?';
+    
+    const firstInitial = firstName ? firstName.charAt(0).toUpperCase() : '';
+    const lastInitial = lastName ? lastName.charAt(0).toUpperCase() : '';
+    const result = firstInitial + lastInitial;
+    console.log(`getInitials("${firstName}", "${lastName}") = "${result}"`);
+    
+    // If we got Hebrew "Unknown User" text, show different initials
+    if (firstName === 'משתמש' && lastName === 'לא ידוע') {
+      return 'מל';
+    }
+    
+    return result || '?';
+  };
+
+  // Function to get role display in Hebrew
+  const getRoleDisplay = (role: string) => {
+    switch (role) {
+      case 'Bride': return 'כלה';
+      case 'Groom': return 'חתן';
+      case 'MotherOfBride': return 'אם הכלה';
+      case 'MotherOfGroom': return 'אם החתן';
+      case 'FatherOfBride': return 'אב הכלה';
+      case 'FatherOfGroom': return 'אב החתן';
+      case 'Planner': return 'מפיק';
+      case 'Member': return 'חבר';
+      case 'חבר': return 'חבר'; // Hebrew input
+      case 'Other': return 'אחר';
+      default: return 'חבר';
+    }
+  };
+
+  // Function to handle navigation to event settings
+  const handleNavigateToEventSettings = () => {
+    // Open share popup instead of navigating
+    setShowSharePopup(true);
+  };
+
+  // Function to translate vendor types to Hebrew
+  const translateVendorType = (type: string): string => {
+    const typeTranslations: { [key: string]: string } = {
+      'venue': 'אולם/גן אירועים',
+      'catering': 'קייטרינג',
+      'photography': 'צילום',
+      'music': 'מוזיקה',
+      'decoration': 'עיצוב וקישוט',
+      'transportation': 'הסעות',
+      'beauty': 'איפור וטיפוח',
+      'jewelry': 'תכשיטים',
+      'dress': 'שמלות',
+      'suit': 'חליפות',
+      'cake': 'עוגת חתונה',
+      'invitations': 'הזמנות',
+      'flowers': 'פרחים',
+      'lighting': 'תאורה',
+      'video': 'וידאו',
+      'dj': 'די ג\'יי',
+      'band': 'להקה',
+      'officiant': 'רב/פקיד',
+      'insurance': 'ביטוח',
+      'other': 'אחר'
+    };
+    
+    return typeTranslations[type.toLowerCase()] || type;
+  };
+
+  // Function to save wedding date
+  const handleSaveWeddingDate = async () => {
+    if (!selectedDate || !coupleName) {
+      alert('אנא מלאו את כל השדות הנדרשים');
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const response = await fetch("/api/weddings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          weddingDate: selectedDate,
+          weddingName: coupleName
+        })
+      });
+
+      if (response.ok) {
+        const newWedding = await response.json();
+        setWeddingData(prev => prev ? {
+          ...prev,
+          weddingDate: selectedDate,
+          weddingName: coupleName
+        } : {
+          weddingDate: selectedDate,
+          weddingName: coupleName,
+          budget: 0,
+          totalGuests: 0
+        });
+        setShowDatePicker(false);
+        setSelectedDate('');
+        setCoupleName('');
+        alert('תאריך החתונה נשמר בהצלחה!');
+      } else {
+        alert('שגיאה בשמירת תאריך החתונה');
+      }
+    } catch (error) {
+      console.error("Error saving wedding date:", error);
+      alert('שגיאה בשמירת תאריך החתונה');
+    }
+  };
+
   if (loading) {
     return (
       <div style={{ textAlign: 'center', padding: '50px' }}>
@@ -255,100 +432,450 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="page-container">
-   
+      {/* Active Partners Section - Small Corner */}
+      <div className="partners-section" style={{
+        position: 'fixed',
+        top: '20px',
+        left: '20px',
+        zIndex: 100,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
+      }}>
+        {/* Debug info */}
+        {(() => {
+          console.log('weddingData:', weddingData);
+          console.log('participants:', weddingData?.participants);
+          return null;
+        })()}
+        
+        {weddingData?.participants && weddingData.participants.length > 0 ? (
+          <>
+            {weddingData.participants.map((participant, index) => {
+              const colors = [
+                        'linear-gradient(135deg, #3b82f6, #1d4ed8)', // כחול
+        'linear-gradient(135deg, #0ea5e9, #0284c7)', // כחול בהיר
+        'linear-gradient(135deg, #06b6d4, #0891b2)', // כחול טורקיז
+        'linear-gradient(135deg, #8b5cf6, #7c3aed)'  // סגול
+              ];
+              const color = colors[index % colors.length];
+              
+              // Debug logging
+              console.log('Participant:', participant);
+              console.log('Type of participant:', typeof participant);
+              
+              // Handle case where participant might be just an ID string
+              let firstName = '';
+              let lastName = '';
+              let role = 'Member';
+              let participantId = '';
+              
+              if (typeof participant === 'string') {
+                // If participant is just an ID string
+                participantId = participant;
+                firstName = 'משתמש';
+                lastName = 'לא ידוע';
+                role = 'חבר';
+              } else if (participant && typeof participant === 'object') {
+                // If participant is an object
+                participantId = participant._id || '';
+                firstName = participant.firstName || 'משתמש';
+                lastName = participant.lastName || 'לא ידוע';
+                role = participant.role || 'Member';
+              }
+              
+              console.log('Processed participant:', { participantId, firstName, lastName, role });
+              console.log('Initials:', getInitials(firstName, lastName));
+              
+              return (
+                <div 
+                  key={participantId || index}
+                  style={{
+                    position: 'relative',
+                    display: 'inline-block'
+                  }}
+                >
+                  <div 
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '50%',
+                      background: color,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontSize: '12px',
+                      fontWeight: 'bold',
+                      border: '2px solid rgba(255,255,255,0.8)',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                      e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+                      // Show tooltip
+                      const tooltip = e.currentTarget.nextElementSibling as HTMLElement;
+                      if (tooltip) {
+                        tooltip.style.opacity = '1';
+                        tooltip.style.visibility = 'visible';
+                        tooltip.style.transform = 'translateX(-50%) scale(1)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+                      // Hide tooltip
+                      const tooltip = e.currentTarget.nextElementSibling as HTMLElement;
+                      if (tooltip) {
+                        tooltip.style.opacity = '0';
+                        tooltip.style.visibility = 'hidden';
+                        tooltip.style.transform = 'translateX(-50%) scale(0.95)';
+                      }
+                    }}
+                  >
+                    {getInitials(firstName, lastName)}
+                  </div>
+                  
+                  {/* Custom Tooltip */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '40px',
+                      left: '50%',
+                      transform: 'translateX(-50%) scale(0.95)',
+                      backgroundColor: '#1e3a8a',
+                      color: 'white',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      whiteSpace: 'nowrap',
+                      zIndex: 1000,
+                      opacity: 0,
+                      visibility: 'hidden',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      minWidth: '120px',
+                      maxWidth: '200px'
+                    }}
+                  >
+                    <div style={{ textAlign: 'center', lineHeight: '1.4' }}>
+                      <div style={{ fontWeight: 'bold', marginBottom: '2px' }}>
+                        {firstName} {lastName}
+                      </div>
+                      <div style={{ fontSize: '11px', opacity: 0.9 }}>
+                        {getRoleDisplay(role)}
+                      </div>
+                    </div>
+                    
+                    {/* Tooltip arrow */}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        bottom: '100%',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: 0,
+                        height: 0,
+                        borderLeft: '6px solid transparent',
+                        borderRight: '6px solid transparent',
+                        borderBottom: '6px solid #1e3a8a'
+                      }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </>
+        ) : (
+          <div 
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #cccccc, #999999)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              border: '2px solid rgba(255,255,255,0.8)',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+            }}
+            title="אין שותפים עדיין"
+          >
+            ?
+          </div>
+        )}
+        
+        <div style={{ position: 'relative', display: 'inline-block' }}>
+          <button
+            onClick={handleNavigateToEventSettings}
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #6C7B7F, #4A5568)',
+              color: 'white',
+              border: '2px solid rgba(255,255,255,0.8)',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.1)';
+              e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+              // Show tooltip
+              const tooltip = e.currentTarget.nextElementSibling as HTMLElement;
+              if (tooltip) {
+                tooltip.style.opacity = '1';
+                tooltip.style.visibility = 'visible';
+                tooltip.style.transform = 'translateX(-50%) scale(1)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+              // Hide tooltip
+              const tooltip = e.currentTarget.nextElementSibling as HTMLElement;
+              if (tooltip) {
+                tooltip.style.opacity = '0';
+                tooltip.style.visibility = 'hidden';
+                tooltip.style.transform = 'translateX(-50%) scale(0.95)';
+              }
+            }}
+          >
+            <img 
+              src={shareIcon} 
+              alt="Share" 
+              style={{ width: '16px', height: '16px', filter: 'brightness(0) invert(1)' }}
+            />
+          </button>
+          
+          {/* Share Button Tooltip */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '40px',
+              left: '50%',
+              transform: 'translateX(-50%) scale(0.95)',
+              backgroundColor: '#1e3a8a',
+              color: 'white',
+              padding: '8px 12px',
+              borderRadius: '6px',
+              fontSize: '12px',
+              fontWeight: '500',
+              whiteSpace: 'nowrap',
+              zIndex: 1000,
+              opacity: 0,
+              visibility: 'hidden',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              minWidth: '120px',
+              maxWidth: '200px'
+            }}
+          >
+            <div style={{ textAlign: 'center', lineHeight: '1.4' }}>
+              <div style={{ fontWeight: 'bold' }}>
+                הוסף שותפים לאירוע
+              </div>
+            </div>
+            
+            {/* Tooltip arrow */}
+            <div
+              style={{
+                position: 'absolute',
+                bottom: '100%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: 0,
+                height: 0,
+                borderLeft: '6px solid transparent',
+                borderRight: '6px solid transparent',
+                borderBottom: '6px solid #1e3a8a'
+              }}
+            />
+          </div>
+        </div>
+      </div>
 
       {/* Countdown Timer */}
-      <div className="card text-center mb-xl" style={{ 
-        background: 'linear-gradient(135deg, #EDF8F4 0%, #EFF5FB 25%, #FCF3F7 50%, #FAFAFA 75%, #EDF8F4 100%)',
-        color: '#0F172A',
+      <div className="card text-center mb-xl countdown-card" style={{ 
+        background: 'linear-gradient(135deg, #65859e 0%, #1f4f66 100%)',
+        color: 'white',
         border: '1px solid #CBD5E1',
-        boxShadow: '0 4px 15px rgba(237, 248, 244, 0.3)',
+        boxShadow: '0 4px 15px rgba(101, 133, 158, 0.3)',
         position: 'relative',
         overflow: 'hidden'
       }}>
-        <h2 style={{ margin: '0 0 20px 0', fontSize: '28px' }}>
-          {timeLeft.days > 0 ? '⏰ ספירה לאחור לחתונה' : '🎉 היום החתונה!'}
-        </h2>
+        {weddingData?.weddingDate ? (
+          <>
+            <h2 style={{ margin: '0 0 20px 0', fontSize: '28px', color: 'white'}}>
+              {timeLeft.days > 0 ? `ספירה לאחור לחתונה של ${weddingData?.weddingName || 'הזוג'}` : '🎉 היום החתונה!'}
+            </h2>
+            {/* Debug info */}
+            {(() => {
+              console.log('weddingName from weddingData:', weddingData?.weddingName);
+              console.log('full weddingData:', weddingData);
+              return null;
+            })()}
         
         {timeLeft.days > 0 ? (
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '72px', fontWeight: 'bold', lineHeight: '1', marginBottom: '10px' }}>
+            <div className="countdown-days" style={{ fontSize: '72px', fontWeight: 'bold', lineHeight: '1', marginBottom: '10px' }}>
               {timeLeft.days}
             </div>
-            <div style={{ fontSize: '24px', opacity: 0.9, marginBottom: '15px' }}>ימים לחתונה</div>
-            <div style={{ fontSize: '18px', opacity: 0.8 }}>
-              תאריך האירוע: {weddingData?.weddingDate ? new Date(weddingData.weddingDate).toLocaleDateString('he-IL', {
+            <div className="countdown-label" style={{ fontSize: '24px', opacity: 0.9, marginBottom: '15px' }}>ימים לחתונה</div>
+            <div className="countdown-date" style={{ fontSize: '18px', opacity: 0.8 }}>
+                  תאריך האירוע: {new Date(weddingData.weddingDate).toLocaleDateString('he-IL', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
                 weekday: 'long'
-              }) : 'לא מוגדר'}
+                  })}
             </div>
           </div>
         ) : (
           <div style={{ fontSize: '36px', fontWeight: 'bold' }}>
             מזל טוב! 🎊
+              </div>
+            )}
+          </>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+            <h2 style={{ margin: '0 0 20px 0', fontSize: '28px', color: 'white' }}>
+              ברוכים הבאים!
+            </h2>
+            <p style={{ fontSize: '18px', marginBottom: '30px', opacity: 0.9 }}>
+              בואו נתחיל לתכנן את החתונה שלכם
+            </p>
+            <button
+              onClick={() => setShowDatePicker(true)}
+              style={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                color: 'white',
+                border: '2px solid rgba(255, 255, 255, 0.3)',
+                borderRadius: '8px',
+                padding: '12px 24px',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                backdropFilter: 'blur(10px)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+              }}
+            >
+              בחרו תאריך לחתונה
+            </button>
           </div>
         )}
       </div>
 
-      {/* Progress Cards */}
-      <div className="grid grid-2 mb-xl">
-                 {/* Tasks Progress */}
-         <div className="card">
-           <div className="flex-between mb-lg">
+      {/* Main Cards - 3 Cards */}
+      <div className="main-cards-grid" style={{ 
+        display: 'grid', 
+        gap: '20px', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+        marginBottom: '30px'
+      }}>
+        {/* Event Cost Summary */}
+        <div className="card main-card" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
              <div style={{ 
                width: '50px', 
                height: '50px', 
                borderRadius: '50%', 
-               background: 'linear-gradient(135deg, #EDF8F4, #EFF5FB)',
+              background: 'linear-gradient(135deg, #EFF5FB, #FAFAFA)',
                display: 'flex',
                alignItems: 'center',
                justifyContent: 'center',
-               marginLeft: '15px',
-               border: '1px solid #CBD5E1'
+              marginLeft: '15px'
              }}>
-               <span style={{ fontSize: '24px' }}>✓</span>
+              <span style={{ fontSize: '24px' }}>💰</span>
              </div>
-             <div>
-               <h3 style={{ margin: '0', color: '#0F172A' }}>משימות כולל</h3>
+                         <div style={{ flex: 1 }}>
+               <h3 style={{ margin: '0', color: '#0F172A' }}>חישוב עלויות האירוע</h3>
                <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
-                 צ'קליסט, ספקים, מוזמנים
+                 עלות כוללת: {eventTotalCost.toLocaleString()} ₪
                </p>
                <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '12px' }}>
-                 {completedItems} מתוך {totalItems} הושלמו
+                 עלות לאיש (מאשרי הגעה): {costPerPerson.toLocaleString()} ₪
+               </p>
+               <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '12px' }}>
+                 עלות למוזמן (מוזמנים): {costPerPersonInvited.toLocaleString()} ₪
                </p>
              </div>
            </div>
           
-           <div style={{ 
-             width: '100%', 
-             height: '8px', 
-             background: '#FAFAFA', 
-             borderRadius: '4px',
-             overflow: 'hidden'
-           }}>
-             <div style={{ 
-               width: `${taskProgress}%`, 
-               height: '100%', 
-               background: 'linear-gradient(135deg, #EDF8F4, #EFF5FB)',
-               transition: 'width 0.3s ease'
-             }}></div>
+          <div style={{ display: 'grid', gap: '8px', gridTemplateColumns: 'repeat(2, 1fr)', marginBottom: '15px' }}>
+            <div style={{ textAlign: 'center', padding: '8px', background: '#f8fafc', borderRadius: '6px' }}>
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1d5a78' }}>{totalVendorExpenses.toLocaleString()} ₪</div>
+              <div style={{ fontSize: '11px', color: '#475569' }}>ספקים</div>
+            </div>
+            <div style={{ textAlign: 'center', padding: '8px', background: '#f8fafc', borderRadius: '6px' }}>
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1d5a78' }}>{confirmedMealCost.toLocaleString()} ₪</div>
+              <div style={{ fontSize: '11px', color: '#475569' }}>מנות</div>
+            </div>
            </div>
            
-           <div style={{ 
-             marginTop: '15px', 
-             fontSize: '28px', 
+          <button
+                            onClick={() => onNavigate?.('budget')}
+            className="main-card-button"
+            style={{
+              width: '100%',
+              padding: '12px 20px',
+              background: '#f8fafc',
+              color: '#1f2937',
+              border: '2px solid #e5e7eb',
+              borderRadius: '25px',
+              fontSize: '14px',
              fontWeight: 'bold', 
-             color: '#1E5A78' 
-           }}>
-             {taskProgress.toFixed(0)}%
-           </div>
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              position: 'relative',
+              marginTop: 'auto'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+              e.currentTarget.style.borderColor = '#d1d5db';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.borderColor = '#e5e7eb';
+            }}
+          >
+            <span>ניהול תקציב</span>
+            <span style={{ 
+              fontSize: '16px',
+              transform: 'rotate(180deg)',
+              marginLeft: '8px'
+            }}>→</span>
+          </button>
         </div>
 
-                 {/* Vendors Progress */}
-         <div className="card">
-           <div className="flex-between mb-lg">
+        {/* Guests */}
+        <div className="card main-card" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
                           <div style={{ 
                 width: '50px', 
                 height: '50px', 
@@ -359,12 +886,15 @@ const Dashboard: React.FC = () => {
                 justifyContent: 'center',
                 marginLeft: '15px'
               }}>
-               <span style={{ fontSize: '24px' }}>🏢</span>
+              <span style={{ fontSize: '24px' }}>👥</span>
              </div>
-             <div>
-               <h3 style={{ margin: '0', color: '#0F172A', fontSize: '16px' }}>ספקים</h3>
-               <p style={{ margin: '2px 0 0 0', color: '#475569', fontSize: '12px' }}>
-                 {confirmedVendors} מתוך {totalVendors} אושרו
+            <div style={{ flex: 1 }}>
+              <h3 style={{ margin: '0', color: '#0F172A' }}>מוזמנים</h3>
+              <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
+                {confirmedGuests} מתוך {totalGuests} אישרו הגעה
+              </p>
+              <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '12px' }}>
+                סה"כ מוזמנים: {totalReservedPlaces}
                </p>
              </div>
            </div>
@@ -374,48 +904,79 @@ const Dashboard: React.FC = () => {
              height: '8px', 
              background: '#FAFAFA', 
              borderRadius: '4px',
-             overflow: 'hidden'
+            overflow: 'hidden',
+            marginBottom: '15px'
            }}>
              <div style={{ 
-               width: `${vendorProgress}%`, 
+              width: `${guestProgress}%`, 
                height: '100%', 
-               background: 'linear-gradient(90deg, #FCF3F7, #FAFAFA)',
+              background: 'linear-gradient(90deg, #EDF8F4, #FCF3F7)',
                transition: 'width 0.3s ease'
              }}></div>
            </div>
           
-                     <div style={{ 
-             marginTop: '10px', 
-             fontSize: '24px', 
+          <button
+                            onClick={() => onNavigate?.('guestList')}
+            className="main-card-button"
+            style={{
+              width: '100%',
+              padding: '12px 20px',
+              background: '#f8fafc',
+              color: '#1f2937',
+              border: '2px solid #e5e7eb',
+              borderRadius: '25px',
+              fontSize: '14px',
              fontWeight: 'bold', 
-             color: '#1E5A78' 
-           }}>
-             {vendorProgress.toFixed(0)}%
-           </div>
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              position: 'relative',
+              marginTop: 'auto'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+              e.currentTarget.style.borderColor = '#d1d5db';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.borderColor = '#e5e7eb';
+            }}
+          >
+            <span>ניהול מוזמנים</span>
+            <span style={{ 
+              fontSize: '16px',
+              transform: 'rotate(180deg)',
+              marginLeft: '8px'
+            }}>→</span>
+          </button>
         </div>
 
-        {/* Guests Progress */}
-        <div className="card">
+        {/* Today's Tasks */}
+        <div className="card main-card" style={{ display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
                          <div style={{ 
                width: '50px', 
                height: '50px', 
                borderRadius: '50%', 
-               background: 'linear-gradient(135deg, #EDF8F4, #FCF3F7)',
+              background: 'linear-gradient(135deg, #EDF8F4, #EFF5FB)',
                display: 'flex',
                alignItems: 'center',
                justifyContent: 'center',
                marginLeft: '15px'
              }}>
-              <span style={{ fontSize: '24px' }}>👥</span>
+              <span style={{ fontSize: '24px' }}>📋</span>
             </div>
-                         <div>
-               <h3 style={{ margin: '0', color: '#0F172A' }}>מוזמנים</h3>
+            <div style={{ flex: 1 }}>
+              <h3 style={{ margin: '0', color: '#0F172A' }}>משימות</h3>
                <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
-                 {confirmedGuests} מתוך {totalGuests} אישרו הגעה
+                {highPriorityTasks.length} משימות דחופות
                </p>
                <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '12px' }}>
-                 סה"כ מוזמנים: {totalReservedPlaces}
+                {completedTasks} מתוך {totalTasks} הושלמו
                </p>
              </div>
           </div>
@@ -425,91 +986,71 @@ const Dashboard: React.FC = () => {
              height: '8px', 
              background: '#FAFAFA', 
              borderRadius: '4px',
-             overflow: 'hidden'
+            overflow: 'hidden',
+            marginBottom: '15px'
            }}>
              <div style={{ 
-               width: `${guestProgress}%`, 
+              width: `${totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0}%`, 
                height: '100%', 
-               background: 'linear-gradient(90deg, #EDF8F4, #FCF3F7)',
+              background: 'linear-gradient(135deg, #EDF8F4, #EFF5FB)',
                transition: 'width 0.3s ease'
              }}></div>
            </div>
           
-                     <div style={{ 
-             marginTop: '10px', 
-             fontSize: '24px', 
-             fontWeight: 'bold', 
-             color: '#1E5A78' 
-           }}>
-             {guestProgress.toFixed(0)}%
-           </div>
-        </div>
-        {/* Event Cost Summary */}
-        <div style={{ 
-          background: '#FFFFFF', 
-          padding: '25px', 
-          borderRadius: '12px',
-          border: '1px solid #CBD5E1'
-         
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-                         <div style={{ 
-               width: '50px', 
-               height: '50px', 
-               borderRadius: '50%', 
-               background: 'linear-gradient(135deg, #EFF5FB, #FAFAFA)',
-               display: 'flex',
+                     <button
+                             onClick={() => onNavigate?.('checklist')}
+             className="main-card-button"
+             style={{
+               width: '100%',
+               padding: '12px 20px',
+               background: '#f8fafc',
+               color: '#1f2937',
+               border: '2px solid #e5e7eb',
+               borderRadius: '25px',
+               fontSize: '14px',
+               fontWeight: 'bold', 
+               cursor: 'pointer',
+               transition: 'all 0.2s ease',
+                display: 'flex',
                alignItems: 'center',
-               justifyContent: 'center',
-               marginLeft: '15px'
-             }}>
-              <span style={{ fontSize: '24px' }}>💰</span>
-            </div>
-            <div>
-              <h3 style={{ margin: '0', color: '#0F172A' }}>חישוב עלויות האירוע</h3>
-              <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
-                עלות לאיש (מאשרים): {costPerPerson.toLocaleString()} ₪
-              </p>
-              <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
-                עלות לאיש (מוזמנים): {costPerPersonInvited.toLocaleString()} ₪
-              </p>
-            </div>
-          </div>
-          <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
-            <div>
-              <div style={{ fontSize: '12px', color: '#475569' }}>סה"כ ספקים</div>
-              <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#c62828' }}>{totalVendorExpenses.toLocaleString()} ₪</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '12px', color: '#475569' }}>עלות מנות (מאשרים)</div>
-              <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#2e7d32' }}>{confirmedMealCost.toLocaleString()} ₪</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '12px', color: '#475569' }}>עלות מנות (מוזמנים)</div>
-              <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#4caf50' }}>{totalInvitedMealCost.toLocaleString()} ₪</div>
-            </div>
-            <div>
-              <div style={{ fontSize: '12px', color: '#475569' }}>סה"כ עלות אירוע</div>
-              <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#f57f17' }}>{eventTotalCost.toLocaleString()} ₪</div>
-            </div>
-          </div>
+               justifyContent: 'space-between',
+               position: 'relative',
+               marginTop: 'auto'
+             }}
+             onMouseEnter={(e) => {
+               e.currentTarget.style.transform = 'translateY(-1px)';
+               e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+               e.currentTarget.style.borderColor = '#d1d5db';
+             }}
+             onMouseLeave={(e) => {
+               e.currentTarget.style.transform = 'translateY(0)';
+               e.currentTarget.style.boxShadow = 'none';
+               e.currentTarget.style.borderColor = '#e5e7eb';
+             }}
+           >
+             <span>משימות</span>
+             <span style={{ 
+               fontSize: '16px',
+               transform: 'rotate(180deg)',
+               marginLeft: '8px'
+             }}>→</span>
+           </button>
         </div>
       </div>
 
-      {/* Tasks and Activities */}
-      <div style={{ 
+      {/* Bottom Section - Recent Activities and Vendors */}
+      <div className="bottom-section" style={{ 
         display: 'grid', 
         gap: '20px', 
         gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
         marginBottom: '30px'
       }}>
         {/* Recent Activities */}
-        <div style={{ 
+        <div className="section-card" style={{ 
           background: '#FFFFFF', 
           padding: '25px', 
           borderRadius: '12px',
           border: '1px solid #CBD5E1'
-      
         }}>
           <h3 style={{ 
             margin: '0 0 20px 0', 
@@ -517,7 +1058,7 @@ const Dashboard: React.FC = () => {
             display: 'flex',
             alignItems: 'center'
           }}>
-            <span style={{ marginLeft: '10px' }}>📝</span>
+         
             פעולות אחרונות
           </h3>
           
@@ -526,7 +1067,6 @@ const Dashboard: React.FC = () => {
               {recentActivities.map((activity) => (
                 <div key={activity.id} style={{ 
                   padding: '15px', 
-                 
                   borderRadius: '8px', 
                   marginBottom: '10px',
                   background: '#EFF5FB'
@@ -559,105 +1099,802 @@ const Dashboard: React.FC = () => {
           )}
         </div>
 
-        {/* Upcoming Tasks from Checklist */}
-        <div style={{ 
+        {/* Vendors Section */}
+        <div className="section-card" style={{ 
           background: '#FFFFFF', 
           padding: '25px', 
           borderRadius: '12px',
           border: '1px solid #CBD5E1'
-       
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '20px'
         }}>
           <h3 style={{ 
-            margin: '0 0 20px 0', 
+              margin: '0', 
             color: '#0F172A',
             display: 'flex',
             alignItems: 'center'
           }}>
-            <span style={{ marginLeft: '10px' }}>📋</span>
-            משימות לביצוע
+             
+              ספקים
           </h3>
+                         <button
+               onClick={() => onNavigate?.('vendors')}
+               style={{
+                 padding: '8px 16px',
+                 background: '#f8fafc',
+                 color: '#1f2937',
+                 border: '2px solid #e5e7eb',
+                 borderRadius: '20px',
+                 fontSize: '12px',
+                 fontWeight: 'bold',
+                 cursor: 'pointer',
+                 transition: 'all 0.2s ease',
+                 display: 'flex',
+                 alignItems: 'center',
+                 gap: '6px'
+               }}
+               onMouseEnter={(e) => {
+                 e.currentTarget.style.transform = 'translateY(-1px)';
+                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                 e.currentTarget.style.borderColor = '#d1d5db';
+               }}
+               onMouseLeave={(e) => {
+                 e.currentTarget.style.transform = 'translateY(0)';
+                 e.currentTarget.style.boxShadow = 'none';
+                 e.currentTarget.style.borderColor = '#e5e7eb';
+               }}
+             >
+               <span>הוסף ספק</span>
+               <span style={{ 
+                 fontSize: '14px',
+                 transform: 'rotate(180deg)'
+               }}>→</span>
+             </button>
+          </div>
           
-          {upcomingTasks.length > 0 ? (
+          {vendors.length > 0 ? (
             <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
-              {upcomingTasks.map((task) => (
-                                 <div key={task._id} style={{ 
+              {vendors.slice(-5).reverse().map((vendor) => (
+                <div key={vendor._id} style={{ 
                    padding: '15px', 
                    borderRadius: '8px', 
                    marginBottom: '10px',
-                                       background: task.dueDate && new Date(task.dueDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? '#faf8f5' : '#fefefe'
+                  background: vendor.status === 'Confirmed' ? '#f0f9ff' : '#fafafa',
+                  border: vendor.status === 'Confirmed' ? '1px solid #0ea5e9' : '1px solid #e5e7eb'
                  }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <div style={{ fontWeight: 'bold', color: '#0F172A' }}>
+                      {vendor.vendorName}
+                    </div>
                    <div style={{ 
+                      padding: '4px 8px', 
+                      borderRadius: '12px', 
+                      fontSize: '11px', 
                      fontWeight: 'bold', 
-                     color: task.dueDate && new Date(task.dueDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) ? '#e65100' : '#0F172A',
-                     marginBottom: '5px',
-                     display: 'flex',
-                     alignItems: 'center'
-                   }}>
-                     {task.dueDate && new Date(task.dueDate) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) && <span style={{ marginLeft: '5px' }}>🔥</span>}
-                     {task.task}
+                      background: vendor.status === 'Confirmed' ? '#dcfce7' : vendor.status === 'Pending' ? '#fef3c7' : '#fee2e2',
+                      color: vendor.status === 'Confirmed' ? '#166534' : vendor.status === 'Pending' ? '#92400e' : '#991b1b'
+                    }}>
+                      {vendor.status === 'Confirmed' ? 'מאושר' : vendor.status === 'Pending' ? 'ממתין' : 'לא מאושר'}
+                    </div>
                    </div>
                    <div style={{ fontSize: '14px', color: '#475569', marginBottom: '5px' }}>
-                     {task.notes || 'אין הערות'}
+                    סוג: {translateVendorType(vendor.type)}
                    </div>
-                   <div style={{ fontSize: '12px', color: '#475569' }}>
-                     {task.dueDate && (
-                       <span style={{ marginRight: '10px' }}>
-                         תאריך יעד: {new Date(task.dueDate).toLocaleDateString('he-IL')}
-                       </span>
-                     )}
+                  <div className="quick-summary-label" style={{ fontSize: '14px', color: '#475569' }}>
+                    מחיר: {vendor.price.toLocaleString()} ₪
                    </div>
                  </div>
               ))}
             </div>
           ) : (
             <div style={{ textAlign: 'center', color: '#475569', fontStyle: 'italic', padding: '20px' }}>
-              אין משימות לביצוע
+              טרם נוספו ספקים
             </div>
           )}
         </div>
       </div>
 
-     
-
-      {/* Quick Stats */}
+      {/* Quick Summary */}
       <div style={{ 
         background: '#FFFFFF', 
         padding: '25px', 
         borderRadius: '12px',
-        border: '1px solid #CBD5E1'
+        border: '1px solid #CBD5E1',
+        marginBottom: '30px'
       }}>
-        <h3 style={{ margin: '0 0 20px 0', color: '#0F172A' }}>📊 סטטיסטיקות מהירות</h3>
+        <h3 style={{ margin: '0 0 20px 0', color: '#0F172A' }}> סיכום מהיר</h3>
         
-        <div style={{ display: 'grid', gap: '20px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#4CAF50' }}>
-              {totalItems}
+        <div className="quick-summary-grid" style={{ 
+          display: 'grid', 
+          gap: '20px', 
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gridTemplateRows: 'repeat(2, 1fr)'
+        }}>
+          <div className="quick-summary-item" style={{ 
+            textAlign: 'center',
+            padding: '20px',
+            background: '#FFFFFF',
+            borderRadius: '8px',
+            border: '1px solid #cbd5e1'
+          }}>
+            <div className="quick-summary-number" style={{ fontSize: '32px', fontWeight: 'bold', color: '#65859e', marginBottom: '8px' }}>
+              {totalReservedPlaces}
             </div>
-            <div style={{ fontSize: '14px', color: '#475569' }}>סה"כ פריטים</div>
+            <div className="quick-summary-label" style={{ fontSize: '14px', color: '#475569' }}>מוזמנים</div>
           </div>
           
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#2196F3' }}>
-              {totalVendors}
+          <div className="quick-summary-item" style={{ 
+            textAlign: 'center',
+            padding: '20px',
+            background: '#FFFFFF',
+            borderRadius: '8px',
+            border: '1px solid #cbd5e1'
+          }}>
+            <div className="quick-summary-number" style={{ fontSize: '32px', fontWeight: 'bold', color: '#65859e', marginBottom: '8px' }}>
+              {confirmedVendors}
             </div>
-            <div style={{ fontSize: '14px', color: '#475569' }}>סה"כ ספקים</div>
+            <div className="quick-summary-label" style={{ fontSize: '14px', color: '#475569' }}>ספקים נבחרו</div>
           </div>
           
-                     <div style={{ textAlign: 'center' }}>
-                            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ff9800' }}>
-               {totalReservedPlaces}
+          <div className="quick-summary-item" style={{ 
+            textAlign: 'center',
+            padding: '20px',
+            background: '#FFFFFF',
+            borderRadius: '8px',
+            border: '1px solid #cbd5e1'
+          }}>
+            <div className="quick-summary-number" style={{ fontSize: '32px', fontWeight: 'bold', color: '#65859e', marginBottom: '8px' }}>
+              {eventTotalCost.toLocaleString()}₪
              </div>
-             <div style={{ fontSize: '14px', color: '#475569' }}>סה"כ מוזמנים</div>
+            <div className="quick-summary-label" style={{ fontSize: '14px', color: '#475569' }}>תחזית תקציב</div>
            </div>
           
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#9C27B0' }}>
-              {highPriorityTasks.length}
+          <div className="quick-summary-item" style={{ 
+            textAlign: 'center',
+            padding: '20px',
+            background: '#FFFFFF',
+            borderRadius: '8px',
+            border: '1px solid #cbd5e1'
+          }}>
+            <div className="quick-summary-number" style={{ fontSize: '32px', fontWeight: 'bold', color: '#65859e', marginBottom: '8px' }}>
+              {totalTasks - completedTasks}
             </div>
-            <div style={{ fontSize: '14px', color: '#475569' }}>משימות דחופות</div>
+            <div className="quick-summary-label" style={{ fontSize: '14px', color: '#475569' }}>משימות שנותרו</div>
           </div>
         </div>
       </div>
+
+      {/* Date Picker Modal */}
+      {showDatePicker && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '12px',
+            padding: '30px',
+            maxWidth: '500px',
+            width: '90%',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginBottom: '20px'
+            }}>
+              <span style={{ fontSize: '24px', marginLeft: '10px' }}>📅</span>
+              <h2 style={{ margin: 0, color: '#0F172A' }}>בחירת תאריך החתונה</h2>
+            </div>
+            
+            <p style={{ color: '#475569', marginBottom: '25px' }}>
+              בחרו את התאריך המתוכנן לחתונה שלכם
+            </p>
+
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '8px', 
+                fontWeight: 'bold', 
+                color: '#0F172A' 
+              }}>
+                שם הזוג
+              </label>
+              <input
+                type="text"
+                value={coupleName}
+                onChange={(e) => setCoupleName(e.target.value)}
+                placeholder="הזינו את שם הזוג"
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #CBD5E1',
+                  borderRadius: '6px',
+                  fontSize: '16px',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '25px' }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '8px', 
+                fontWeight: 'bold', 
+                color: '#0F172A' 
+              }}>
+                תאריך האירוע
+              </label>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #CBD5E1',
+                  borderRadius: '6px',
+                  fontSize: '16px',
+                  boxSizing: 'border-box',
+                  background: 'white'
+                }}
+              />
+            </div>
+
+            <div style={{
+              display: 'flex',
+              gap: '10px',
+              justifyContent: 'flex-end'
+            }}>
+              <button
+                onClick={() => {
+                  setShowDatePicker(false);
+                  setSelectedDate('');
+                  setCoupleName('');
+                }}
+                style={{
+                  padding: '10px 20px',
+                  border: '1px solid #CBD5E1',
+                  borderRadius: '6px',
+                  background: 'white',
+                  color: '#475569',
+                  cursor: 'pointer',
+                  fontSize: '14px'
+                }}
+              >
+                ביטול
+              </button>
+              <button
+                onClick={handleSaveWeddingDate}
+                style={{
+                  padding: '10px 20px',
+                  border: 'none',
+                  borderRadius: '6px',
+                  background: 'linear-gradient(135deg, #65859e 0%, #1f4f66 100%)',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: 'bold'
+                }}
+              >
+                שמרו תאריך
+              </button>
+            </div>
+
+            <p style={{ 
+              color: '#6B7280', 
+              fontSize: '12px', 
+              marginTop: '15px', 
+              textAlign: 'center',
+              fontStyle: 'italic'
+            }}>
+              ניתן תמיד לשנות את התאריך מההגדרות
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Responsive Styles */}
+      <style>{`
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+          .page-container {
+            padding: 10px !important;
+          }
+          
+          /* Partners Section - Mobile */
+          .partners-section {
+            position: static !important;
+            top: auto !important;
+            left: auto !important;
+            margin-bottom: 15px !important;
+            justify-content: center !important;
+          }
+          
+          /* Countdown Timer - Mobile */
+          .countdown-card {
+            margin-bottom: 20px !important;
+            padding: 20px 15px !important;
+          }
+          
+          .countdown-card h2 {
+            font-size: 20px !important;
+            margin-bottom: 15px !important;
+          }
+          
+          .countdown-days {
+            font-size: 48px !important;
+          }
+          
+          .countdown-label {
+            font-size: 18px !important;
+          }
+          
+          .countdown-date {
+            font-size: 14px !important;
+          }
+          
+          /* Main Cards - Mobile (Stack vertically) */
+          .main-cards-grid {
+            grid-template-columns: 1fr !important;
+            gap: 15px !important;
+          }
+          
+          .main-card {
+            padding: 15px !important;
+          }
+          
+          .main-card h4 {
+            font-size: 16px !important;
+            margin-bottom: 10px !important;
+          }
+          
+          .main-card-stats {
+            font-size: 12px !important;
+            margin-bottom: 8px !important;
+          }
+          
+          .main-card-button {
+            padding: 10px 16px !important;
+            font-size: 14px !important;
+          }
+          
+          /* Quick Summary - Mobile (2x2 grid with smaller items) */
+          .quick-summary-grid {
+            gap: 10px !important;
+          }
+          
+          .quick-summary-item {
+            padding: 15px !important;
+          }
+          
+          .quick-summary-number {
+            font-size: 24px !important;
+          }
+          
+          .quick-summary-label {
+            font-size: 12px !important;
+          }
+          
+          /* Recent Activities & Vendors - Mobile */
+          .bottom-section {
+            grid-template-columns: 1fr !important;
+            gap: 15px !important;
+          }
+          
+          .section-card {
+            padding: 15px !important;
+          }
+          
+          .section-card h3 {
+            font-size: 16px !important;
+            margin-bottom: 12px !important;
+          }
+          
+          .activity-item, .vendor-item {
+            padding: 10px !important;
+            margin-bottom: 8px !important;
+          }
+          
+          .activity-title, .vendor-name {
+            font-size: 14px !important;
+          }
+          
+          .activity-description, .vendor-details {
+            font-size: 12px !important;
+          }
+        }
+        
+        /* Tablet Styles */
+        @media (min-width: 769px) and (max-width: 1024px) {
+          .page-container {
+            padding: 15px !important;
+          }
+          
+          /* Main Cards - Tablet (2 columns) */
+          .main-cards-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 20px !important;
+          }
+          
+          .main-card:nth-child(3) {
+            grid-column: 1 / -1 !important;
+            max-width: 50% !important;
+            margin: 0 auto !important;
+          }
+          
+          /* Quick Summary - Tablet */
+          .quick-summary-grid {
+            gap: 15px !important;
+          }
+          
+          .quick-summary-item {
+            padding: 18px !important;
+          }
+          
+          /* Bottom Section - Tablet */
+          .bottom-section {
+            gap: 20px !important;
+          }
+        }
+        
+        /* Small Mobile Styles */
+        @media (max-width: 480px) {
+          .page-container {
+            padding: 8px !important;
+          }
+          
+          /* Partners circles smaller */
+          .partner-circle {
+            width: 28px !important;
+            height: 28px !important;
+            font-size: 11px !important;
+          }
+          
+          .share-icon {
+            width: 16px !important;
+            height: 16px !important;
+          }
+          
+          /* Countdown even smaller */
+          .countdown-card h2 {
+            font-size: 18px !important;
+          }
+          
+          .countdown-days {
+            font-size: 36px !important;
+          }
+          
+          .countdown-label {
+            font-size: 16px !important;
+          }
+          
+          /* Main cards more compact */
+          .main-card {
+            padding: 12px !important;
+          }
+          
+          .main-card h4 {
+            font-size: 14px !important;
+          }
+          
+          .main-card-button {
+            padding: 8px 12px !important;
+            font-size: 12px !important;
+          }
+          
+          /* Quick summary smaller */
+          .quick-summary-item {
+            padding: 12px !important;
+          }
+          
+          .quick-summary-number {
+            font-size: 20px !important;
+          }
+          
+          .quick-summary-label {
+            font-size: 11px !important;
+          }
+        }
+      `}</style>
+
+      {/* Share Popup */}
+      {showSharePopup && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 2000
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '16px',
+            padding: '30px',
+            maxWidth: '500px',
+            width: '90%',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+            position: 'relative'
+          }}>
+            {/* Close Button */}
+            <button
+              onClick={() => setShowSharePopup(false)}
+              style={{
+                position: 'absolute',
+                top: '15px',
+                right: '20px',
+                background: 'none',
+                border: 'none',
+                fontSize: '24px',
+                cursor: 'pointer',
+                color: '#666',
+                width: '30px',
+                height: '30px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '50%',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#f3f4f6';
+                e.currentTarget.style.color = '#374151';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = '#666';
+              }}
+            >
+              ×
+            </button>
+
+            {/* Header */}
+            <div style={{ textAlign: 'center', marginBottom: '25px' }}>
+              <h2 style={{ 
+                margin: '0 0 10px 0', 
+                color: '#1f2937',
+                fontSize: '24px',
+                fontWeight: 'bold'
+              }}>
+                שתף את האירוע
+              </h2>
+              <p style={{ 
+                margin: 0, 
+                color: '#6b7280',
+                fontSize: '14px'
+              }}>
+                צור לינק לשיתוף עם שותפים נוספים
+              </p>
+            </div>
+
+            {/* Current Partners Section */}
+            <div style={{ marginBottom: '25px' }}>
+              <h3 style={{ 
+                margin: '0 0 15px 0', 
+                color: '#374151',
+                fontSize: '18px',
+                fontWeight: '600'
+              }}>
+                שותפים נוכחיים ({weddingData?.participants?.length || 0})
+              </h3>
+              
+              {weddingData?.participants && weddingData.participants.length > 0 ? (
+                <div style={{ 
+                  display: 'grid', 
+                  gap: '12px',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))'
+                }}>
+                  {weddingData.participants.map((participant, index) => {
+                    const colors = [
+                      'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+                      'linear-gradient(135deg, #0ea5e9, #0284c7)',
+                      'linear-gradient(135deg, #06b6d4, #0891b2)',
+                      'linear-gradient(135deg, #8b5cf6, #7c3aed)'
+                    ];
+                    const color = colors[index % colors.length];
+                    
+                    // Handle case where participant might be just an ID string
+                    let firstName = '';
+                    let lastName = '';
+                    let role = '';
+                    
+                    if (typeof participant === 'object' && participant !== null) {
+                      firstName = participant.firstName || '';
+                      lastName = participant.lastName || '';
+                      role = participant.role || '';
+                    }
+                    
+                    const getInitials = (first: string, last: string) => {
+                      const firstInitial = first.charAt(0) || '';
+                      const lastInitial = last.charAt(0) || '';
+                      return (firstInitial + lastInitial).toUpperCase();
+                    };
+                    
+                    return (
+                      <div key={index} style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '12px',
+                        background: '#f9fafb',
+                        borderRadius: '8px',
+                        border: '1px solid #e5e7eb'
+                      }}>
+                        <div style={{
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '50%',
+                          background: color,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'white',
+                          fontWeight: 'bold',
+                          fontSize: '14px'
+                        }}>
+                          {getInitials(firstName, lastName)}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ 
+                            fontWeight: '600', 
+                            color: '#1f2937',
+                            fontSize: '14px'
+                          }}>
+                            {firstName} {lastName}
+                          </div>
+                          {role && (
+                            <div style={{ 
+                              color: '#6b7280',
+                              fontSize: '12px'
+                            }}>
+                              {role}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div style={{
+                  textAlign: 'center',
+                  padding: '20px',
+                  background: '#f9fafb',
+                  borderRadius: '8px',
+                  border: '1px solid #e5e7eb',
+                  color: '#6b7280'
+                }}>
+                  אין שותפים לאירוע עדיין
+                </div>
+              )}
+            </div>
+
+            {/* Share Link Section */}
+            <div style={{ marginBottom: '25px' }}>
+              <h3 style={{ 
+                margin: '0 0 15px 0', 
+                color: '#374151',
+                fontSize: '18px',
+                fontWeight: '600'
+              }}>
+                לינק לשיתוף
+              </h3>
+              
+              <div style={{
+                display: 'flex',
+                gap: '10px',
+                alignItems: 'center'
+              }}>
+                <input
+                  type="text"
+                  value={`${window.location.origin}/invite/${weddingData?._id || 'wedding-id'}`}
+                  readOnly
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    background: '#f9fafb',
+                    color: '#374151'
+                  }}
+                />
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${window.location.origin}/invite/${weddingData?._id || 'wedding-id'}`);
+                    alert('הלינק הועתק ללוח!');
+                  }}
+                  style={{
+                    padding: '12px 16px',
+                    background: '#1d5a78',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    transition: 'all 0.2s ease',
+                    whiteSpace: 'nowrap'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#164e63';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = '#1d5a78';
+                  }}
+                >
+                  העתק
+                </button>
+              </div>
+              
+              <p style={{
+                margin: '10px 0 0 0',
+                fontSize: '12px',
+                color: '#6b7280',
+                lineHeight: '1.4'
+              }}>
+                שלח את הלינק הזה לחברים ובני משפחה כדי שיוכלו להצטרף לאירוע
+              </p>
+            </div>
+
+            {/* Add Partner Button */}
+            <div style={{ textAlign: 'center' }}>
+              <button
+                onClick={() => {
+                  setShowSharePopup(false);
+                  onNavigate && onNavigate('eventSettings');
+                }}
+                style={{
+                  padding: '14px 24px',
+                  background: '#3b82f6',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '25px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  transition: 'all 0.2s ease',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#2563eb';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = '#3b82f6';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                ➕ הוסף שותפים נוספים
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

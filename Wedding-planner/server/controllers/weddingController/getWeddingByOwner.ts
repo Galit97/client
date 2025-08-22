@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Wedding from "../../models/weddingModel";
+import User from "../../models/userModel";
 
 interface AuthenticatedRequest extends Request {
   user?: { _id: string };
@@ -22,7 +23,8 @@ const getWeddingByOwner = async (req: AuthenticatedRequest, res: Response) => {
         { ownerID },
         { participants: ownerID }
       ]
-    });
+    }).populate('participants', 'firstName lastName role');
+    
     console.log('📋 Found wedding:', JSON.stringify(wedding, null, 2));
     console.log('🍽️ Meal pricing from database:', JSON.stringify(wedding?.mealPricing, null, 2));
     console.log('🔍 Wedding schema fields:', Object.keys(wedding?.toObject() || {}));

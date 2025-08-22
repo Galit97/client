@@ -25,7 +25,7 @@ router.get("/by-participant", authenticateJWT, getWeddingByParticipant);
 router.get("/owner", authenticateJWT, getWeddingByOwner);
 router.get("/:id", getWeddingById);     
 router.put("/:id", updateWedding);
-router.delete("/:id", deleteWedding);
+router.delete("/:id", authenticateJWT, deleteWedding);
 router.post("/invites", authenticateJWT, createInvite);
 router.post("/invites/accept/:token", authenticateJWT, acceptInvite);
 

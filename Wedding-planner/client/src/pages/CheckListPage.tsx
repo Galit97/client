@@ -313,11 +313,15 @@ export default function CheckListPage() {
   }
 
   function getStatusColor(done: boolean) {
-    return done ? '#4CAF50' : '#ff9800';
+    return done ? '#dcfce7' : '#fef3c7';
   }
 
   function getStatusText(done: boolean) {
     return done ? 'הושלם' : 'ממתין';
+  }
+
+  function getStatusTextColor(done: boolean) {
+    return done ? '#166534' : '#92400e';
   }
 
   function formatDate(dateString: string) {
@@ -362,26 +366,10 @@ export default function CheckListPage() {
         borderBottom: '2px solid #E5E7EB',
         paddingBottom: '10px'
       }}>
-        צ'קליסט אירוע
+     משימות
       </h1>
 
-      {/* Help Section */}
-      <div style={{
-       background: 'linear-gradient(135deg, #cce7ff 0%, #d4f5d4 25%, #f5f0e6 50%, #cce7ff 100%)',
-       padding: '15px',
-       borderRadius: '8px',
-       marginBottom: '20px',
-      
-   
-      }}>
-        <h4 style={{ margin: '0 0 10px 0', color: '#1976d2' }}>💡 איך להשתמש בצ'קליסט:</h4>
-        <div style={{ fontSize: '14px', lineHeight: '1.5', color: '#333' }}>
-          <div><strong>תפקיד קשור:</strong> מי אחראי על המשימה (כלה, חתן, או שותף אחר)</div>
-          <div><strong>ספק קשור:</strong> אם המשימה קשורה לספק מסוים (צלם, קייטרינג וכו')</div>
-          <div><strong>תאריך יעד:</strong> מתי המשימה צריכה להיות מושלמת</div>
-          <div><strong>סינון ומיון:</strong> השתמש בפילטרים כדי לראות משימות ספציפיות</div>
-        </div>
-      </div>
+
 
       {/* Add Task Form */}
       <div style={{
@@ -482,9 +470,7 @@ export default function CheckListPage() {
       <div style={{
         background: '#ffffff',
         padding: '15px',
-        borderRadius: '8px',
-        marginBottom: '20px',
-        border: '1px solid black'
+      
        
       }}>
         <h4 style={{ margin: '0 0 15px 0' }}>סינון ומיון</h4>
@@ -589,7 +575,7 @@ export default function CheckListPage() {
               gridTemplateColumns: '30px 2fr 1fr 1fr 1fr 1fr 1fr',
               gap: '10px',
               alignItems: 'center',
-              backgroundColor: isOverdue(item.dueDate || '', item.done) ? '#fff3cd' : 'white'
+              backgroundColor: isOverdue(item.dueDate || '', item.done) ? '#dbeafe' : 'white'
             }}>
             <input
               type="checkbox"
@@ -678,10 +664,10 @@ export default function CheckListPage() {
               <div>
                 <span style={{
                   padding: '4px 8px',
-                  borderRadius: '4px',
+                  borderRadius: '12px',
                   backgroundColor: getStatusColor(item.done),
-                  color: 'white',
-                  fontSize: '12px',
+                  color: getStatusTextColor(item.done),
+                  fontSize: '11px',
                   fontWeight: 'bold'
                 }}>
                   {getStatusText(item.done)}
@@ -693,13 +679,13 @@ export default function CheckListPage() {
                   <>
                     <button 
                       onClick={() => updateTask(editingItem)}
-                      style={{ padding: '4px 8px', backgroundColor: '#a7d6ba', color: '#333', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
+                      style={{ padding: '4px 8px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
                     >
                       שמור
                     </button>
                     <button 
                       onClick={cancelEditing}
-                      style={{ padding: '4px 8px', backgroundColor: '#f4c2c2', color: '#333', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
+                      style={{ padding: '4px 8px', backgroundColor: '#6b7280', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
                     >
                       ביטול
                     </button>
@@ -708,13 +694,13 @@ export default function CheckListPage() {
                   <>
                     <button 
                       onClick={() => startEditing(item)}
-                      style={{ padding: '4px 8px', backgroundColor: '#d4a574', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
+                      style={{ padding: '4px 8px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
                     >
                       ערוך
                     </button>
                     <button 
                       onClick={() => deleteTask(item._id)}
-                      style={{ padding: '4px 8px', backgroundColor: '#f4c2c2', color: '#333', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
+                      style={{ padding: '4px 8px', backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
                     >
                       מחק
                     </button>
@@ -731,11 +717,11 @@ export default function CheckListPage() {
         <div style={{
           marginTop: '20px',
           padding: '15px',
-          background: '#e8f5e8',
+        border: 'solid black 1px',
           borderRadius: '8px',
         
         }}>
-          <h4 style={{ margin: '0 0 10px 0' }}>📊 סיכום צ'קליסט</h4>
+          <h4 style={{ margin: '0 0 10px 0' }}> סיכום משימות</h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
             <div><strong>סה"כ משימות:</strong> {items.length}</div>
             <div><strong>הושלמו:</strong> {items.filter(i => i.done).length}</div>

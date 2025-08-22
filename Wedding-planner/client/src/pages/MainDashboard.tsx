@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Menu from "../components/Menu/Menu";
+import BottomNav from "../components/BottomNav/BottomNav";
 import GuestListPage from "./GuestListPage";
 import VendorPage from "./VendorPage";
 import WeedingPage from "./WeedingPage";
@@ -12,6 +13,7 @@ import AccountSettings from "./account/AccountSettings";
 import MyWeddings from "./weddings/MyWeddings";
 import ImportantThingsPage from "./ImportantThingsPage";
 import WeddingDayPage from "./WeddingDayPage";
+import "../styles/Dashboard.css";
 
 export default function MainDashboard() {
   const [selectedSection, setSelectedSection] = useState<string>("dashboard");
@@ -22,10 +24,23 @@ export default function MainDashboard() {
     window.location.href = "/";
   };
 
+  // Handle navigation from dashboard to event settings (keep for share icon)
+  useEffect(() => {
+    const handleNavigateToEventSettings = () => {
+      setSelectedSection("eventSettings");
+    };
+
+    window.addEventListener('navigateToEventSettings', handleNavigateToEventSettings);
+    
+    return () => {
+      window.removeEventListener('navigateToEventSettings', handleNavigateToEventSettings);
+    };
+  }, []);
+
   const renderSection = () => {
     switch (selectedSection) {
       case "dashboard":
-        return <Dashboard />;
+        return <Dashboard onNavigate={setSelectedSection} />;
       case "eventSettings":
         return <WeedingPage />;
       case "guestList":
@@ -73,26 +88,12 @@ export default function MainDashboard() {
           onSelect={setSelectedSection} 
           onLogout={handleLogout}
         />
-
-        <button
-          onClick={handleLogout}
-          style={{
-            background: "none",
-            border: "none",
-            padding: "8px 12px",
-            fontSize: "16px",
-            cursor: "pointer",
-            color: "black",
-            borderRadius: "4px",
-            transition: "background-color 0.2s ease",
-          }}
-          className="logout-button desktop-logout"
-        >
-          התנתקות
-        </button>
       </header>
 
-      <main style={{ padding: "0 20px" }}>{renderSection()}</main>
+      <main style={{ padding: "0 20px", paddingBottom: "80px" }}>{renderSection()}</main>
+
+      {/* Bottom Navigation */}
+      <BottomNav onSelect={setSelectedSection} currentSection={selectedSection} />
 
       <style>{`
         @media (max-width: 768px) {
@@ -100,9 +101,6 @@ export default function MainDashboard() {
             padding: 10px 15px !important;
             flex-direction: row !important;
             justify-content: space-between !important;
-          }
-          .desktop-logout {
-            display: none !important;
           }
         }
         @media (max-width: 480px) {

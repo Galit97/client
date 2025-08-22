@@ -645,20 +645,47 @@ export default function VendorsListPage() {
 
   return (
     <div className="page-container ">
-      <h1 className="text-center mb-xl">
-        ניהול ספקים
-      </h1>
-
-      {/* Help Section */}
-      <div className="card"> 
-        <h4 className="mb-md ">💡 איך לנהל ספקים:</h4>
-        <div className="text-secondary">
-          <div><strong>סטטוס:</strong> ממתין → אושר → שולם</div>
-          <div><strong>סוג ספק:</strong> בחר את סוג השירות שהספק מספק</div>
-          <div><strong>קישורים:</strong> הוסף קישורים לחוזים והצעות</div>
-          <div><strong>סינון ומיון:</strong> השתמש בפילטרים כדי למצוא ספקים ספציפיים</div>
-        </div>   
+      <div style={{
+        textAlign: 'center',
+        marginBottom: '30px',
+        padding: '20px',
+        background: '#f0f5fb',
+        borderRadius: '12px',
+        border: '1px solid #dee2e6'
+      }}>
+        <h1 style={{ 
+          margin: '0',
+          fontSize: '32px',
+          fontWeight: 'bold',
+          color: '#495057',
+          textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
+        }}>
+          ניהול ספקים
+        </h1>
       </div>
+
+      {/* Summary */}
+      {vendors.length > 0 && (
+        <div style={{
+          marginBottom: '20px',
+          padding: '15px',
+          background: '#ffffff',
+          borderRadius: '8px',
+          border: '1px solid #dee2e6'
+        }}>
+          <h4 style={{ margin: '0 0 10px 0' }}> סיכום ספקים</h4>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
+            <div><strong>סה"כ ספקים:</strong> {vendors.length}</div>
+            <div><strong>סה"כ עלות:</strong> {vendors.reduce((sum, v) => sum + v.price, 0).toLocaleString()} ₪</div>
+            <div><strong>סה"כ מקדמות:</strong> {vendors.reduce((sum, v) => sum + (v.depositAmount || 0), 0).toLocaleString()} ₪</div>
+            <div><strong>נותר לשלם:</strong> {vendors.reduce((sum, v) => sum + (v.price - (v.depositAmount || 0)), 0).toLocaleString()} ₪</div>
+            <div><strong>ממתינים:</strong> {vendors.filter(v => v.status === 'Pending').length}</div>
+            <div><strong>אושרו:</strong> {vendors.filter(v => v.status === 'Confirmed').length}</div>
+            <div><strong>שולמו:</strong> {vendors.filter(v => v.status === 'Paid').length}</div>
+            <div><strong>עלות ממוצעת:</strong> {Math.round(vendors.reduce((sum, v) => sum + v.price, 0) / vendors.length).toLocaleString()} ₪</div>
+          </div>
+        </div>
+      )}
 
       {/* Manual Calculation Section */}
       <div className="alert warning mb-xl">
@@ -808,6 +835,7 @@ export default function VendorsListPage() {
         padding: '20px',
         borderRadius: '8px',
         marginBottom: '30px',
+        border: 'solid black 1px'
        
       }}>
         <h3 style={{ marginTop: 0, marginBottom: '15px' }}>הוסף ספק חדש</h3>
@@ -1009,19 +1037,14 @@ export default function VendorsListPage() {
         <h4 style={{ margin: '0 0 12px 0' }}>סינון ומיון</h4>
         {filteredAndSortedVendors.length > 0 && (
           <div style={{
-            background: '#EDF8F4',
+            
             padding: '10px',
             borderRadius: '6px',
             marginBottom: '12px',
        
             fontSize: '14px'
           }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 8 }}>
-              <div><strong>סה"כ מחיר:</strong> {totalPrice.toLocaleString()} ₪</div>
-              <div><strong>סה"כ מקדמות:</strong> {totalDeposits.toLocaleString()} ₪</div>
-              <div><strong>נותר לשלם:</strong> {remainingToPay.toLocaleString()} ₪</div>
-              <div><strong>ספקים מוצגים:</strong> {filteredAndSortedVendors.length}</div>
-            </div>
+            
           </div>
         )}
         <div className="toolbar-grid">
@@ -1237,7 +1260,7 @@ export default function VendorsListPage() {
                         <span style={{
                           padding: '4px 8px',
                           borderRadius: '4px',
-                          backgroundColor: vendor.status === 'Confirmed' ? '#A8D5BA' : 
+                          backgroundColor: vendor.status === 'Confirmed' ? '#bfdbfe' : 
                                          vendor.status === 'Pending' ? '#F7E7CE' : '#F4C2C2',
                           color: '#333',
                           fontSize: '12px',
@@ -1287,28 +1310,7 @@ export default function VendorsListPage() {
         </div>
       )}
 
-      {/* Summary */}
-      {vendors.length > 0 && (
-        <div style={{
-          marginTop: '20px',
-          padding: '15px',
-          background: '#e8f5e8',
-          borderRadius: '8px',
-         
-        }}>
-          <h4 style={{ margin: '0 0 10px 0' }}>📊 סיכום ספקים</h4>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
-            <div><strong>סה"כ ספקים:</strong> {vendors.length}</div>
-            <div><strong>סה"כ עלות:</strong> {vendors.reduce((sum, v) => sum + v.price, 0).toLocaleString()} ₪</div>
-            <div><strong>סה"כ מקדמות:</strong> {vendors.reduce((sum, v) => sum + (v.depositAmount || 0), 0).toLocaleString()} ₪</div>
-            <div><strong>נותר לשלם:</strong> {vendors.reduce((sum, v) => sum + (v.price - (v.depositAmount || 0)), 0).toLocaleString()} ₪</div>
-            <div><strong>ממתינים:</strong> {vendors.filter(v => v.status === 'Pending').length}</div>
-            <div><strong>אושרו:</strong> {vendors.filter(v => v.status === 'Confirmed').length}</div>
-            <div><strong>שולמו:</strong> {vendors.filter(v => v.status === 'Paid').length}</div>
-            <div><strong>עלות ממוצעת:</strong> {Math.round(vendors.reduce((sum, v) => sum + v.price, 0) / vendors.length).toLocaleString()} ₪</div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }
