@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import FirstPage from "./pages/FirstPage";
 import MainDashboard from "./pages/MainDashboard";
 import InviteAcceptPage from "./pages/invite/InviteAcceptPage";
+import BudgetMaster from "./lib/budgetMaster";
 
 export default function App() {
   return (
@@ -10,6 +11,7 @@ export default function App() {
         <Route path="/" element={<FirstPage />} />
         <Route path="/dashboard" element={<MainDashboard />} />
         <Route path="/invite/:token" element={<InviteAcceptPage />} />
+        
       </Routes>
     </BrowserRouter>
   );

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 
 type Participant = {
   id: string;
@@ -68,6 +69,9 @@ const initialWedding: WeddingData = {
 };
 
 export default function WeddingPage() {
+  const [searchParams] = useSearchParams();
+  const weddingId = searchParams.get('weddingId');
+  
   const [wedding, setWedding] = useState<WeddingData>(initialWedding);
   const [allUsers, setAllUsers] = useState<Participant[]>([]);
   const [selectedParticipantId, setSelectedParticipantId] = useState("");
@@ -139,7 +143,10 @@ export default function WeddingPage() {
 
       try {
         console.log("Fetching wedding with token:", token.substring(0, 20) + "...");
-        const res = await fetch("/api/weddings/owner", {
+        
+        // If weddingId is provided, fetch that specific wedding, otherwise fetch user's wedding
+        const endpoint = weddingId ? `/api/weddings/${weddingId}` : "/api/weddings/owner";
+        const res = await fetch(endpoint, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -286,6 +293,14 @@ export default function WeddingPage() {
   }
 
   function handleRemoveParticipant(id: string) {
+    const participant = wedding.participants.find((p) => p.id === id);
+    if (!participant) return;
+
+    const confirmMessage = `האם אתה בטוח שברצונך להסיר את ${participant.name} מהאירוע?`;
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
     setWedding((prev) => ({
       ...prev,
       participants: prev.participants.filter((p) => p.id !== id),
@@ -384,6 +399,50 @@ export default function WeddingPage() {
       }
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function deleteWedding() {
+    if (!wedding._id) {
+      alert("לא ניתן למחוק אירוע שלא נשמר");
+      return;
+    }
+
+    if (!confirm("האם אתה בטוח שברצונך למחוק את האירוע? פעולה זו אינה הפיכה ותמחק את כל הנתונים הקשורים לאירוע.")) {
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("לא מזוהה משתמש מחובר");
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/weddings/${wedding._id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Error deleting wedding:", errorText);
+        alert("שגיאה במחיקת האירוע");
+        return;
+      }
+
+      alert("האירוע נמחק בהצלחה!");
+      // Redirect to MyWeddings page if we came from there, otherwise to dashboard
+      if (weddingId) {
+        window.location.href = "/dashboard?section=myWeddings";
+      } else {
+        window.location.href = "/dashboard";
+      }
+    } catch (error) {
+      console.error("Error deleting wedding:", error);
+      alert("שגיאה במחיקת האירוע");
     }
   }
 
@@ -756,9 +815,20 @@ export default function WeddingPage() {
             />
           </div>
 
-          {/* Participants Section */}
-          <div style={{ marginTop: '20px', padding: '15px', background: '#f5f5f5', borderRadius: '4px' }}>
-            <h4 style={{ margin: '0 0 15px 0' }}>שותפים לאירוע</h4>
+                     {/* Participants Section */}
+           <div style={{ marginTop: '20px', padding: '15px', background: '#f5f5f5', borderRadius: '4px' }}>
+             <h4 style={{ margin: '0 0 15px 0' }}>שותפים לאירוע</h4>
+             <div style={{ 
+               marginBottom: '15px', 
+               padding: '8px 12px', 
+               background: '#e3f2fd', 
+               borderRadius: '4px', 
+               border: '1px solid #2196F3',
+               fontSize: '12px',
+               color: '#1976d2'
+             }}>
+               💡 <strong>טיפ:</strong> לחץ על כפתור "🗑️ הסר" כדי להסיר שותף מהאירוע. פעולה זו תדרוש אישור.
+             </div>
         <div style={{ marginBottom: '12px', display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <button
             type="button"
@@ -830,27 +900,62 @@ export default function WeddingPage() {
 
             {wedding.participants.length > 0 ? (
               <div style={{ display: 'grid', gap: '8px' }}>
-                {wedding.participants.map((p) => (
-                  <div
-                    key={p.id}
-                    className="card"
-                  >
-                    <span style={{ fontWeight: 'bold' }}>{p.name}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveParticipant(p.id)}
-                      style={{ 
-                        padding: '4px 8px', 
-                        border: '1px solid #f4c2c2', 
-                        background: '#ef4444',
-                        color: '#333',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px'
-                      }}
-                    >
-                      הסר
-                    </button>
+                                 {wedding.participants.map((p) => (
+                   <div
+                     key={p.id}
+                     style={{
+                       display: 'flex',
+                       justifyContent: 'space-between',
+                       alignItems: 'center',
+                       padding: '12px 16px',
+                       background: 'white',
+                       border: '1px solid #e5e7eb',
+                       borderRadius: '8px',
+                       boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                     }}
+                   >
+                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                       <div style={{
+                         width: '32px',
+                         height: '32px',
+                         borderRadius: '50%',
+                         background: '#3b82f6',
+                         color: 'white',
+                         display: 'flex',
+                         alignItems: 'center',
+                         justifyContent: 'center',
+                         fontSize: '14px',
+                         fontWeight: 'bold'
+                       }}>
+                         {p.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                       </div>
+                       <span style={{ fontWeight: 'bold', color: '#1f2937' }}>{p.name}</span>
+                     </div>
+                                         <button
+                       type="button"
+                       onClick={() => handleRemoveParticipant(p.id)}
+                       style={{ 
+                         padding: '6px 12px', 
+                         border: '1px solid #ef4444', 
+                         background: '#ef4444',
+                         color: 'white',
+                         borderRadius: '6px',
+                         cursor: 'pointer',
+                         fontSize: '12px',
+                         fontWeight: 'bold',
+                         transition: 'all 0.2s ease'
+                       }}
+                       onMouseEnter={(e) => {
+                         e.currentTarget.style.backgroundColor = '#dc2626';
+                         e.currentTarget.style.borderColor = '#dc2626';
+                       }}
+                       onMouseLeave={(e) => {
+                         e.currentTarget.style.backgroundColor = '#ef4444';
+                         e.currentTarget.style.borderColor = '#ef4444';
+                       }}
+                     >
+                       🗑️ הסר
+                     </button>
                   </div>
                 ))}
               </div>
@@ -861,14 +966,40 @@ export default function WeddingPage() {
             )}
           </div>
 
-          <div style={{ marginTop: '20px', textAlign: 'center' }}>
+          <div style={{ marginTop: '20px', textAlign: 'center', display: 'flex', gap: '15px', justifyContent: 'center' }}>
             <button
               type="submit"
               disabled={saving}
-          className='button'
+              className='button'
             >
               {saving ? 'שומר...' : 'שמור אירוע'}
             </button>
+            
+            {wedding._id && (
+              <button
+                type="button"
+                onClick={deleteWedding}
+                style={{
+                  padding: '12px 24px',
+                  backgroundColor: '#ef4444',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#dc2626';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#ef4444';
+                }}
+              >
+                🗑️ מחק אירוע
+              </button>
+            )}
           </div>
         </form>
       </div>

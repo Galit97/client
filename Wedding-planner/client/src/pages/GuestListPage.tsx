@@ -632,7 +632,7 @@ export default function GuestListPage() {
       direction: 'rtl'
     }}>
       <div style={{
-        textAlign: 'center',
+        textAlign: 'center', 
         marginBottom: '30px',
         padding: '20px',
         background: '#fdf3f7',
@@ -647,16 +647,16 @@ export default function GuestListPage() {
           textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
         }}>
           מוזמנים
-        </h1>
+      </h1>
       </div>
 
       {/* Summary */}
       {guests.length > 0 && (
-        <div style={{
+      <div style={{
           marginBottom: '20px',
-          padding: '15px',
+        padding: '15px',
           background: '#ffffff',
-          borderRadius: '8px',
+        borderRadius: '8px',
           border: '1px solid #dee2e6'
         }}>
           <h4 style={{ margin: '0 0 10px 0' }}> סיכום רשימת המוזמנים</h4>
@@ -667,16 +667,16 @@ export default function GuestListPage() {
             <div><strong>נדחו:</strong> {guests.filter(g => g.status === 'Declined').length}</div>
             <div><strong>הגיעו לאירוע:</strong> {guests.filter(g => g.status === 'Arrived').length}</div>
             <div><strong>ממתינים לאישור:</strong> {guests.filter(g => g.status === 'Invited').length}</div>
-          </div>
         </div>
+      </div>
       )}
 
       {/* Excel Import/Export Section */}
       <div className="card">
         <h4 style={{ margin: '0 0 15px 0', color: '#856404' }}> ייבוא וייצוא אקסל</h4>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-          <button 
-            onClick={downloadTemplate} 
+          <button
+            onClick={downloadTemplate}
             style={{
               padding: '12px 20px',
               background: '#f8fafc',
@@ -705,8 +705,8 @@ export default function GuestListPage() {
           >
             📥 הורד תבנית
           </button>
-          <button 
-            onClick={exportToExcel} 
+          <button
+            onClick={exportToExcel}
             disabled={guests.length === 0}
             style={{
               padding: '12px 20px',
@@ -739,7 +739,7 @@ export default function GuestListPage() {
           >
             📤 ייצא ({guests.length})
           </button>
-          <label 
+          <label
             style={{
               padding: '12px 20px',
               background: importing ? '#f3f4f6' : '#f8fafc',
@@ -779,35 +779,35 @@ export default function GuestListPage() {
             />
           </label>
         </div>
-        {importing && (
-          <div style={{ 
-            marginTop: '10px', 
-            padding: '8px', 
-            backgroundColor: '#d1ecf1', 
-            border: '1px solid #bee5eb',
-            borderRadius: '4px',
-            color: '#0c5460'
-          }}>
-            ⏳ מייבא מוזמנים... אנא המתן
-          </div>
-        )}
-        {importMessage && (
-          <div style={{ 
-            marginTop: '10px', 
-            padding: '8px', 
-            backgroundColor: importMessage.includes('בהצלחה') ? '#d4edda' : '#f8d7da', 
-            border: `1px solid ${importMessage.includes('בהצלחה') ? '#c3e6cb' : '#f5c6cb'}`,
-            borderRadius: '4px',
-            color: importMessage.includes('בהצלחה') ? '#155724' : '#721c24'
-          }}>
-            {importMessage.includes('בהצלחה') ? '✅ ' : '❌ '}{importMessage}
-          </div>
-        )}
+          {importing && (
+            <div style={{ 
+              marginTop: '10px', 
+              padding: '8px', 
+              backgroundColor: '#d1ecf1', 
+              border: '1px solid #bee5eb',
+              borderRadius: '4px',
+              color: '#0c5460'
+            }}>
+              ⏳ מייבא מוזמנים... אנא המתן
+            </div>
+          )}
+          {importMessage && (
+            <div style={{ 
+              marginTop: '10px', 
+              padding: '8px', 
+              backgroundColor: importMessage.includes('בהצלחה') ? '#d4edda' : '#f8d7da', 
+              border: `1px solid ${importMessage.includes('בהצלחה') ? '#c3e6cb' : '#f5c6cb'}`,
+              borderRadius: '4px',
+              color: importMessage.includes('בהצלחה') ? '#155724' : '#721c24'
+            }}>
+              {importMessage.includes('בהצלחה') ? '✅ ' : '❌ '}{importMessage}
+            </div>
+          )}
       </div>
 
       {/* Add Guest Button */}
       <div className="card" style={{ textAlign: 'center', padding: '20px' }}>
-        <button 
+            <button 
           onClick={() => setShowAddGuestModal(true)}
           style={{
             padding: '12px 20px',
@@ -839,7 +839,7 @@ export default function GuestListPage() {
           }}
         >
           ➕ הוסיפו מוזמן חדש
-        </button>
+            </button>
       </div>
 
       {/* Guests Toolbar */}

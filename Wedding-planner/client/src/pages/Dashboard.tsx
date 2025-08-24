@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import shareIcon from "../assets/images/share.svg";
+import BudgetMaster from "../lib/budgetMaster";
 import "../styles/Dashboard.css";
 
 type Task = {
@@ -80,6 +81,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const [loading, setLoading] = useState(true);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showSharePopup, setShowSharePopup] = useState(false);
+  const [showBudgetEdit, setShowBudgetEdit] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
   const [coupleName, setCoupleName] = useState('');
   const [timeLeft, setTimeLeft] = useState({
@@ -372,6 +374,23 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     };
     
     return typeTranslations[type.toLowerCase()] || type;
+  };
+
+  // Function to translate participant roles to Hebrew
+  const translateParticipantRole = (role: string): string => {
+    const roleTranslations: { [key: string]: string } = {
+      'bride': 'כלה',
+      'groom': 'חתן',
+      'producer': 'מפיק',
+      'planner': 'מתכנן',
+      'coordinator': 'מתאם',
+      'assistant': 'עוזר',
+      'family': 'משפחה',
+      'friend': 'חבר',
+      'other': 'אחר'
+    };
+    
+    return roleTranslations[role.toLowerCase()] || role;
   };
 
   // Function to save wedding date
@@ -720,7 +739,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           <>
             <h2 style={{ margin: '0 0 20px 0', fontSize: '28px', color: 'white'}}>
               {timeLeft.days > 0 ? `ספירה לאחור לחתונה של ${weddingData?.weddingName || 'הזוג'}` : '🎉 היום החתונה!'}
-            </h2>
+        </h2>
             {/* Debug info */}
             {(() => {
               console.log('weddingName from weddingData:', weddingData?.weddingName);
@@ -833,44 +852,76 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
             </div>
            </div>
            
-          <button
-                            onClick={() => onNavigate?.('budget')}
-            className="main-card-button"
-            style={{
-              width: '100%',
-              padding: '12px 20px',
-              background: '#f8fafc',
-              color: '#1f2937',
-              border: '2px solid #e5e7eb',
-              borderRadius: '25px',
-              fontSize: '14px',
-             fontWeight: 'bold', 
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              position: 'relative',
-              marginTop: 'auto'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-1px)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-              e.currentTarget.style.borderColor = '#d1d5db';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = 'none';
-              e.currentTarget.style.borderColor = '#e5e7eb';
-            }}
-          >
-            <span>ניהול תקציב</span>
-            <span style={{ 
-              fontSize: '16px',
-              transform: 'rotate(180deg)',
-              marginLeft: '8px'
-            }}>→</span>
-          </button>
+          <div style={{ display: 'flex', gap: '10px', marginTop: 'auto' }}>
+            <button
+              onClick={() => setShowBudgetEdit(true)}
+              className="main-card-button"
+              style={{
+                flex: 1,
+                padding: '12px 20px',
+                background: '#f8fafc',
+                color: '#1f2937',
+                border: '2px solid #e5e7eb',
+                borderRadius: '25px',
+                fontSize: '14px',
+                fontWeight: 'bold', 
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                position: 'relative'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                e.currentTarget.style.borderColor = '#d1d5db';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.borderColor = '#e5e7eb';
+              }}
+            >
+              <span>ניהול תקציב</span>
+              <span style={{ 
+                fontSize: '16px',
+                transform: 'rotate(180deg)',
+                marginLeft: '8px'
+              }}>→</span>
+            </button>
+            <button
+                              onClick={() => setShowBudgetEdit(true)}
+              className="main-card-button"
+              style={{
+                padding: '12px 16px',
+                background: '#1d5a78',
+                color: 'white',
+                border: '2px solid #1d5a78',
+                borderRadius: '25px',
+                fontSize: '12px',
+                fontWeight: 'bold', 
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(29, 90, 120, 0.3)';
+                e.currentTarget.style.background = '#164e63';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.background = '#1d5a78';
+              }}
+            >
+              <span>מאסטר</span>
+            </button>
+          </div>
         </div>
 
         {/* Guests */}
@@ -1008,10 +1059,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                border: '2px solid #e5e7eb',
                borderRadius: '25px',
                fontSize: '14px',
-               fontWeight: 'bold', 
+             fontWeight: 'bold', 
                cursor: 'pointer',
                transition: 'all 0.2s ease',
-                display: 'flex',
+               display: 'flex',
                alignItems: 'center',
                justifyContent: 'space-between',
                position: 'relative',
@@ -1769,7 +1820,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                               color: '#6b7280',
                               fontSize: '12px'
                             }}>
-                              {role}
+                              {translateParticipantRole(role)}
                             </div>
                           )}
                         </div>
@@ -1891,6 +1942,77 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
               >
                 ➕ הוסף שותפים נוספים
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Budget Edit Modal */}
+      {showBudgetEdit && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '16px',
+            width: '95%',
+            maxWidth: '800px',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            padding: '0'
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '20px 24px',
+              borderBottom: '1px solid #e5e7eb'
+            }}>
+              <h2 style={{ margin: 0, color: '#1d5a78', fontSize: '24px', fontWeight: 'bold' }}>
+                עריכת הגדרות תקציב
+              </h2>
+              <button
+                onClick={() => setShowBudgetEdit(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: '#6b7280',
+                  padding: '4px',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '32px',
+                  height: '32px'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#f3f4f6';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'none';
+                }}
+              >
+                ×
+              </button>
+            </div>
+            
+            <div style={{ padding: '24px' }}>
+                              <BudgetMaster onClose={() => {
+          setShowBudgetEdit(false);
+          // Refresh the page to update budget data
+          window.location.reload();
+        }} />
             </div>
           </div>
         </div>

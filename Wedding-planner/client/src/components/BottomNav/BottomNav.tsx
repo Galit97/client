@@ -66,8 +66,12 @@ const BottomNav: React.FC<BottomNavProps> = ({ onSelect, currentSection }) => {
   ];
 
   const handleNavClick = (item: typeof navItems[0]) => {
+    console.log('Nav item clicked:', item.id, 'Type:', item.type);
+    console.log('Current activeDropdown:', activeDropdown);
     if (item.type === 'dropdown') {
-      setActiveDropdown(activeDropdown === item.id ? null : item.id);
+      const newActiveDropdown = activeDropdown === item.id ? null : item.id;
+      console.log('Setting active dropdown to:', newActiveDropdown);
+      setActiveDropdown(newActiveDropdown);
     } else {
       onSelect(item.id);
       setActiveDropdown(null);
@@ -109,20 +113,20 @@ const BottomNav: React.FC<BottomNavProps> = ({ onSelect, currentSection }) => {
           overflow: 'hidden'
         }}
       >
-        {/* Dropdown Overlay */}
-        {activeDropdown && (
-          <div
-            onClick={() => setActiveDropdown(null)}
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              zIndex: 999
-            }}
-          />
-        )}
+                 {/* Dropdown Overlay */}
+         {activeDropdown && (
+           <div
+             onClick={() => setActiveDropdown(null)}
+             style={{
+               position: 'fixed',
+               top: 0,
+               left: 0,
+               right: 0,
+               bottom: 0,
+               zIndex: 998
+             }}
+           />
+         )}
 
         {navItems.map((item) => (
           <div key={item.id} style={{ position: 'relative' }}>
@@ -160,67 +164,91 @@ const BottomNav: React.FC<BottomNavProps> = ({ onSelect, currentSection }) => {
                     marginRight: '2px', 
                     transform: activeDropdown === item.id ? 'rotate(180deg)' : 'rotate(0deg)',
                     transition: 'transform 0.2s ease',
-                    display: 'inline-block'
+                    display: 'inline-block',
+                    fontSize: '10px',
+                    color: activeDropdown === item.id ? '#1d5a78' : '#6b7280'
                   }}>
-                    ▲
+                    ▼
                   </span>
                 )}
               </span>
             </button>
 
-            {/* Dropdown Menu */}
-            {item.type === 'dropdown' && activeDropdown === item.id && (
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: '100%',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  backgroundColor: 'white',
-                  borderRadius: '12px',
-                  boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
-                  border: '1px solid #e5e7eb',
-                  marginBottom: '8px',
-                  minWidth: '180px',
-                  zIndex: 1000,
-                  overflow: 'hidden'
-                }}
-              >
-                {item.items?.map((subItem, index) => (
-                  <button
-                    key={subItem.id}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDropdownItemClick(subItem.id);
-                    }}
-                    style={{
-                      width: '100%',
-                      background: 'none',
-                      border: 'none',
-                      padding: '12px 16px',
-                      textAlign: 'right',
-                      fontSize: '14px',
-                      cursor: 'pointer',
-                      color: '#374151',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      borderBottom: index < (item.items?.length || 0) - 1 ? '1px solid #f3f4f6' : 'none'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = '#f8fafc';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'none';
-                    }}
-                  >
-                    <span style={{ fontSize: '16px' }}>{subItem.icon}</span>
-                    <span>{subItem.label}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+                        {/* Dropdown Menu */}
+            {(() => {
+              console.log('Rendering dropdown for:', item.id, 'activeDropdown:', activeDropdown, 'should show:', item.type === 'dropdown' && activeDropdown === item.id);
+              return null;
+            })()}
+                         <div
+               style={{
+                 position: 'fixed',
+                 bottom: '80px',
+                 left: '50%',
+                 transform: 'translateX(-50%)',
+                 backgroundColor: '#ffffff',
+                 borderRadius: '12px',
+                 boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
+                 border: '2px solid #1d5a78',
+                 marginBottom: '8px',
+                 minWidth: '180px',
+                 zIndex: 1001,
+                 overflow: 'hidden',
+                 maxHeight: '300px',
+                 overflowY: 'auto',
+                 display: item.type === 'dropdown' && activeDropdown === item.id ? 'block' : 'none',
+                 visibility: item.type === 'dropdown' && activeDropdown === item.id ? 'visible' : 'hidden',
+                 opacity: item.type === 'dropdown' && activeDropdown === item.id ? 1 : 0,
+                 padding: '8px 0',
+                 pointerEvents: 'auto',
+                 transition: 'opacity 0.2s ease, visibility 0.2s ease'
+               }}
+             >
+                                     <div style={{ 
+                     padding: '8px 16px', 
+                     fontSize: '12px', 
+                     color: '#1d5a78', 
+                     borderBottom: '1px solid #e5e7eb',
+                     textAlign: 'center',
+                     fontWeight: 'bold',
+                     backgroundColor: '#f0f9ff'
+                   }}>
+                     דרופ דאון פתוח - {item.label}
+                   </div>
+                                    {item.items?.map((subItem, index) => (
+                    <button
+                      key={subItem.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDropdownItemClick(subItem.id);
+                      }}
+                                             style={{
+                         width: '100%',
+                         background: currentSection === subItem.id ? '#f0f9ff' : '#f8fafc',
+                         border: 'none',
+                         padding: '12px 16px',
+                         textAlign: 'right',
+                         fontSize: '14px',
+                         cursor: 'pointer',
+                         color: currentSection === subItem.id ? '#1d5a78' : '#374151',
+                         display: 'flex',
+                         alignItems: 'center',
+                         gap: '8px',
+                         borderBottom: index < (item.items?.length || 0) - 1 ? '1px solid #f3f4f6' : 'none',
+                         fontWeight: currentSection === subItem.id ? 'bold' : 'normal'
+                       }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = currentSection === subItem.id ? '#f0f9ff' : '#f8fafc';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = currentSection === subItem.id ? '#f0f9ff' : 'none';
+                      }}
+                    >
+                      <span style={{ fontSize: '16px' }}>{subItem.icon}</span>
+                      <span>{subItem.label}</span>
+                    </button>
+                  ))}
+                </div>
+            </div>
         ))}
       </div>
     </nav>

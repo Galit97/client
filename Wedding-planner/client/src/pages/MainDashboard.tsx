@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Menu from "../components/Menu/Menu";
 import BottomNav from "../components/BottomNav/BottomNav";
 import GuestListPage from "./GuestListPage";
@@ -16,7 +17,9 @@ import WeddingDayPage from "./WeddingDayPage";
 import "../styles/Dashboard.css";
 
 export default function MainDashboard() {
-  const [selectedSection, setSelectedSection] = useState<string>("dashboard");
+  const [searchParams] = useSearchParams();
+  const sectionParam = searchParams.get('section');
+  const [selectedSection, setSelectedSection] = useState<string>(sectionParam || "dashboard");
 
   const handleLogout = () => {
     localStorage.removeItem("token");
