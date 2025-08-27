@@ -1,0 +1,15 @@
+{
+  "name": "wedding-planner",
+  "version": "1.0.0",
+  "description": "Wedding Planner Application",
+  "scripts": {
+    "build": "cd client && npm run build",
+    "dev": "cd client && npm run dev",
+    "install-client": "cd client && npm install",
+    "install-server": "cd server && npm install",
+    "install-all": "npm run install-client && npm run install-server"
+  },
+  "keywords": ["wedding", "planner", "react", "node"],
+  "author": "Your Name",
+  "license": "MIT"
+} 

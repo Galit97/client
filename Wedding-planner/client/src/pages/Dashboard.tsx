@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import shareIcon from "../assets/images/share.svg";
 import BudgetMaster from "../lib/budgetMaster";
+import { apiUrl } from "../utils/api";
 import "../styles/Dashboard.css";
 
 type Task = {
@@ -102,7 +103,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
       setIsRefreshing(true);
       
       // Fetch wedding data
-      const weddingRes = await fetch("/api/weddings/owner", {
+      const weddingRes = await fetch(apiUrl("/api/weddings/owner"), {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (weddingRes.ok) {
@@ -116,7 +117,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           if (typeof firstParticipant === 'string' || !firstParticipant.firstName) {
             console.log('Participants are IDs, fetching user details...');
             // Fetch all users to get names
-            const usersRes = await fetch("/api/users", {
+            const usersRes = await fetch(apiUrl("/api/users"), {
               headers: { Authorization: `Bearer ${token}` }
             });
             if (usersRes.ok) {
@@ -153,7 +154,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
       }
 
       // Fetch tasks
-      const tasksRes = await fetch("/api/checklists", {
+              const tasksRes = await fetch(apiUrl("/api/checklists"), {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (tasksRes.ok) {
@@ -162,7 +163,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
       }
 
       // Fetch vendors
-      const vendorsRes = await fetch("/api/vendors", {
+              const vendorsRes = await fetch(apiUrl("/api/vendors"), {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (vendorsRes.ok) {
@@ -171,7 +172,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
       }
 
       // Fetch guests
-      const guestsRes = await fetch("/api/guests", {
+              const guestsRes = await fetch(apiUrl("/api/guests"), {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (guestsRes.ok) {
@@ -433,7 +434,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     if (!token) return;
 
     try {
-      const response = await fetch("/api/weddings", {
+      const response = await fetch(apiUrl("/api/weddings"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -480,29 +481,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
 
   return (
     <div className="page-container">
-      {/* Global Refresh Indicator */}
-      {isRefreshing && (
-        <div style={{
-          position: 'fixed',
-          top: '0',
-          left: '0',
-          right: '0',
-          background: 'linear-gradient(90deg, #0ea5e9, #3b82f6)',
-          color: 'white',
-          padding: '8px',
-          textAlign: 'center',
-          fontSize: '14px',
-          fontWeight: '500',
-          zIndex: 2000,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px'
-        }}>
-          <span style={{ animation: 'spin 1s linear infinite' }}>⟳</span>
-          מעדכן נתונים...
-        </div>
-      )}
+      
       
       {/* Active Partners Section - Small Corner */}
       <div className="partners-section" style={{
@@ -1408,21 +1387,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                          <div style={{ fontSize: '11px', color: '#64748b' }}>
                ספקים: {costBreakdown.vendors.toLocaleString()}₪ | מנות: {costBreakdown.mealsTotal.toLocaleString()}₪
              </div>
-            {costBreakdown.hasMealPricing && (
-              <div style={{ 
-                position: 'absolute', 
-                top: '5px', 
-                right: '5px', 
-                background: '#0ea5e9', 
-                color: 'white', 
-                fontSize: '10px', 
-                padding: '2px 6px', 
-                borderRadius: '10px',
-                fontWeight: 'bold'
-              }}>
-                🍽️
-              </div>
-            )}
+            
           </div>
           
           <div className="quick-summary-item" style={{ 
@@ -1970,7 +1935,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                                 
                                 if (response.ok) {
                                   // Refresh wedding data by refetching
-                                  const refreshRes = await fetch("/api/weddings/owner", {
+                                  const refreshRes = await fetch(apiUrl("/api/weddings/owner"), {
                                     headers: { Authorization: `Bearer ${token}` }
                                   });
                                   if (refreshRes.ok) {
