@@ -90,98 +90,114 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     minutes: 0,
     seconds: 0
   });
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  useEffect(() => {
-    async function fetchData() {
-      const token = localStorage.getItem("token");
-      if (!token) return;
+  // Function to fetch all data
+  const fetchData = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-      try {
-        // Fetch wedding data
-        const weddingRes = await fetch("/api/weddings/owner", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (weddingRes.ok) {
-          const wedding = await weddingRes.json();
-          console.log('Wedding data from server:', wedding);
-          console.log('Participants from server:', wedding.participants);
-          
-          // If participants are just IDs, fetch user details
-          if (wedding.participants && wedding.participants.length > 0) {
-            const firstParticipant = wedding.participants[0];
-            if (typeof firstParticipant === 'string' || !firstParticipant.firstName) {
-              console.log('Participants are IDs, fetching user details...');
-              // Fetch all users to get names
-              const usersRes = await fetch("/api/users", {
-                headers: { Authorization: `Bearer ${token}` }
-              });
-              if (usersRes.ok) {
-                const users = await usersRes.json();
-                console.log('All users:', users);
-                
-                // Map participant IDs to user objects
-                const populatedParticipants = wedding.participants.map((participantId: string | any) => {
-                  const id = typeof participantId === 'string' ? participantId : participantId._id;
-                  const user = users.find((u: any) => u._id === id);
-                  if (user) {
-                    return {
-                      _id: user._id,
-                      firstName: user.firstName,
-                      lastName: user.lastName,
-                      role: user.role || 'Member'
-                    };
-                  }
+    try {
+      setIsRefreshing(true);
+      
+      // Fetch wedding data
+      const weddingRes = await fetch("/api/weddings/owner", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (weddingRes.ok) {
+        const wedding = await weddingRes.json();
+        console.log('Wedding data from server:', wedding);
+        console.log('Participants from server:', wedding.participants);
+        
+        // If participants are just IDs, fetch user details
+        if (wedding.participants && wedding.participants.length > 0) {
+          const firstParticipant = wedding.participants[0];
+          if (typeof firstParticipant === 'string' || !firstParticipant.firstName) {
+            console.log('Participants are IDs, fetching user details...');
+            // Fetch all users to get names
+            const usersRes = await fetch("/api/users", {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            if (usersRes.ok) {
+              const users = await usersRes.json();
+              console.log('All users:', users);
+              
+              // Map participant IDs to user objects
+              const populatedParticipants = wedding.participants.map((participantId: string | any) => {
+                const id = typeof participantId === 'string' ? participantId : participantId._id;
+                const user = users.find((u: any) => u._id === id);
+                if (user) {
                   return {
-                    _id: id,
-                    firstName: 'Unknown',
-                    lastName: 'User',
-                    role: 'Member'
+                    _id: user._id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    role: user.role || 'Member'
                   };
-                });
-                
-                wedding.participants = populatedParticipants;
-                console.log('Populated participants:', populatedParticipants);
-              }
+                }
+                return {
+                  _id: id,
+                  firstName: 'Unknown',
+                  lastName: 'User',
+                  role: 'Member'
+                };
+              });
+              
+              wedding.participants = populatedParticipants;
+              console.log('Populated participants:', populatedParticipants);
             }
           }
-          
-          setWeddingData(wedding);
         }
-
-        // Fetch tasks
-        const tasksRes = await fetch("/api/checklists", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (tasksRes.ok) {
-          const tasksData = await tasksRes.json();
-          setTasks(tasksData);
-        }
-
-        // Fetch vendors
-        const vendorsRes = await fetch("/api/vendors", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (vendorsRes.ok) {
-          const vendorsData = await vendorsRes.json();
-          setVendors(vendorsData);
-        }
-
-        // Fetch guests
-        const guestsRes = await fetch("/api/guests", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (guestsRes.ok) {
-          const guestsData = await guestsRes.json();
-          setGuests(guestsData);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
+        
+        setWeddingData(wedding);
       }
-    }
 
+      // Fetch tasks
+      const tasksRes = await fetch("/api/checklists", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (tasksRes.ok) {
+        const tasksData = await tasksRes.json();
+        setTasks(tasksData);
+      }
+
+      // Fetch vendors
+      const vendorsRes = await fetch("/api/vendors", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (vendorsRes.ok) {
+        const vendorsData = await vendorsRes.json();
+        setVendors(vendorsData);
+      }
+
+      // Fetch guests
+      const guestsRes = await fetch("/api/guests", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (guestsRes.ok) {
+        const guestsData = await guestsRes.json();
+        setGuests(guestsData);
+      }
+
+      setLastRefresh(new Date());
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
+  }, []);
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchData();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
   }, []);
 
   // Countdown timer - only days
@@ -307,6 +323,18 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const totalInvitedMealCost = calculateMealCostForCount(totalGuests);
   const totalInvitedEventCost = totalVendorExpenses + totalInvitedMealCost;
   const costPerPersonInvited = totalGuests > 0 ? Math.round(totalInvitedEventCost / totalGuests) : 0;
+
+  // Enhanced cost breakdown for better display
+  const costBreakdown = {
+    vendors: totalVendorExpenses,
+    mealsConfirmed: confirmedMealCost,
+    mealsTotal: totalInvitedMealCost,
+    totalConfirmed: eventTotalCost,
+    totalInvited: totalInvitedEventCost,
+    costPerPersonConfirmed: costPerPerson,
+    costPerPersonInvited: costPerPersonInvited,
+    hasMealPricing: !!weddingData?.mealPricing
+  };
 
   // Function to get initials from name
   const getInitials = (firstName: string, lastName: string) => {
@@ -451,6 +479,30 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
 
   return (
     <div className="page-container">
+      {/* Global Refresh Indicator */}
+      {isRefreshing && (
+        <div style={{
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          right: '0',
+          background: 'linear-gradient(90deg, #0ea5e9, #3b82f6)',
+          color: 'white',
+          padding: '8px',
+          textAlign: 'center',
+          fontSize: '14px',
+          fontWeight: '500',
+          zIndex: 2000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px'
+        }}>
+          <span style={{ animation: 'spin 1s linear infinite' }}>⟳</span>
+          מעדכן נתונים...
+        </div>
+      )}
+      
       {/* Active Partners Section - Small Corner */}
       <div className="partners-section" style={{
         position: 'fixed',
@@ -828,29 +880,97 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
               <span style={{ fontSize: '24px' }}>💰</span>
              </div>
                          <div style={{ flex: 1 }}>
-               <h3 style={{ margin: '0', color: '#0F172A' }}>חישוב עלויות האירוע</h3>
+               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '5px' }}>
+                 <h3 style={{ margin: '0', color: '#0F172A' }}>חישוב עלויות האירוע</h3>
+                 <button
+                   onClick={fetchData}
+                   disabled={isRefreshing}
+                   style={{
+                     padding: '4px 8px',
+                     background: isRefreshing ? '#e5e7eb' : '#f0f9ff',
+                     color: isRefreshing ? '#9ca3af' : '#0ea5e9',
+                     border: '1px solid #0ea5e9',
+                     borderRadius: '4px',
+                     cursor: isRefreshing ? 'not-allowed' : 'pointer',
+                     fontSize: '10px',
+                     fontWeight: '500',
+                     transition: 'all 0.2s ease',
+                     display: 'flex',
+                     alignItems: 'center',
+                     gap: '2px'
+                   }}
+                   onMouseEnter={(e) => {
+                     if (!isRefreshing) {
+                       e.currentTarget.style.background = '#e0f2fe';
+                     }
+                   }}
+                   onMouseLeave={(e) => {
+                     if (!isRefreshing) {
+                       e.currentTarget.style.background = '#f0f9ff';
+                     }
+                   }}
+                 >
+                   {isRefreshing ? (
+                     <span style={{ animation: 'spin 1s linear infinite' }}>⟳</span>
+                   ) : (
+                     <span>⟳</span>
+                   )}
+                 </button>
+               </div>
                <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
-                 עלות כוללת: {eventTotalCost.toLocaleString()} ₪
+                 עלות כוללת: {costBreakdown.totalConfirmed.toLocaleString()} ₪
                </p>
                <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '12px' }}>
-                 עלות לאיש (מאשרי הגעה): {costPerPerson.toLocaleString()} ₪
+                 עלות לאיש (מאשרי הגעה): {costBreakdown.costPerPersonConfirmed.toLocaleString()} ₪
                </p>
                <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '12px' }}>
-                 עלות למוזמן (מוזמנים): {costPerPersonInvited.toLocaleString()} ₪
+                 עלות למוזמן (מוזמנים): {costBreakdown.costPerPersonInvited.toLocaleString()} ₪
                </p>
+               {costBreakdown.hasMealPricing && (
+                 <p style={{ margin: '5px 0 0 0', color: '#0ea5e9', fontSize: '11px', fontWeight: 'bold' }}>
+                   🍽️ כולל חישוב עלויות מנות
+                 </p>
+               )}
              </div>
            </div>
           
-          <div style={{ display: 'grid', gap: '8px', gridTemplateColumns: 'repeat(2, 1fr)', marginBottom: '15px' }}>
+          <div style={{ display: 'grid', gap: '8px', gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: '15px' }}>
             <div style={{ textAlign: 'center', padding: '8px', background: '#f8fafc', borderRadius: '6px' }}>
-              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1d5a78' }}>{totalVendorExpenses.toLocaleString()} ₪</div>
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1d5a78' }}>{costBreakdown.vendors.toLocaleString()} ₪</div>
               <div style={{ fontSize: '11px', color: '#475569' }}>ספקים</div>
             </div>
             <div style={{ textAlign: 'center', padding: '8px', background: '#f8fafc', borderRadius: '6px' }}>
-              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1d5a78' }}>{confirmedMealCost.toLocaleString()} ₪</div>
-              <div style={{ fontSize: '11px', color: '#475569' }}>מנות</div>
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1d5a78' }}>{costBreakdown.mealsConfirmed.toLocaleString()} ₪</div>
+              <div style={{ fontSize: '11px', color: '#475569' }}>מנות (מאשרים)</div>
             </div>
-           </div>
+            <div style={{ textAlign: 'center', padding: '8px', background: '#f8fafc', borderRadius: '6px' }}>
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1d5a78' }}>{costBreakdown.mealsTotal.toLocaleString()} ₪</div>
+              <div style={{ fontSize: '11px', color: '#475569' }}>מנות (כל המוזמנים)</div>
+            </div>
+          </div>
+          
+          {costBreakdown.hasMealPricing && (
+            <div style={{ 
+              marginBottom: '15px', 
+              padding: '10px', 
+              background: '#f0f9ff', 
+              borderRadius: '6px', 
+              border: '1px solid #0ea5e9',
+              fontSize: '12px',
+              color: '#0c4a6e'
+            }}>
+              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>🍽️ חישוב עלויות מנות:</div>
+              <div>• מאשרי הגעה ({confirmedGuests} אנשים): {costBreakdown.mealsConfirmed.toLocaleString()} ₪</div>
+              <div>• כל המוזמנים ({totalGuests} אנשים): {costBreakdown.mealsTotal.toLocaleString()} ₪</div>
+              {weddingData?.mealPricing && (
+                <div style={{ marginTop: '4px', fontSize: '11px', opacity: '0.8' }}>
+                  מחיר מנה: {weddingData.mealPricing.basePrice.toLocaleString()} ₪ | 
+                  הנחה לילדים: {weddingData.mealPricing.childDiscount}% | 
+                  מחיר התחייבות: {weddingData.mealPricing.bulkPrice > 0 ? `${weddingData.mealPricing.bulkPrice.toLocaleString()} ₪` : 'לא מוגדר'}
+                </div>
+              )}
+            </div>
+          )}
            
           <div style={{ display: 'flex', gap: '10px', marginTop: 'auto' }}>
             <button
@@ -923,6 +1043,117 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
             </button>
           </div>
         </div>
+
+        {/* Detailed Cost Breakdown */}
+        {costBreakdown.hasMealPricing && (
+          <div className="card main-card" style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
+              <div style={{ 
+                width: '50px', 
+                height: '50px', 
+                borderRadius: '50%', 
+                background: 'linear-gradient(135deg, #f0f9ff, #e0f2fe)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginLeft: '15px'
+              }}>
+                <span style={{ fontSize: '24px' }}>🍽️</span>
+              </div>
+              <div style={{ flex: 1 }}>
+                <h3 style={{ margin: '0', color: '#0F172A' }}>פירוט עלויות מנות</h3>
+                <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
+                  חישוב מפורט של עלויות המנות לפי מספר המוזמנים
+                </p>
+              </div>
+            </div>
+            
+            <div style={{ display: 'grid', gap: '12px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', marginBottom: '15px' }}>
+              <div style={{ 
+                padding: '12px', 
+                background: '#f8fafc', 
+                borderRadius: '8px', 
+                border: '1px solid #e2e8f0',
+                textAlign: 'center'
+              }}>
+                <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1d5a78', marginBottom: '4px' }}>
+                  {costBreakdown.mealsConfirmed.toLocaleString()} ₪
+                </div>
+                <div style={{ fontSize: '12px', color: '#64748b' }}>
+                  עלות מנות - מאשרי הגעה
+                </div>
+                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
+                  ({confirmedGuests} אנשים)
+                </div>
+              </div>
+              
+              <div style={{ 
+                padding: '12px', 
+                background: '#f8fafc', 
+                borderRadius: '8px', 
+                border: '1px solid #e2e8f0',
+                textAlign: 'center'
+              }}>
+                <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1d5a78', marginBottom: '4px' }}>
+                  {costBreakdown.mealsTotal.toLocaleString()} ₪
+                </div>
+                <div style={{ fontSize: '12px', color: '#64748b' }}>
+                  עלות מנות - כל המוזמנים
+                </div>
+                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
+                  ({totalGuests} אנשים)
+                </div>
+              </div>
+              
+              <div style={{ 
+                padding: '12px', 
+                background: '#f8fafc', 
+                borderRadius: '8px', 
+                border: '1px solid #e2e8f0',
+                textAlign: 'center'
+              }}>
+                <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1d5a78', marginBottom: '4px' }}>
+                  {costBreakdown.totalConfirmed.toLocaleString()} ₪
+                </div>
+                <div style={{ fontSize: '12px', color: '#64748b' }}>
+                  סה"כ עלות אירוע
+                </div>
+                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
+                  (ספקים + מנות)
+                </div>
+              </div>
+            </div>
+            
+            {weddingData?.mealPricing && (
+              <div style={{ 
+                padding: '10px', 
+                background: '#f0f9ff', 
+                borderRadius: '6px', 
+                border: '1px solid #0ea5e9',
+                fontSize: '12px',
+                color: '#0c4a6e'
+              }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '6px' }}>הגדרות מחירי מנות:</div>
+                <div style={{ display: 'grid', gap: '8px', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
+                  <div>
+                    <span style={{ fontWeight: '500' }}>מחיר מנה:</span> {weddingData.mealPricing.basePrice.toLocaleString()} ₪
+                  </div>
+                  <div>
+                    <span style={{ fontWeight: '500' }}>הנחה לילדים:</span> {weddingData.mealPricing.childDiscount}%
+                  </div>
+                  <div>
+                    <span style={{ fontWeight: '500' }}>סף התחייבות:</span> {weddingData.mealPricing.bulkThreshold} אנשים
+                  </div>
+                  {weddingData.mealPricing.bulkPrice > 0 && (
+                    <div>
+                      <span style={{ fontWeight: '500' }}>מחיר התחייבות:</span> {weddingData.mealPricing.bulkPrice.toLocaleString()} ₪
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Guests */}
         <div className="card main-card" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -1096,22 +1327,80 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
         gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
         marginBottom: '30px'
       }}>
-        {/* Recent Activities */}
-        <div className="section-card" style={{ 
-          background: '#FFFFFF', 
-          padding: '25px', 
-          borderRadius: '12px',
-          border: '1px solid #CBD5E1'
-        }}>
-          <h3 style={{ 
-            margin: '0 0 20px 0', 
-            color: '#0F172A',
-            display: 'flex',
-            alignItems: 'center'
-          }}>
-         
-            פעולות אחרונות
-          </h3>
+                 {/* Recent Activities */}
+         <div className="section-card" style={{ 
+           background: '#FFFFFF', 
+           padding: '25px', 
+           borderRadius: '12px',
+           border: '1px solid #CBD5E1'
+         }}>
+           <div style={{ 
+             display: 'flex', 
+             justifyContent: 'space-between', 
+             alignItems: 'center',
+             marginBottom: '20px'
+           }}>
+             <h3 style={{ 
+               margin: '0', 
+               color: '#0F172A',
+               display: 'flex',
+               alignItems: 'center'
+             }}>
+               פעולות אחרונות
+             </h3>
+             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+               <button
+                 onClick={fetchData}
+                 disabled={isRefreshing}
+                 style={{
+                   padding: '6px 12px',
+                   background: isRefreshing ? '#e5e7eb' : '#f3f4f6',
+                   color: isRefreshing ? '#9ca3af' : '#374151',
+                   border: '1px solid #d1d5db',
+                   borderRadius: '6px',
+                   cursor: isRefreshing ? 'not-allowed' : 'pointer',
+                   fontSize: '12px',
+                   fontWeight: '500',
+                   transition: 'all 0.2s ease',
+                   display: 'flex',
+                   alignItems: 'center',
+                   gap: '4px'
+                 }}
+                 onMouseEnter={(e) => {
+                   if (!isRefreshing) {
+                     e.currentTarget.style.background = '#e5e7eb';
+                   }
+                 }}
+                 onMouseLeave={(e) => {
+                   if (!isRefreshing) {
+                     e.currentTarget.style.background = '#f3f4f6';
+                   }
+                 }}
+               >
+                 {isRefreshing ? (
+                   <>
+                     <span style={{ animation: 'spin 1s linear infinite' }}>⟳</span>
+                     מעדכן...
+                   </>
+                 ) : (
+                   <>
+                     <span>⟳</span>
+                     רענן
+                   </>
+                 )}
+               </button>
+               <div style={{ 
+                 fontSize: '11px', 
+                 color: '#6b7280',
+                 whiteSpace: 'nowrap'
+               }}>
+                 עודכן: {lastRefresh.toLocaleTimeString('he-IL', { 
+                   hour: '2-digit', 
+                   minute: '2-digit' 
+                 })}
+               </div>
+             </div>
+           </div>
           
           {recentActivities.length > 0 ? (
             <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
@@ -1157,22 +1446,63 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           borderRadius: '12px',
           border: '1px solid #CBD5E1'
         }}>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            marginBottom: '20px'
-        }}>
-          <h3 style={{ 
-              margin: '0', 
-            color: '#0F172A',
-            display: 'flex',
-            alignItems: 'center'
-          }}>
-             
-              ספקים
-          </h3>
-                         <button
+                     <div style={{ 
+             display: 'flex', 
+             justifyContent: 'space-between', 
+             alignItems: 'center',
+             marginBottom: '20px'
+         }}>
+           <h3 style={{ 
+               margin: '0', 
+             color: '#0F172A',
+             display: 'flex',
+             alignItems: 'center'
+           }}>
+              
+               ספקים
+           </h3>
+           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+             <button
+               onClick={fetchData}
+               disabled={isRefreshing}
+               style={{
+                 padding: '6px 12px',
+                 background: isRefreshing ? '#e5e7eb' : '#f3f4f6',
+                 color: isRefreshing ? '#9ca3af' : '#374151',
+                 border: '1px solid #d1d5db',
+                 borderRadius: '6px',
+                 cursor: isRefreshing ? 'not-allowed' : 'pointer',
+                 fontSize: '12px',
+                 fontWeight: '500',
+                 transition: 'all 0.2s ease',
+                 display: 'flex',
+                 alignItems: 'center',
+                 gap: '4px'
+               }}
+               onMouseEnter={(e) => {
+                 if (!isRefreshing) {
+                   e.currentTarget.style.background = '#e5e7eb';
+                 }
+               }}
+               onMouseLeave={(e) => {
+                 if (!isRefreshing) {
+                   e.currentTarget.style.background = '#f3f4f6';
+                 }
+               }}
+             >
+               {isRefreshing ? (
+                 <>
+                   <span style={{ animation: 'spin 1s linear infinite' }}>⟳</span>
+                   מעדכן...
+                 </>
+               ) : (
+                 <>
+                   <span>⟳</span>
+                   רענן
+                 </>
+               )}
+             </button>
+             <button
                onClick={() => onNavigate?.('vendors')}
                style={{
                  padding: '8px 16px',
@@ -1205,7 +1535,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                  transform: 'rotate(180deg)'
                }}>→</span>
              </button>
-          </div>
+           </div>
+           </div>
           
           {vendors.length > 0 ? (
             <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
@@ -1296,13 +1627,32 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
             padding: '20px',
             background: '#FFFFFF',
             borderRadius: '8px',
-            border: '1px solid #cbd5e1'
+            border: '1px solid #cbd5e1',
+            position: 'relative'
           }}>
             <div className="quick-summary-number" style={{ fontSize: '32px', fontWeight: 'bold', color: '#65859e', marginBottom: '8px' }}>
-              {eventTotalCost.toLocaleString()}₪
-             </div>
-            <div className="quick-summary-label" style={{ fontSize: '14px', color: '#475569' }}>תחזית תקציב</div>
-           </div>
+              {costBreakdown.totalConfirmed.toLocaleString()}₪
+            </div>
+            <div className="quick-summary-label" style={{ fontSize: '14px', color: '#475569', marginBottom: '4px' }}>תחזית תקציב</div>
+            <div style={{ fontSize: '11px', color: '#64748b' }}>
+              ספקים: {costBreakdown.vendors.toLocaleString()}₪ | מנות: {costBreakdown.mealsConfirmed.toLocaleString()}₪
+            </div>
+            {costBreakdown.hasMealPricing && (
+              <div style={{ 
+                position: 'absolute', 
+                top: '5px', 
+                right: '5px', 
+                background: '#0ea5e9', 
+                color: 'white', 
+                fontSize: '10px', 
+                padding: '2px 6px', 
+                borderRadius: '10px',
+                fontWeight: 'bold'
+              }}>
+                🍽️
+              </div>
+            )}
+          </div>
           
           <div className="quick-summary-item" style={{ 
             textAlign: 'center',
@@ -1460,9 +1810,15 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
         </div>
       )}
 
-      {/* Responsive Styles */}
-      <style>{`
-        /* Mobile Styles */
+             {/* Responsive Styles */}
+       <style>{`
+         /* Refresh Animation */
+         @keyframes spin {
+           from { transform: rotate(0deg); }
+           to { transform: rotate(360deg); }
+         }
+         
+         /* Mobile Styles */
         @media (max-width: 768px) {
           .page-container {
             padding: 10px !important;

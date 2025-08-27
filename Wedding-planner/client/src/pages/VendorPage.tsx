@@ -1311,211 +1311,7 @@ export default function VendorsListPage() {
         </div>
       </div>
 
-      {/* Add Vendor Form */}
-      <div style={{
-        background: '#ffffff',
-        padding: '20px',
-        borderRadius: '12px',
-        marginBottom: '30px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-      }}>
-        <h3 style={{ marginTop: 0, marginBottom: '15px' }}>הוסף ספק חדש</h3>
-        <form onSubmit={addVendor} style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
-              שם הספק *
-            </label>
-            <input
-            
-              value={newVendor.vendorName}
-              onChange={(e) => setNewVendor({ ...newVendor, vendorName: e.target.value })}
-              required
-              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
-            />
-          </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
-              מחיר (₪) *
-            </label>
-            <input
-              type="number"
-              min={0}
-            
-              value={newVendor.price}
-              onChange={(e) => setNewVendor({ ...newVendor, price: Number(e.target.value) })}
-              required
-              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
-            />
-          </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
-              שולם מקדמה
-            </label>
-            <input
-              type="checkbox"
-              checked={newVendor.depositPaid}
-              onChange={(e) => setNewVendor({ ...newVendor, depositPaid: e.target.checked })}
-              style={{ marginLeft: '8px' }}
-            />
-          </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
-              סכום מקדמה (₪)
-            </label>
-            <input
-              type="number"
-              min={0}
-              max={newVendor.price}
-              placeholder="0"
-              value={newVendor.depositAmount}
-              onChange={(e) => setNewVendor({ ...newVendor, depositAmount: Number(e.target.value) })}
-              disabled={!newVendor.depositPaid}
-              style={{ 
-                width: '100%', 
-                padding: '8px', 
-                border: '1px solid #ddd', 
-                borderRadius: '4px',
-                backgroundColor: !newVendor.depositPaid ? '#f5f5f5' : 'white'
-              }}
-            />
-            {newVendor.depositPaid && newVendor.depositAmount > 0 && (
-              <small style={{ color: '#666', fontSize: '12px' }}>
-                נותר לשלם: {(newVendor.price - newVendor.depositAmount).toLocaleString()} ₪
-              </small>
-            )}
-          </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
-              סוג ספק *
-            </label>
-            <select
-              value={newVendor.type}
-              onChange={(e) => setNewVendor({ ...newVendor, type: e.target.value as VendorType })}
-              required
-              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
-            >
-              <option value="music">מוזיקה</option>
-              <option value="food">אוכל</option>
-              <option value="photography">צילום</option>
-              <option value="decor">קישוט</option>
-              <option value="clothes">בגדים</option>
-              <option value="makeup_hair">איפור ושיער</option>
-              <option value="lighting_sound">תאורה והגברה</option>
-              <option value="guest_gifts">מתנות לאורחים</option>
-              <option value="venue_deposit">מקדמה לאולם</option>
-              <option value="bride_dress">שמלות כלה</option>
-              <option value="groom_suit">חליפת חתן</option>
-              <option value="shoes">נעליים</option>
-              <option value="jewelry">תכשיטים</option>
-              <option value="rsvp">אישורי הגעה</option>
-              <option value="design_tables">עיצוב ושולחנות</option>
-              <option value="bride_bouquet">זר כלה</option>
-              <option value="chuppah">חופה</option>
-              <option value="flowers">פרחים</option>
-              <option value="internet_orders">הזמנות מקוונות</option>
-              <option value="other">אחר</option>
-            </select>
-          </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
-              סטטוס
-            </label>
-            <select
-              value={newVendor.status}
-              onChange={(e) => setNewVendor({ ...newVendor, status: e.target.value as VendorStatus })}
-              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
-            >
-              <option value="Pending">ממתין</option>
-              <option value="Confirmed">אושר</option>
-              <option value="Paid">שולם</option>
-            </select>
-          </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
-              הערות
-            </label>
-            <input
-              placeholder="פרטים נוספים על הספק"
-              value={newVendor.notes}
-              onChange={(e) => setNewVendor({ ...newVendor, notes: e.target.value })}
-              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
-            />
-          </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#0F172A' }}>
-              העלאת חוזה
-            </label>
-            <input
-              type="file"
-              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.txt"
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  const filename = await uploadFile(file);
-                  if (filename) {
-                    setNewVendor({ ...newVendor, contractFile: filename });
-                  } else {
-                    alert('שגיאה בהעלאת הקובץ');
-                  }
-                }
-              }}
-              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
-            />
-            {newVendor.contractFile && (
-              <small style={{ color: '#475569', fontSize: '12px' }}>
-                קובץ נבחר: {newVendor.contractFile}
-              </small>
-            )}
-          </div>
-          
-          <div>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
-              העלאת מסמך נוסף
-            </label>
-            <input
-              type="file"
-              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.txt"
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  const filename = await uploadFile(file);
-                  if (filename) {
-                    setNewVendor({ ...newVendor, fileURL: filename });
-                  } else {
-                    alert('שגיאה בהעלאת הקובץ');
-                  }
-                }
-              }}
-              style={{ width: '100%', padding: '8px', border: '1px solid #E5E7EB', borderRadius: '4px' }}
-            />
-            {newVendor.fileURL && (
-              <small style={{ color: '#475569', fontSize: '12px' }}>
-                קובץ נבחר: {newVendor.fileURL}
-              </small>
-            )}
-          </div>
-          
-          <div style={{ display: 'flex', alignItems: 'end' }}>
-            <button 
-              type="submit"
-            className='button'
-            >
-              הוסף ספק
-            </button>
-          </div>
-        </form>
-      </div>
-
- 
-
-      {/* Vendor List */}
+             {/* Vendor List */}
       {filteredAndSortedVendors.length === 0 ? (
         <div style={{
           padding: '60px 20px',
@@ -1995,10 +1791,10 @@ export default function VendorsListPage() {
           <div style={{
             background: 'white',
             borderRadius: '12px',
-            padding: '20px',
-            maxWidth: '600px',
+            padding: '30px',
+            maxWidth: '700px',
             width: '90%',
-            maxHeight: '80vh',
+            maxHeight: '90vh',
             overflowY: 'auto',
             boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)'
           }}>
@@ -2006,40 +1802,60 @@ export default function VendorsListPage() {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: '15px'
+              marginBottom: '25px'
             }}>
-              <h2 style={{ margin: 0, color: '#0F172A' }}>הוספת ספק חדש</h2>
+              <h2 style={{ margin: 0, color: '#1d5a78', fontSize: '24px', fontWeight: 'bold' }}>הוספת ספק חדש</h2>
               <button
                 onClick={() => setShowAddVendorModal(false)}
                 style={{
                   background: 'none',
                   border: 'none',
-                  fontSize: '24px',
+                  fontSize: '28px',
                   cursor: 'pointer',
-                  color: '#666'
+                  color: '#666',
+                  padding: '0',
+                  width: '30px',
+                  height: '30px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
               >
                 ×
               </button>
             </div>
 
-            <form onSubmit={addVendor} style={{ display: 'grid', gap: '12px' }}>
+            <form onSubmit={addVendor} style={{ display: 'grid', gap: '20px' }}>
               {/* Basic Info */}
-              <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+              <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#1d5a78', fontSize: '14px' }}>
                     שם הספק *
                   </label>
                   <input
                     value={newVendor.vendorName}
                     onChange={e => setNewVendor({ ...newVendor, vendorName: e.target.value })}
                     required
-                    style={{ width: '100%', padding: '10px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                    style={{ 
+                      width: '100%', 
+                      padding: '12px', 
+                      border: '1px solid #E5E7EB', 
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      outline: 'none',
+                      transition: 'border-color 0.2s ease'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#1d5a78';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#E5E7EB';
+                    }}
                   />
                 </div>
                 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#1d5a78', fontSize: '14px' }}>
                     מחיר (₪) *
                   </label>
                   <input
@@ -2048,21 +1864,50 @@ export default function VendorsListPage() {
                     value={newVendor.price}
                     onChange={e => setNewVendor({ ...newVendor, price: Number(e.target.value) })}
                     required
-                    style={{ width: '100%', padding: '10px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                    style={{ 
+                      width: '100%', 
+                      padding: '12px', 
+                      border: '1px solid #E5E7EB', 
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      outline: 'none',
+                      transition: 'border-color 0.2s ease'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#1d5a78';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#E5E7EB';
+                    }}
                   />
                 </div>
               </div>
 
               {/* Type and Status */}
-              <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+              <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
-                    סוג ספק
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#1d5a78', fontSize: '14px' }}>
+                    סוג ספק *
                   </label>
                   <select
                     value={newVendor.type}
                     onChange={e => setNewVendor({ ...newVendor, type: e.target.value as VendorType })}
-                    style={{ width: '100%', padding: '10px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                    required
+                    style={{ 
+                      width: '100%', 
+                      padding: '12px', 
+                      border: '1px solid #E5E7EB', 
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      outline: 'none',
+                      transition: 'border-color 0.2s ease'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#1d5a78';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#E5E7EB';
+                    }}
                   >
                     <option value="music">מוזיקה</option>
                     <option value="food">אוכל</option>
@@ -2086,13 +1931,27 @@ export default function VendorsListPage() {
                 </div>
                 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#1d5a78', fontSize: '14px' }}>
                     סטטוס
                   </label>
                   <select
                     value={newVendor.status}
                     onChange={e => setNewVendor({ ...newVendor, status: e.target.value as VendorStatus })}
-                    style={{ width: '100%', padding: '10px', border: '1px solid #E5E7EB', borderRadius: '6px' }}
+                    style={{ 
+                      width: '100%', 
+                      padding: '12px', 
+                      border: '1px solid #E5E7EB', 
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      outline: 'none',
+                      transition: 'border-color 0.2s ease'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#1d5a78';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#E5E7EB';
+                    }}
                   >
                     <option value="Pending">ממתין</option>
                     <option value="Confirmed">אושר</option>
@@ -2102,21 +1961,30 @@ export default function VendorsListPage() {
               </div>
 
               {/* Deposit */}
-              <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+              <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#1d5a78', fontSize: '14px' }}>
                     שולם מקדמה
                   </label>
-                  <input
-                    type="checkbox"
-                    checked={newVendor.depositPaid}
-                    onChange={e => setNewVendor({ ...newVendor, depositPaid: e.target.checked })}
-                    style={{ marginLeft: '8px' }}
-                  />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <input
+                      type="checkbox"
+                      checked={newVendor.depositPaid}
+                      onChange={e => setNewVendor({ ...newVendor, depositPaid: e.target.checked })}
+                      style={{ 
+                        width: '18px', 
+                        height: '18px',
+                        accentColor: '#1d5a78'
+                      }}
+                    />
+                    <span style={{ fontSize: '14px', color: '#374151' }}>
+                      {newVendor.depositPaid ? 'כן' : 'לא'}
+                    </span>
+                  </div>
                 </div>
                 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#1d5a78', fontSize: '14px' }}>
                     סכום מקדמה (₪)
                   </label>
                   <input
@@ -2129,40 +1997,157 @@ export default function VendorsListPage() {
                     disabled={!newVendor.depositPaid}
                     style={{ 
                       width: '100%', 
-                      padding: '10px', 
+                      padding: '12px', 
                       border: '1px solid #E5E7EB', 
-                      borderRadius: '6px',
-                      backgroundColor: !newVendor.depositPaid ? '#f5f5f5' : 'white'
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      backgroundColor: !newVendor.depositPaid ? '#f5f5f5' : 'white',
+                      outline: 'none',
+                      transition: 'border-color 0.2s ease'
+                    }}
+                    onFocus={(e) => {
+                      if (newVendor.depositPaid) {
+                        e.target.style.borderColor = '#1d5a78';
+                      }
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#E5E7EB';
                     }}
                   />
+                  {newVendor.depositPaid && newVendor.depositAmount > 0 && (
+                    <small style={{ color: '#059669', fontSize: '12px', marginTop: '5px', display: 'block' }}>
+                      נותר לשלם: {(newVendor.price - newVendor.depositAmount).toLocaleString()} ₪
+                    </small>
+                  )}
+                </div>
+              </div>
+
+              {/* File Uploads */}
+              <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#1d5a78', fontSize: '14px' }}>
+                    העלאת חוזה
+                  </label>
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.txt"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const filename = await uploadFile(file);
+                        if (filename) {
+                          setNewVendor({ ...newVendor, contractFile: filename });
+                        } else {
+                          alert('שגיאה בהעלאת הקובץ');
+                        }
+                      }
+                    }}
+                    style={{ 
+                      width: '100%', 
+                      padding: '12px', 
+                      border: '1px solid #E5E7EB', 
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      outline: 'none',
+                      transition: 'border-color 0.2s ease'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#1d5a78';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#E5E7EB';
+                    }}
+                  />
+                  {newVendor.contractFile && (
+                    <small style={{ color: '#059669', fontSize: '12px', marginTop: '5px', display: 'block' }}>
+                      ✓ קובץ נבחר: {newVendor.contractFile}
+                    </small>
+                  )}
+                </div>
+                
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#1d5a78', fontSize: '14px' }}>
+                    העלאת מסמך נוסף
+                  </label>
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.txt"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const filename = await uploadFile(file);
+                        if (filename) {
+                          setNewVendor({ ...newVendor, fileURL: filename });
+                        } else {
+                          alert('שגיאה בהעלאת הקובץ');
+                        }
+                      }
+                    }}
+                    style={{ 
+                      width: '100%', 
+                      padding: '12px', 
+                      border: '1px solid #E5E7EB', 
+                      borderRadius: '8px',
+                      fontSize: '14px',
+                      outline: 'none',
+                      transition: 'border-color 0.2s ease'
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#1d5a78';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#E5E7EB';
+                    }}
+                  />
+                  {newVendor.fileURL && (
+                    <small style={{ color: '#059669', fontSize: '12px', marginTop: '5px', display: 'block' }}>
+                      ✓ קובץ נבחר: {newVendor.fileURL}
+                    </small>
+                  )}
                 </div>
               </div>
 
               {/* Notes */}
               <div>
-                <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#0F172A' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#1d5a78', fontSize: '14px' }}>
                   הערות
                 </label>
                 <textarea
                   value={newVendor.notes}
                   onChange={e => setNewVendor({ ...newVendor, notes: e.target.value })}
                   placeholder="הערות נוספות על הספק..."
-                  rows={2}
-                  style={{ width: '100%', padding: '10px', border: '1px solid #E5E7EB', borderRadius: '6px', resize: 'vertical' }}
+                  rows={3}
+                  style={{ 
+                    width: '100%', 
+                    padding: '12px', 
+                    border: '1px solid #E5E7EB', 
+                    borderRadius: '8px', 
+                    resize: 'vertical',
+                    fontSize: '14px',
+                    outline: 'none',
+                    transition: 'border-color 0.2s ease',
+                    fontFamily: 'inherit'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#1d5a78';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#E5E7EB';
+                  }}
                 />
               </div>
 
               {/* Buttons */}
-              <div style={{ display: 'flex', gap: '15px', justifyContent: 'flex-end', marginTop: '15px' }}>
+              <div style={{ display: 'flex', gap: '15px', justifyContent: 'flex-end', marginTop: '25px' }}>
                 <button
                   type="button"
                   onClick={() => setShowAddVendorModal(false)}
                   style={{
-                    padding: '12px 20px',
+                    padding: '12px 24px',
                     background: '#6b7280',
                     color: '#ffffff',
                     border: '2px solid #6b7280',
-                    borderRadius: '25px',
+                    borderRadius: '8px',
                     fontSize: '14px',
                     fontWeight: 'bold', 
                     cursor: 'pointer',
@@ -2190,11 +2175,11 @@ export default function VendorsListPage() {
                 <button
                   type="submit"
                   style={{
-                    padding: '12px 20px',
+                    padding: '12px 24px',
                     background: '#1d5a78',
                     color: '#ffffff',
-                    border: '2px solid #3b82f6',
-                    borderRadius: '25px',
+                    border: '2px solid #1d5a78',
+                    borderRadius: '8px',
                     fontSize: '14px',
                     fontWeight: 'bold', 
                     cursor: 'pointer',
@@ -2206,14 +2191,14 @@ export default function VendorsListPage() {
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'translateY(-1px)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
-                    e.currentTarget.style.borderColor = '#2563eb';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(29, 90, 120, 0.3)';
+                    e.currentTarget.style.borderColor = '#164e63';
                     e.currentTarget.style.background = '#164e63';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
                     e.currentTarget.style.boxShadow = 'none';
-                    e.currentTarget.style.borderColor = '#3b82f6';
+                    e.currentTarget.style.borderColor = '#1d5a78';
                     e.currentTarget.style.background = '#1d5a78';
                   }}
                 >
