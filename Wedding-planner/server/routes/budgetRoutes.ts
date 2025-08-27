@@ -5,6 +5,7 @@ import { getBudgetByOwner } from "../controllers/budgetController/getBudgetByOwn
 import { updateBudget } from "../controllers/budgetController/updateBudget";
 import { deleteBudget } from "../controllers/budgetController/deleteBudget";
 import { getWeddingBudgetDetails } from "../controllers/budgetController/getWeddingBudgetDetails";
+import { saveBudgetSettings } from "../controllers/budgetController/saveBudgetSettings";
 
 
 const router = Router();
@@ -12,6 +13,7 @@ const router = Router();
 router.use(authenticateJWT); 
 
 router.post("/", createBudget);
+router.post("/settings", saveBudgetSettings);
 router.get("/owner", getBudgetByOwner);
 router.put("/:id", updateBudget);
 router.delete("/:id", deleteBudget);

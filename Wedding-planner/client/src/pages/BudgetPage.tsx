@@ -94,7 +94,7 @@ const BudgetPage: React.FC = () => {
     if (!token) return;
 
     try {
-      // Fetch wedding data for budget settings
+      // Fetch wedding data
       const weddingRes = await fetch("/api/weddings/owner", {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -102,44 +102,64 @@ const BudgetPage: React.FC = () => {
         const wedding = await weddingRes.json();
         setWeddingData(wedding);
         console.log("Wedding data loaded:", wedding);
-        console.log("Guests data from API:", {
-          guestsMin: wedding.guestsMin,
-          guestsMax: wedding.guestsMax,
-          guestsExact: wedding.guestsExact
+      }
+
+      // Fetch budget data from the new API
+      console.log("🔍 Fetching budget data...");
+      try {
+        console.log("📡 Making request to /api/budgets/owner");
+        const budgetRes = await fetch("/api/budgets/owner", { 
+          headers: { Authorization: `Bearer ${token}` } 
         });
+        console.log("📡 Budget response status:", budgetRes.status);
+        console.log("📡 Budget response ok:", budgetRes.ok);
         
-        // Convert existing budget data to new format
-        const budgetSettings: BudgetSettings = {
-          guestsMin: wedding.guestsMin || 50,
-          guestsMax: wedding.guestsMax || 150,
-          guestsExact: wedding.guestsExact,
-          giftAvg: wedding.giftAvg || 500,
-          savePercent: wedding.savePercent || 10,
-          mode: (wedding.budgetMode as any) || 'ניצמד'
-        };
-        setBudget(budgetSettings);
-        console.log("Budget settings converted:", budgetSettings);
-        console.log("Budget state after setting:", budgetSettings);
-        console.log("Raw wedding data for budget:", {
-          guestsMin: wedding.guestsMin,
-          guestsMax: wedding.guestsMax,
-          guestsExact: wedding.guestsExact,
-          giftAvg: wedding.giftAvg,
-          budgetMode: wedding.budgetMode
-        });
-        
-        // Update weddingData with the new budget value
-        setWeddingData(prev => ({
-          ...prev,
-          budget: wedding.budget || 0,
-          guestsMin: wedding.guestsMin,
-          guestsMax: wedding.guestsMax,
-          guestsExact: wedding.guestsExact,
-          giftAvg: wedding.giftAvg,
-          savePercent: wedding.savePercent,
-          budgetMode: wedding.budgetMode
-        }));
-        console.log("Updated weddingData with budget:", wedding.budget);
+        if (budgetRes.ok) {
+          const budgetData = await budgetRes.json();
+          console.log("📦 Budget data loaded from API:", budgetData);
+          console.log("📦 Budget totalBudget:", budgetData.totalBudget);
+          console.log("📦 Budget guestsMin:", budgetData.guestsMin);
+          console.log("📦 Budget guestsMax:", budgetData.guestsMax);
+
+          // Check if this is an empty budget (no totalBudget or totalBudget is 0)
+          if (!budgetData.totalBudget || budgetData.totalBudget === 0) {
+            console.log("❌ Empty budget found, will show empty state");
+            setBudget(null);
+          } else {
+            console.log("✅ Valid budget found, setting budget state");
+            // Convert budget data to BudgetSettings format
+            const budgetSettings: BudgetSettings = {
+              guestsMin: budgetData.guestsMin || 50,
+              guestsMax: budgetData.guestsMax || 150,
+              guestsExact: budgetData.guestsExact,
+              giftAvg: budgetData.giftAvg || 500,
+              savePercent: budgetData.savePercent || 10,
+              mode: (budgetData.budgetMode as any) || 'ניצמד',
+              personalPocket: budgetData.personalPocket
+            };
+            setBudget(budgetSettings);
+          }
+          
+          // Update weddingData with budget information
+          setWeddingData(prev => ({
+            ...prev,
+            budget: budgetData.totalBudget || 0,
+            guestsMin: budgetData.guestsMin,
+            guestsMax: budgetData.guestsMax,
+            guestsExact: budgetData.guestsExact,
+            giftAvg: budgetData.giftAvg,
+            savePercent: budgetData.savePercent,
+            budgetMode: budgetData.budgetMode,
+            personalPocket: budgetData.personalPocket
+          }));
+          console.log("Updated weddingData with budget:", budgetData.totalBudget);
+        } else {
+          console.error("❌ Failed to load budget data:", budgetRes.status);
+          setBudget(null);
+        }
+      } catch (error) {
+        console.error("❌ Error fetching budget data:", error);
+        setBudget(null);
       }
 
       // Fetch vendors and convert to suppliers format
@@ -558,8 +578,8 @@ const BudgetPage: React.FC = () => {
   console.log("Manual deposits calculation:", manualDeposits);
   console.log("Suppliers with deposits:", suppliers.filter(s => (s.deposit || 0) > 0));
   
-  // Calculate total expected costs (suppliers only - meals are part of the budget target)
-  const totalExpectedCosts = actualSummary.committedTotal;
+  // Calculate total expected costs (suppliers + meals)
+  const totalExpectedCosts = actualSummary.committedTotal + likelyMealCosts;
   
   console.log("Min guests:", minGuests, "Min meal costs:", minMealCosts);
   console.log("Max guests:", maxGuests, "Max meal costs:", maxMealCosts);
@@ -614,7 +634,81 @@ const BudgetPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Currently Expected Card */}
+                 {/* Currently Expected - Vendors Only Card */}
+         <div style={{
+           background: 'white',
+           borderRadius: '12px',
+           padding: '25px',
+           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+           display: 'flex',
+           alignItems: 'center',
+           gap: '15px'
+         }}>
+           <div style={{
+             width: '50px',
+             height: '50px',
+             borderRadius: '50%',
+             background: '#e0f2fe',
+             display: 'flex',
+             alignItems: 'center',
+             justifyContent: 'center'
+           }}>
+             <span style={{ fontSize: '20px', color: '#0284c7' }}>₪</span>
+           </div>
+           <div>
+             <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '5px' }}>
+               צפוי כרגע - ספקים
+             </div>
+             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1d5a78' }}>
+               {formatILS(actualSummary.committedTotal)}
+             </div>
+             <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '5px' }}>
+               התחייבויות ספקים
+             </div>
+             <div style={{ fontSize: '10px', color: '#059669', marginTop: '2px' }}>
+               מקדמות: {formatILS(manualDeposits)}
+             </div>
+           </div>
+         </div>
+
+         {/* Currently Expected - Total Costs Card */}
+         <div style={{
+           background: 'white',
+           borderRadius: '12px',
+           padding: '25px',
+           boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+           display: 'flex',
+           alignItems: 'center',
+           gap: '15px'
+         }}>
+           <div style={{
+             width: '50px',
+             height: '50px',
+             borderRadius: '50%',
+             background: '#f0f9ff',
+             display: 'flex',
+             alignItems: 'center',
+             justifyContent: 'center'
+           }}>
+             <span style={{ fontSize: '20px', color: '#0369a1' }}>₪</span>
+           </div>
+           <div>
+             <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '5px' }}>
+               צפוי כרגע - סה"כ
+             </div>
+             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1d5a78' }}>
+               {formatILS(totalExpectedCosts)}
+             </div>
+             <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '5px' }}>
+               ספקים + מנות
+             </div>
+             <div style={{ fontSize: '10px', color: '#059669', marginTop: '2px' }}>
+               מקדמות: {formatILS(manualDeposits)}
+             </div>
+           </div>
+         </div>
+
+        {/* Currently Expected - Meals Card */}
         <div style={{
           background: 'white',
           borderRadius: '12px',
@@ -628,28 +722,25 @@ const BudgetPage: React.FC = () => {
             width: '50px',
             height: '50px',
             borderRadius: '50%',
-            background: '#e0f2fe',
+            background: '#fef3c7',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
           }}>
-            <span style={{ fontSize: '20px', color: '#0284c7' }}>₪</span>
+            <span style={{ fontSize: '20px', color: '#d97706' }}>🍽️</span>
           </div>
           <div>
             <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '5px' }}>
-              צפוי כרגע
+              צפוי כרגע - מנות
             </div>
             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1d5a78' }}>
-              {formatILS(totalExpectedCosts)}
+              {formatILS(likelyMealCosts)}
             </div>
             <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '5px' }}>
-              התחייבויות ספקים
-            </div>
-            <div style={{ fontSize: '10px', color: '#059669', marginTop: '2px' }}>
-              + מנות: {formatILS(likelyMealCosts)}
+              טווח: {formatILS(minMealCosts)}-{formatILS(maxMealCosts)}
             </div>
             <div style={{ fontSize: '10px', color: '#6b7280', marginTop: '2px' }}>
-              טווח: {formatILS(minMealCosts)}-{formatILS(maxMealCosts)} ({minGuests}-{maxGuests} אורחים)
+              ({minGuests}-{maxGuests} אורחים)
             </div>
           </div>
         </div>
@@ -996,15 +1087,18 @@ const BudgetPage: React.FC = () => {
               gap: '15px',
               marginBottom: '20px'
             }}>
-              <div className="card" style={{ 
-                background: '#f8fafc', 
-                padding: '20px', 
-                borderRadius: '6px',
-                textAlign: 'center'
-              }}>
-                <div className="label" style={{ color: '#6b7280', fontSize: '12px', marginBottom: '8px' }}>סה״כ התחייבויות</div>
-                <div style={{ fontWeight: 600, fontSize: '18px', color: '#1d5a78' }}>{formatILS(totalExpectedCosts)}</div>
-              </div>
+                             <div className="card" style={{ 
+                 background: '#f8fafc', 
+                 padding: '20px', 
+                 borderRadius: '6px',
+                 textAlign: 'center'
+               }}>
+                 <div className="label" style={{ color: '#6b7280', fontSize: '12px', marginBottom: '8px' }}>סה״כ התחייבויות</div>
+                 <div style={{ fontWeight: 600, fontSize: '18px', color: '#1d5a78' }}>{formatILS(totalExpectedCosts)}</div>
+                 <div style={{ fontSize: '10px', color: '#6b7280', marginTop: '2px' }}>
+                   ספקים: {formatILS(actualSummary.committedTotal)} + מנות: {formatILS(likelyMealCosts)}
+                 </div>
+               </div>
               <div className="card" style={{ 
                 background: '#f8fafc', 
                 padding: '20px', 
@@ -1076,7 +1170,7 @@ const BudgetPage: React.FC = () => {
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
         marginBottom: '20px'
       }}>
-        <h2 style={{ margin: '0 0 20px 0', color: '#ff9800' }}>🧮 חישוב ידני - אומדן מותאם אישית</h2>
+                 <h3 style={{ margin: '0 0 20px 0', color: '#1d5a78' }}>🧮 חישוב ידני - אומדן מותאם אישית</h3>
         
         <div style={{ 
           background: '#f8fafc', 
@@ -1262,105 +1356,8 @@ const BudgetPage: React.FC = () => {
         )}
       </section>
 
-      {/* ניווטים נפוצים */}
-      <footer className="row" style={{ 
-        display: 'flex', 
-        justifyContent: 'flex-end', 
-        gap: '15px' 
-      }}>
-        <button 
-          className="btn secondary" 
-          onClick={handleRefreshData}
-          style={{
-            padding: '10px 20px',
-            background: '#6b7280',
-            border: 'none',
-            borderRadius: '6px',
-            color: 'white',
-            cursor: 'pointer',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#4b5563';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = '#6b7280';
-          }}
-        >
-          🔄 רענן נתונים
-        </button>
-        <button 
-          className="btn secondary" 
-          onClick={() => setShowBudgetEdit(true)}
-          style={{
-            padding: '10px 20px',
-            background: '#059669',
-            border: 'none',
-            borderRadius: '6px',
-            color: 'white',
-            cursor: 'pointer',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#047857';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = '#059669';
-          }}
-        >
-          מאסטר תקציב
-        </button>
-        <button 
-          className="btn secondary" 
-          onClick={handleGoToSuppliers}
-          style={{
-            padding: '10px 20px',
-            background: '#6b7280',
-            border: 'none',
-            borderRadius: '6px',
-            color: 'white',
-            cursor: 'pointer',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#4b5563';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = '#6b7280';
-          }}
-        >
-          לספקים
-        </button>
-        <button 
-          className="btn primary" 
-          onClick={handleEditBudget}
-          style={{
-            padding: '10px 20px',
-            background: '#1d5a78',
-            border: 'none',
-            borderRadius: '6px',
-            color: 'white',
-            cursor: 'pointer',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            transition: 'all 0.2s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#164e63';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = '#1d5a78';
-          }}
-        >
-          עריכת התקציב
-        </button>
-      </footer>
+ 
+       
 
       {/* Budget Edit Popup */}
       {showBudgetEdit && (

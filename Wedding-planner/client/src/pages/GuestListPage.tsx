@@ -44,6 +44,7 @@ export default function GuestListPage() {
   const [editingGuest, setEditingGuest] = useState<EditingGuest | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'' | GuestStatus>('');
+  const [filterSide, setFilterSide] = useState<'' | 'bride' | 'groom' | 'shared'>('');
   const [showAddGuestModal, setShowAddGuestModal] = useState(false);
   const [newGuest, setNewGuest] = useState({
     firstName: '',
@@ -599,12 +600,13 @@ export default function GuestListPage() {
     const term = searchTerm.trim().toLowerCase();
     return guests.filter(g => {
       if (filterStatus && g.status !== filterStatus) return false;
+      if (filterSide && g.side !== filterSide) return false;
       if (!term) return true;
       const name = `${g.firstName} ${g.lastName}`.toLowerCase();
       const phone = (g.phone || '').toLowerCase();
       return name.includes(term) || phone.includes(term);
     });
-  }, [guests, searchTerm, filterStatus]);
+  }, [guests, searchTerm, filterStatus, filterSide]);
 
   if (loading) {
     return (
@@ -629,51 +631,272 @@ export default function GuestListPage() {
       maxWidth: '1200px', 
       margin: '0 auto',
       fontFamily: 'Arial, sans-serif',
-      direction: 'rtl'
+      direction: 'rtl',
+      background: '#f0f4f8',
+      minHeight: '100vh'
     }}>
+      {/* Header Section */}
       <div style={{
-        textAlign: 'center', 
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: '30px',
         padding: '20px',
-        background: '#fdf3f7',
+        background: 'white',
         borderRadius: '12px',
-        border: '1px solid #dee2e6'
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
       }}>
-        <h1 style={{ 
-          margin: '0',
-          fontSize: '32px',
-          fontWeight: 'bold',
-          color: '#495057',
-          textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
-        }}>
-          מוזמנים
-      </h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            background: '#1d5a78',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontSize: '20px'
+          }}>
+            ✉️
+          </div>
+          <h1 style={{ 
+            margin: 0,
+            fontSize: '28px',
+            fontWeight: 'bold',
+            color: '#1d5a78'
+          }}>
+            ניהול מוזמנים
+          </h1>
+        </div>
+        <button 
+          onClick={() => setShowAddGuestModal(true)}
+          style={{
+            padding: '12px 24px',
+            background: '#1d5a78',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = '#164e63';
+            e.currentTarget.style.transform = 'translateY(-1px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = '#1d5a78';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
+        >
+          + מוזמן חדש
+        </button>
       </div>
 
-      {/* Summary */}
-      {guests.length > 0 && (
+  
+
+      {/* Guest Statistics Cards */}
       <div style={{
-          marginBottom: '20px',
-        padding: '15px',
-          background: '#ffffff',
-        borderRadius: '8px',
-          border: '1px solid #dee2e6'
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '20px',
+        marginBottom: '30px'
+      }}>
+        {/* Confirmed Guests */}
+        <div style={{
+          background: 'white',
+          padding: '25px',
+          borderRadius: '12px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          textAlign: 'center'
         }}>
-          <h4 style={{ margin: '0 0 10px 0' }}> סיכום רשימת המוזמנים</h4>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px' }}>
-            <div><strong>סה"כ מוזמנים:</strong> {guests.length}</div>
-            <div><strong>סה"כ מקומות שמורים:</strong> {guests.reduce((sum, g) => sum + g.seatsReserved, 0)}</div>
-            <div><strong>אושרו להגיע:</strong> {guests.filter(g => g.status === 'Confirmed').length}</div>
-            <div><strong>נדחו:</strong> {guests.filter(g => g.status === 'Declined').length}</div>
-            <div><strong>הגיעו לאירוע:</strong> {guests.filter(g => g.status === 'Arrived').length}</div>
-            <div><strong>ממתינים לאישור:</strong> {guests.filter(g => g.status === 'Invited').length}</div>
+          <div style={{
+            fontSize: '32px',
+            fontWeight: 'bold',
+            color: '#10b981',
+            marginBottom: '8px'
+          }}>
+            {guests.filter(g => g.status === 'Confirmed').length}
+          </div>
+          <div style={{
+            fontSize: '14px',
+            color: '#6b7280',
+            fontWeight: '500'
+          }}>
+            מאשרים
+          </div>
+        </div>
+
+        {/* Declined Guests */}
+        <div style={{
+          background: 'white',
+          padding: '25px',
+          borderRadius: '12px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            fontSize: '32px',
+            fontWeight: 'bold',
+            color: '#ef4444',
+            marginBottom: '8px'
+          }}>
+            {guests.filter(g => g.status === 'Declined').length}
+          </div>
+          <div style={{
+            fontSize: '14px',
+            color: '#6b7280',
+            fontWeight: '500'
+          }}>
+            מסרבים
+          </div>
+        </div>
+
+        {/* Total Guests */}
+        <div style={{
+          background: 'white',
+          padding: '25px',
+          borderRadius: '12px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            fontSize: '32px',
+            fontWeight: 'bold',
+            color: '#1d5a78',
+            marginBottom: '8px'
+          }}>
+            {guests.length}
+          </div>
+          <div style={{
+            fontSize: '14px',
+            color: '#6b7280',
+            fontWeight: '500'
+          }}>
+            סה"כ
+          </div>
+        </div>
+
+        {/* Maybe/Pending Guests */}
+        <div style={{
+          background: 'white',
+          padding: '25px',
+          borderRadius: '12px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            fontSize: '32px',
+            fontWeight: 'bold',
+            color: '#f59e0b',
+            marginBottom: '8px'
+          }}>
+            {guests.filter(g => g.status === 'Invited').length}
+          </div>
+          <div style={{
+            fontSize: '14px',
+            color: '#6b7280',
+            fontWeight: '500'
+          }}>
+            אולי
+          </div>
+        </div>
+
+        {/* Arrived Guests */}
+        <div style={{
+          background: 'white',
+          padding: '25px',
+          borderRadius: '12px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            fontSize: '32px',
+            fontWeight: 'bold',
+            color: '#8b5cf6',
+            marginBottom: '8px'
+          }}>
+            {guests.filter(g => g.status === 'Arrived').length}
+          </div>
+          <div style={{
+            fontSize: '14px',
+            color: '#6b7280',
+            fontWeight: '500'
+          }}>
+            ממתינים
+          </div>
         </div>
       </div>
-      )}
+
+      {/* Estimated Places */}
+      <div style={{
+        marginBottom: '30px',
+        padding: '15px 20px',
+        background: 'white',
+        borderRadius: '12px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+      }}>
+        <div style={{
+          fontSize: '16px',
+          color: '#1d5a78',
+          fontWeight: '500'
+        }}>
+          מקומות משוערים: {guests.reduce((sum, g) => sum + g.seatsReserved, 0)}
+        </div>
+      </div>
+
+      {/* Add Another Guest Button */}
+      <div style={{
+        marginBottom: '30px',
+        textAlign: 'center'
+      }}>
+        <button 
+          onClick={() => setShowAddGuestModal(true)}
+          style={{
+            padding: '10px 20px',
+            background: '#f8fafc',
+            color: '#1d5a78',
+            border: '2px solid #e5e7eb',
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontWeight: '500',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = '#e5e7eb';
+            e.currentTarget.style.transform = 'translateY(-1px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = '#f8fafc';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
+        >
+          + עוד מוזמן
+        </button>
+      </div>
 
       {/* Excel Import/Export Section */}
-      <div className="card">
-        <h4 style={{ margin: '0 0 15px 0', color: '#856404' }}> ייבוא וייצוא אקסל</h4>
+      <div style={{
+        marginTop: '30px',
+        padding: '20px',
+        background: 'white',
+        borderRadius: '12px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+      }}>
+        <h4 style={{ 
+          margin: '0 0 15px 0', 
+          color: '#1d5a78',
+          fontSize: '18px',
+          fontWeight: '600'
+        }}>
+          ייבוא וייצוא אקסל
+        </h4>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <button
             onClick={downloadTemplate}
@@ -805,73 +1028,175 @@ export default function GuestListPage() {
           )}
       </div>
 
-      {/* Add Guest Button */}
-      <div className="card" style={{ textAlign: 'center', padding: '20px' }}>
-            <button 
-          onClick={() => setShowAddGuestModal(true)}
-          style={{
-            padding: '12px 20px',
-            background: '#1d5a78',
-            color: '#ffffff',
-            border: '2px solid #3b82f6',
-            borderRadius: '25px',
-            fontSize: '14px',
-            fontWeight: 'bold', 
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            margin: '0 auto'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-1px)';
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.3)';
-            e.currentTarget.style.borderColor = '#2563eb';
-            e.currentTarget.style.background = '#164e63';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = 'none';
-            e.currentTarget.style.borderColor = '#3b82f6';
-            e.currentTarget.style.background = '#1d5a78';
-          }}
-        >
-          ➕ הוסיפו מוזמן חדש
-            </button>
-      </div>
 
-      {/* Guests Toolbar */}
-      <div className="toolbar" style={{ marginBottom: 16 }}>
-        <h4 style={{ margin: '0 0 12px 0' }}>סינון</h4>
-        <div className="toolbar-grid">
-          <div className="field">
-            <label>חיפוש</label>
-            <input className="input" placeholder="חפש לפי שם או טלפון" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+
+      {/* Search and Filter Section */}
+      <div style={{
+        marginBottom: '30px',
+        padding: '20px',
+        background: 'white',
+        borderRadius: '12px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+      }}>
+        {/* Search Bar */}
+        <div style={{ marginBottom: '20px' }}>
+          <input
+            type="text"
+            placeholder="חפשו לפי שם / טלפון / מייל / קבוצה..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+              fontSize: '14px',
+              outline: 'none',
+              transition: 'border-color 0.2s ease'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#1d5a78';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#e5e7eb';
+            }}
+          />
+        </div>
+
+        {/* Filter Buttons */}
+        <div style={{ marginBottom: '15px' }}>
+          <div style={{
+            fontSize: '14px',
+            fontWeight: '500',
+            color: '#374151',
+            marginBottom: '10px'
+          }}>
+            סטטוס:
           </div>
-          <div className="field">
-            <label>סטטוס</label>
-            <select className="select" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as any)}>
-              <option value="">כולם</option>
-              <option value="Invited">הוזמן</option>
-              <option value="Confirmed">אושר</option>
-              <option value="Declined">נדחה</option>
-              <option value="Arrived">הגיע</option>
-            </select>
+          <div style={{
+            display: 'flex',
+            gap: '8px',
+            flexWrap: 'wrap'
+          }}>
+            {[
+              { value: '', label: 'הכל' },
+              { value: 'Invited', label: 'טיוטה' },
+              { value: 'Invited', label: 'נשלחה הזמנה' },
+              { value: 'Confirmed', label: 'מאשר' },
+              { value: 'Declined', label: 'מסרב' },
+              { value: 'Arrived', label: 'אולי' }
+            ].map((option) => (
+              <button
+                key={option.value + option.label}
+                onClick={() => setFilterStatus(option.value as any)}
+                style={{
+                  padding: '8px 16px',
+                  background: filterStatus === option.value ? '#1d5a78' : '#f3f4f6',
+                  color: filterStatus === option.value ? 'white' : '#374151',
+                  border: 'none',
+                  borderRadius: '20px',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  if (filterStatus !== option.value) {
+                    e.currentTarget.style.background = '#e5e7eb';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (filterStatus !== option.value) {
+                    e.currentTarget.style.background = '#f3f4f6';
+                  }
+                }}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Side Filter */}
+        <div>
+          <div style={{
+            fontSize: '14px',
+            fontWeight: '500',
+            color: '#374151',
+            marginBottom: '10px'
+          }}>
+            צד:
+          </div>
+          <div style={{
+            display: 'flex',
+            gap: '8px',
+            flexWrap: 'wrap'
+          }}>
+            {[
+              { value: '', label: 'הכל' },
+              { value: 'bride', label: 'כלה' },
+              { value: 'groom', label: 'חתן' },
+              { value: 'shared', label: 'משותף' }
+            ].map((option) => (
+              <button
+                key={option.value + option.label}
+                onClick={() => setFilterSide(option.value as '' | 'bride' | 'groom' | 'shared')}
+                style={{
+                  padding: '8px 16px',
+                  background: filterSide === option.value ? '#1d5a78' : '#f3f4f6',
+                  color: filterSide === option.value ? 'white' : '#374151',
+                  border: 'none',
+                  borderRadius: '20px',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  if (filterSide !== option.value) {
+                    e.currentTarget.style.background = '#e5e7eb';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (filterSide !== option.value) {
+                    e.currentTarget.style.background = '#f3f4f6';
+                  }
+                }}
+              >
+                {option.label}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Guest List as Cards */}
+      {/* Guest List */}
       {filteredGuests.length === 0 ? (
-        <div style={{ padding: '40px', textAlign: 'center', color: '#666' }}>
+        <div style={{
+          padding: '60px 20px',
+          textAlign: 'center',
+          background: 'white',
+          borderRadius: '12px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          color: '#6b7280',
+          fontSize: '16px'
+        }}>
           אין מוזמנים תואמים. נסה לסנן אחרת או להוסיף מוזמן.
         </div>
       ) : (
-        <div className="card-grid">
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+          gap: '20px'
+        }}>
           {filteredGuests.map(guest => (
-                         <div key={guest._id} className="card">
+            <div key={guest._id} style={{
+              background: 'white',
+              borderRadius: '12px',
+              padding: '20px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+              border: '1px solid #f3f4f6'
+            }}>
               {editingGuest && editingGuest._id === guest._id ? (
                 <>
                   <div className="card-header">
@@ -957,78 +1282,304 @@ export default function GuestListPage() {
                     </div>
                   </div>
                 </>
-              ) : (
+                              ) : (
                 <>
-                                     <div className="card-header">
-                     <div className="card-title">{guest.firstName} {guest.lastName}</div>
-                     <div style={{ display: 'flex', gap: 8 }}>
-                       <button className="btn-icon" title="ערוך" onClick={() => startEditing(guest)}>✏️</button>
-                       <button className="btn-icon" title="מחק" onClick={() => deleteGuest(guest._id)}>🗑️</button>
-                     </div>
-                   </div>
-                                     <div className="card-row">
-                     <div>
-                       <div className="muted">טלפון</div>
-                       <div>{guest.phone}</div>
-                     </div>
-                     <div>
-                       <div className="muted">אימייל</div>
-                       <div>{guest.email || '-'}</div>
-                     </div>
-                   </div>
-                                     <div className="card-row">
-                     <div>
-                       <div className="muted">מקומות</div>
-                       <div>{guest.seatsReserved}</div>
-                     </div>
-                     <div>
-                       <div className="muted">שולחן</div>
-                       <div>{guest.tableNumber || '-'}</div>
-                     </div>
-                   </div>
-                                     <div className="card-row">
-                     <div>
-                       <div className="muted">תזונה</div>
-                       <div>{guest.dietaryRestrictions || 'רגיל'}</div>
-                     </div>
-                     <div>
-                       <div className="muted">קבוצה</div>
-                       <div>{guest.group || '-'}</div>
-                     </div>
-                   </div>
-                                     <div className="card-row">
-                     <div>
-                       <div className="muted">מהצד של</div>
-                       <div>{guest.side === 'bride' ? 'כלה' : guest.side === 'groom' ? 'חתן' : 'משותף'}</div>
-                     </div>
-                     <div>
-                       <div className="muted">סטטוס</div>
-                       <div>
-                         <span className={`chip ${guest.status === 'Invited' ? 'chip-invited' : guest.status === 'Confirmed' ? 'chip-confirmed' : guest.status === 'Declined' ? 'chip-declined' : 'chip-arrived'}`}>
-                           {guest.status === 'Invited' ? '⏳ הוזמן' : guest.status === 'Confirmed' ? '✅ אושר' : guest.status === 'Declined' ? '❌ נדחה' : '🎉 הגיע'}
-                         </span>
-                       </div>
-                     </div>
-                   </div>
-                                     {guest.notes && (
-                     <div className="card-row">
-                       <div style={{ gridColumn: '1 / -1' }}>
-                         <div className="muted">הערות</div>
-                         <div style={{ fontStyle: 'italic', color: '#666' }}>{guest.notes}</div>
-                       </div>
-                     </div>
-                   )}
-                                     <div className="card-row">
-                     <div>
-                       <div className="muted">שינוי סטטוס מהיר</div>
-                       <div style={{ display: 'flex', gap: 8 }}>
-                         <button className="btn-icon" title="הוזמן" onClick={() => updateStatus(guest._id, 'Invited')}>⏳</button>
-                         <button className="btn-icon" title="אושר" onClick={() => updateStatus(guest._id, 'Confirmed')}>✅</button>
-                         <button className="btn-icon" title="נדחה" onClick={() => updateStatus(guest._id, 'Declined')}>❌</button>
-                         <button className="btn-icon" title="הגיע" onClick={() => updateStatus(guest._id, 'Arrived')}>🎉</button>
-                       </div>
-                     </div>
-                   </div>
+                  {/* Guest Header */}
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '15px',
+                    paddingBottom: '15px',
+                    borderBottom: '1px solid #f3f4f6'
+                  }}>
+                    <div>
+                      <div style={{
+                        fontSize: '18px',
+                        fontWeight: 'bold',
+                        color: '#1d5a78',
+                        marginBottom: '4px'
+                      }}>
+                        {guest.firstName} {guest.lastName}
+                      </div>
+                      <div style={{
+                        fontSize: '12px',
+                        color: '#6b7280'
+                      }}>
+                        {guest.phone}
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        onClick={() => startEditing(guest)}
+                        style={{
+                          padding: '6px',
+                          background: '#f3f4f6',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#e5e7eb';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = '#f3f4f6';
+                        }}
+                        title="ערוך"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={() => deleteGuest(guest._id)}
+                        style={{
+                          padding: '6px',
+                          background: '#fef2f2',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '14px',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = '#fee2e2';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = '#fef2f2';
+                        }}
+                        title="מחק"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Guest Details */}
+                  <div style={{ display: 'grid', gap: '12px' }}>
+                    {/* Contact Info */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                      <div>
+                        <div style={{
+                          fontSize: '12px',
+                          color: '#6b7280',
+                          marginBottom: '4px'
+                        }}>
+                          אימייל
+                        </div>
+                        <div style={{
+                          fontSize: '14px',
+                          color: '#374151'
+                        }}>
+                          {guest.email || '-'}
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{
+                          fontSize: '12px',
+                          color: '#6b7280',
+                          marginBottom: '4px'
+                        }}>
+                          מקומות
+                        </div>
+                        <div style={{
+                          fontSize: '14px',
+                          color: '#374151',
+                          fontWeight: '500'
+                        }}>
+                          {guest.seatsReserved}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Event Details */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                      <div>
+                        <div style={{
+                          fontSize: '12px',
+                          color: '#6b7280',
+                          marginBottom: '4px'
+                        }}>
+                          שולחן
+                        </div>
+                        <div style={{
+                          fontSize: '14px',
+                          color: '#374151'
+                        }}>
+                          {guest.tableNumber || '-'}
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{
+                          fontSize: '12px',
+                          color: '#6b7280',
+                          marginBottom: '4px'
+                        }}>
+                          תזונה
+                        </div>
+                        <div style={{
+                          fontSize: '14px',
+                          color: '#374151'
+                        }}>
+                          {guest.dietaryRestrictions || 'רגיל'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Group and Side */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                      <div>
+                        <div style={{
+                          fontSize: '12px',
+                          color: '#6b7280',
+                          marginBottom: '4px'
+                        }}>
+                          קבוצה
+                        </div>
+                        <div style={{
+                          fontSize: '14px',
+                          color: '#374151'
+                        }}>
+                          {guest.group || '-'}
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{
+                          fontSize: '12px',
+                          color: '#6b7280',
+                          marginBottom: '4px'
+                        }}>
+                          מהצד של
+                        </div>
+                        <div style={{
+                          fontSize: '14px',
+                          color: '#374151'
+                        }}>
+                          {guest.side === 'bride' ? 'כלה' : guest.side === 'groom' ? 'חתן' : 'משותף'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Status */}
+                    <div>
+                      <div style={{
+                        fontSize: '12px',
+                        color: '#6b7280',
+                        marginBottom: '8px'
+                      }}>
+                        סטטוס
+                      </div>
+                      <div style={{
+                        display: 'inline-block',
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        background: guest.status === 'Confirmed' ? '#dcfce7' : 
+                                   guest.status === 'Declined' ? '#fee2e2' : 
+                                   guest.status === 'Arrived' ? '#dbeafe' : '#fef3c7',
+                        color: guest.status === 'Confirmed' ? '#166534' : 
+                               guest.status === 'Declined' ? '#991b1b' : 
+                               guest.status === 'Arrived' ? '#1e40af' : '#92400e'
+                      }}>
+                        {guest.status === 'Invited' ? '⏳ הוזמן' : 
+                         guest.status === 'Confirmed' ? '✅ אושר' : 
+                         guest.status === 'Declined' ? '❌ נדחה' : '🎉 הגיע'}
+                      </div>
+                    </div>
+
+                    {/* Notes */}
+                    {guest.notes && (
+                      <div>
+                        <div style={{
+                          fontSize: '12px',
+                          color: '#6b7280',
+                          marginBottom: '4px'
+                        }}>
+                          הערות
+                        </div>
+                        <div style={{
+                          fontSize: '14px',
+                          color: '#374151',
+                          fontStyle: 'italic',
+                          padding: '8px',
+                          background: '#f9fafb',
+                          borderRadius: '6px'
+                        }}>
+                          {guest.notes}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Quick Status Actions */}
+                    <div style={{
+                      display: 'flex',
+                      gap: '8px',
+                      paddingTop: '12px',
+                      borderTop: '1px solid #f3f4f6'
+                    }}>
+                      <button
+                        onClick={() => updateStatus(guest._id, 'Invited')}
+                        style={{
+                          padding: '6px 12px',
+                          background: guest.status === 'Invited' ? '#fef3c7' : '#f3f4f6',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                          transition: 'all 0.2s ease'
+                        }}
+                        title="הוזמן"
+                      >
+                        ⏳
+                      </button>
+                      <button
+                        onClick={() => updateStatus(guest._id, 'Confirmed')}
+                        style={{
+                          padding: '6px 12px',
+                          background: guest.status === 'Confirmed' ? '#dcfce7' : '#f3f4f6',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                          transition: 'all 0.2s ease'
+                        }}
+                        title="אושר"
+                      >
+                        ✅
+                      </button>
+                      <button
+                        onClick={() => updateStatus(guest._id, 'Declined')}
+                        style={{
+                          padding: '6px 12px',
+                          background: guest.status === 'Declined' ? '#fee2e2' : '#f3f4f6',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                          transition: 'all 0.2s ease'
+                        }}
+                        title="נדחה"
+                      >
+                        ❌
+                      </button>
+                      <button
+                        onClick={() => updateStatus(guest._id, 'Arrived')}
+                        style={{
+                          padding: '6px 12px',
+                          background: guest.status === 'Arrived' ? '#dbeafe' : '#f3f4f6',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                          transition: 'all 0.2s ease'
+                        }}
+                        title="הגיע"
+                      >
+                        🎉
+                      </button>
+                    </div>
+                  </div>
                 </>
               )}
             </div>

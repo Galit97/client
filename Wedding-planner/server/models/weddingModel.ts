@@ -23,6 +23,16 @@ export interface IWedding {
   guestList?: Types.ObjectId[];   
   actualCost?: number;
   budgetBreakdown?: Record<string, number>; 
+  budgetSettings?: {
+    guestsMin: number;
+    guestsMax: number;
+    guestsExact?: number;
+    giftAvg: number;
+    savePercent: number;
+    budgetMode: string;
+    personalPocket?: number;
+    totalBudget: number;
+  };
   mealPricing?: {
     basePrice: number;
     childDiscount: number;
@@ -133,6 +143,16 @@ const weddingSchema = new Schema<IWedding>(
       type: Map,
       of: Number,
       default: {},
+    },
+    budgetSettings: {
+      guestsMin: { type: Number, default: 50 },
+      guestsMax: { type: Number, default: 150 },
+      guestsExact: { type: Number },
+      giftAvg: { type: Number, default: 500 },
+      savePercent: { type: Number, default: 10 },
+      budgetMode: { type: String, default: 'ניצמד' },
+      personalPocket: { type: Number, default: 50000 },
+      totalBudget: { type: Number, default: 0 }
     },
     mealPricing: {
       basePrice: {

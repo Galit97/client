@@ -1824,6 +1824,65 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                             </div>
                           )}
                         </div>
+                        {/* Remove Partner Button */}
+                        <button
+                          onClick={async () => {
+                            if (confirm(`האם אתה בטוח שברצונך להסיר את ${firstName} ${lastName} מהאירוע?`)) {
+                              try {
+                                const token = localStorage.getItem("token");
+                                if (!token) return;
+                                
+                                const participantId = typeof participant === 'object' ? participant._id : participant;
+                                const response = await fetch(`/api/weddings/${weddingData?._id}/participants/${participantId}`, {
+                                  method: 'DELETE',
+                                  headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                    'Content-Type': 'application/json'
+                                  }
+                                });
+                                
+                                if (response.ok) {
+                                  // Refresh wedding data by refetching
+                                  const refreshRes = await fetch("/api/weddings/owner", {
+                                    headers: { Authorization: `Bearer ${token}` }
+                                  });
+                                  if (refreshRes.ok) {
+                                    const refreshedWedding = await refreshRes.json();
+                                    setWeddingData(refreshedWedding);
+                                  }
+                                  alert(`${firstName} ${lastName} הוסר מהאירוע בהצלחה`);
+                                } else {
+                                  const errorData = await response.json();
+                                  alert(`שגיאה בהסרת השותף: ${errorData.message || 'שגיאה לא ידועה'}`);
+                                }
+                              } catch (error) {
+                                console.error('Error removing participant:', error);
+                                alert('שגיאה בהסרת השותף');
+                              }
+                            }
+                          }}
+                          style={{
+                            padding: '6px 10px',
+                            background: '#dc2626',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                            fontWeight: '500',
+                            transition: 'all 0.2s ease',
+                            minWidth: '60px'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = '#b91c1c';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = '#dc2626';
+                          }}
+                          title="הסר שותף"
+                        >
+                          הסר
+                        </button>
                       </div>
                     );
                   })}

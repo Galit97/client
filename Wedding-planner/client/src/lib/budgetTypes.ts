@@ -9,6 +9,7 @@ export interface BudgetSettings {
   giftAvg: number;       // מתנה ממוצעת לאורח (₪)
   savePercent: number;   // 5–30 (%), בשימוש ל"נרוויח"/"כיס אישי"
   mode: BudgetMode;      // יעד: ניצמד/כיס אישי/נרוויח
+  personalPocket?: number; // כיס אישי (₪)
 }
 
 export type SupplierStatus = 'פתוח' | 'הצעה' | 'התחייב';

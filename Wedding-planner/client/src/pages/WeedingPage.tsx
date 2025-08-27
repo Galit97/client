@@ -701,7 +701,7 @@ export default function WeddingPage() {
           <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
-                שם האירוע *
+               שם הזוג
               </label>
               <input
                 name="weddingName"
@@ -715,7 +715,7 @@ export default function WeddingPage() {
 
             <div>
               <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
-                תאריך האירוע *
+                תאריך האירוע 
               </label>
               <input
                 name="weddingDate"

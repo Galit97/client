@@ -27,44 +27,48 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
         }
 
         console.log("Loading existing budget data...");
-        const response = await fetch("/api/weddings/owner", {
+        const response = await fetch("/api/budgets/owner", {
           headers: { Authorization: `Bearer ${token}` }
         });
 
         console.log("Load response status:", response.status);
 
         if (response.ok) {
-          const wedding = await response.json();
-          console.log("Loaded wedding data:", wedding);
+          const budget = await response.json();
+          console.log("Loaded budget data:", budget);
           
           // Map existing data to component state
-          if (wedding.guestsMin) {
-            console.log("Setting guestsMin:", wedding.guestsMin);
-            setGuestsMin(wedding.guestsMin);
+          if (budget.guestsMin) {
+            console.log("Setting guestsMin:", budget.guestsMin);
+            setGuestsMin(budget.guestsMin);
           }
-          if (wedding.guestsMax) {
-            console.log("Setting guestsMax:", wedding.guestsMax);
-            setGuestsMax(wedding.guestsMax);
+          if (budget.guestsMax) {
+            console.log("Setting guestsMax:", budget.guestsMax);
+            setGuestsMax(budget.guestsMax);
           }
-          if (wedding.guestsExact) {
-            console.log("Setting guestsExact:", wedding.guestsExact);
-            setGuestsExact(wedding.guestsExact);
+          if (budget.guestsExact) {
+            console.log("Setting guestsExact:", budget.guestsExact);
+            setGuestsExact(budget.guestsExact);
           }
-          if (wedding.giftAvg) {
-            console.log("Setting giftAvg:", wedding.giftAvg);
-            setGift(wedding.giftAvg);
+          if (budget.giftAvg) {
+            console.log("Setting giftAvg:", budget.giftAvg);
+            setGift(budget.giftAvg);
           }
-          if (wedding.budgetMode) {
-            console.log("Setting budgetMode:", wedding.budgetMode);
+          if (budget.budgetMode) {
+            console.log("Setting budgetMode:", budget.budgetMode);
             // Map budget mode to component values
             const modeMap: { [key: string]: string } = {
               'ניצמד': 'balanced',
               'כיס אישי': 'flexible',
               'נרוויח': 'tight'
             };
-            const mappedMode = modeMap[wedding.budgetMode] || 'balanced';
-            console.log("Mapped budget mode:", wedding.budgetMode, "->", mappedMode);
+            const mappedMode = modeMap[budget.budgetMode] || 'balanced';
+            console.log("Mapped budget mode:", budget.budgetMode, "->", mappedMode);
             setTarget(mappedMode);
+          }
+          if (budget.personalPocket) {
+            console.log("Setting personalPocket:", budget.personalPocket);
+            setPersonalBudget(budget.personalPocket);
           }
         } else {
           const errorText = await response.text();
@@ -198,75 +202,43 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
       }
       console.log("Request body:", JSON.stringify(budgetData, null, 2));
 
-      // Try to get the wedding ID first
-      const getWeddingResponse = await fetch("/api/weddings/owner", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+             // Get wedding ID for the budget
+       const getWeddingResponse = await fetch("/api/weddings/owner", {
+         headers: { Authorization: `Bearer ${token}` }
+       });
 
-      if (!getWeddingResponse.ok) {
-        console.error("Failed to get wedding data:", getWeddingResponse.status);
-        alert("שגיאה בקבלת נתוני החתונה");
-        return;
-      }
+       if (!getWeddingResponse.ok) {
+         console.error("Failed to get wedding data:", getWeddingResponse.status);
+         alert("שגיאה בקבלת נתוני החתונה");
+         return;
+       }
 
-      const weddingData = await getWeddingResponse.json();
-      console.log("Current wedding data:", weddingData);
+       const weddingData = await getWeddingResponse.json();
+       console.log("Current wedding data:", weddingData);
 
-      // Try with PUT method first, then PATCH if it fails
-      let response = await fetch("/api/weddings/owner", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(budgetData),
-      });
+       // Prepare budget data for the API
+       const budgetApiData = {
+         weddingID: weddingData._id,
+         guestsMin: Number(guestsMin),
+         guestsMax: Number(guestsMax),
+         guestsExact: guestsExact ? Number(guestsExact) : undefined,
+         giftAvg: Number(gift),
+         savePercent: target === 'flexible' ? 15 : target === 'tight' ? 10 : undefined,
+         budgetMode: modeMap[target],
+         personalPocket: target === 'flexible' ? Number(personalBudget) : undefined
+       };
 
-      console.log("First attempt response:", response.status, response.statusText);
+       console.log("Saving budget data to API:", budgetApiData);
 
-      // If PUT fails, try PATCH
-      if (!response.ok) {
-        console.log("PUT failed, trying PATCH...");
-        response = await fetch("/api/weddings/owner", {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(budgetData),
-        });
-        console.log("PATCH attempt response:", response.status, response.statusText);
-      }
-
-      // If both fail, try POST
-      if (!response.ok) {
-        console.log("Both PUT and PATCH failed, trying POST...");
-        response = await fetch("/api/weddings/owner", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(budgetData),
-        });
-        console.log("POST attempt response:", response.status, response.statusText);
-      }
-
-      // If all fail, try with different endpoint
-      if (!response.ok) {
-        console.log("All methods failed, trying with wedding ID...");
-        if (weddingData._id) {
-          response = await fetch(`/api/weddings/${weddingData._id}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(budgetData),
-          });
-          console.log("Wedding ID attempt response:", response.status, response.statusText);
-        }
-      }
+       // Save budget settings using the dedicated budget API
+       const response = await fetch("/api/budgets/settings", {
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+           Authorization: `Bearer ${token}`,
+         },
+         body: JSON.stringify(budgetApiData),
+       });
 
       console.log("Response status:", response.status);
       console.log("Response headers:", Object.fromEntries(response.headers.entries()));
@@ -279,37 +251,37 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
           responseData = { message: "Success but no JSON response" };
         }
         
-        console.log("Budget saved successfully! Response:", responseData);
-        console.log("Updated budget to:", calculatedBudget);
-        console.log("Saved data:", budgetData);
+                 console.log("Budget saved successfully! Response:", responseData);
+         console.log("Saved budget data:", responseData.budget);
         
-        // Verify the data was saved by fetching it again
-        setTimeout(async () => {
-          try {
-            const verifyResponse = await fetch("/api/weddings/owner", {
-              headers: { Authorization: `Bearer ${token}` }
-            });
-            if (verifyResponse.ok) {
-              const savedData = await verifyResponse.json();
-              console.log("Verification - saved data:", {
-                guestsMin: savedData.guestsMin,
-                guestsMax: savedData.guestsMax,
-                guestsExact: savedData.guestsExact,
-                giftAvg: savedData.giftAvg,
-                budget: savedData.budget,
-                budgetMode: savedData.budgetMode
-              });
-            }
-          } catch (error) {
-            console.error("Error verifying saved data:", error);
-          }
-        }, 500);
+                 // Verify the data was saved by fetching it from the budget API
+         setTimeout(async () => {
+           try {
+             const verifyResponse = await fetch("/api/budgets/owner", {
+               headers: { Authorization: `Bearer ${token}` }
+             });
+             if (verifyResponse.ok) {
+               const savedData = await verifyResponse.json();
+               console.log("Verification - saved budget data:", {
+                 guestsMin: savedData.guestsMin,
+                 guestsMax: savedData.guestsMax,
+                 guestsExact: savedData.guestsExact,
+                 giftAvg: savedData.giftAvg,
+                 totalBudget: savedData.totalBudget,
+                 budgetMode: savedData.budgetMode,
+                 personalPocket: savedData.personalPocket
+               });
+             }
+           } catch (error: any) {
+             console.error("Error verifying saved data:", error);
+           }
+         }, 500);
         
-        let alertMessage = `התקציב נשמר בהצלחה!\n\nתקציב חדש: ₪${calculatedBudget.toLocaleString()}\nמספר אורחים: ${exactGuests}\nמתנה ממוצעת: ₪${gift}`;
-        if (target === 'flexible') {
-          alertMessage += `\nכיס אישי: ₪${personalBudget.toLocaleString()}`;
-        }
-        alert(alertMessage);
+                 let alertMessage = `התקציב נשמר בהצלחה!\n\nתקציב חדש: ₪${responseData.calculatedBudget?.toLocaleString() || calculatedBudget.toLocaleString()}\nמספר אורחים: ${responseData.exactGuests || exactGuests}\nמתנה ממוצעת: ₪${gift}`;
+         if (target === 'flexible') {
+           alertMessage += `\nכיס אישי: ₪${personalBudget.toLocaleString()}`;
+         }
+         alert(alertMessage);
         
         // Always close popup and refresh
         if (onClose) {
@@ -559,7 +531,7 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
               style={{ margin: 0 }}
             />
             <label style={{ fontSize: '14px', color: '#374151', cursor: 'pointer' }}>
-              נעמד – מתכננים סביב יעד מוגדר
+         ניצמד - מתכננים סביב יעד מוגדר.
             </label>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px', border: '1px solid #e5e7eb', borderRadius: '12px' }}>
@@ -571,7 +543,8 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
               style={{ margin: 0 }}
             />
             <label style={{ fontSize: '14px', color: '#374151', cursor: 'pointer' }}>
-              כיס אישי – מוסיפים סכום שישלים את הצורך
+             כיס אישי - 
+             מוסיפים סכום שישלים את הצורך.
             </label>
           </div>
           {target === "flexible" && (
@@ -637,7 +610,8 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
               style={{ margin: 0 }}
             />
             <label style={{ fontSize: '14px', color: '#374151', cursor: 'pointer' }}>
-              נורית – מגדירים יעד נמוך כדי להישאר בטווח
+             נרוויח - 
+             מגדירים יעד נמוך כדי להישאר ביתרה.
             </label>
           </div>
         </div>
