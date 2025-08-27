@@ -184,6 +184,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
       console.error("Error fetching data:", error);
     } finally {
       setIsRefreshing(false);
+      setLoading(false);
     }
   };
 
@@ -880,46 +881,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
               <span style={{ fontSize: '24px' }}>💰</span>
              </div>
                          <div style={{ flex: 1 }}>
-               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '5px' }}>
-                 <h3 style={{ margin: '0', color: '#0F172A' }}>חישוב עלויות האירוע</h3>
-                 <button
-                   onClick={fetchData}
-                   disabled={isRefreshing}
-                   style={{
-                     padding: '4px 8px',
-                     background: isRefreshing ? '#e5e7eb' : '#f0f9ff',
-                     color: isRefreshing ? '#9ca3af' : '#0ea5e9',
-                     border: '1px solid #0ea5e9',
-                     borderRadius: '4px',
-                     cursor: isRefreshing ? 'not-allowed' : 'pointer',
-                     fontSize: '10px',
-                     fontWeight: '500',
-                     transition: 'all 0.2s ease',
-                     display: 'flex',
-                     alignItems: 'center',
-                     gap: '2px'
-                   }}
-                   onMouseEnter={(e) => {
-                     if (!isRefreshing) {
-                       e.currentTarget.style.background = '#e0f2fe';
-                     }
-                   }}
-                   onMouseLeave={(e) => {
-                     if (!isRefreshing) {
-                       e.currentTarget.style.background = '#f0f9ff';
-                     }
-                   }}
-                 >
-                   {isRefreshing ? (
-                     <span style={{ animation: 'spin 1s linear infinite' }}>⟳</span>
-                   ) : (
-                     <span>⟳</span>
-                   )}
-                 </button>
-               </div>
-               <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
-                 עלות כוללת: {costBreakdown.totalConfirmed.toLocaleString()} ₪
-               </p>
+                                <h3 style={{ margin: '0', color: '#0F172A' }}>חישוב עלויות האירוע</h3>
+                               <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
+                  עלות כוללת: {(costBreakdown.vendors + costBreakdown.mealsTotal).toLocaleString()} ₪
+                </p>
                <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '12px' }}>
                  עלות לאיש (מאשרי הגעה): {costBreakdown.costPerPersonConfirmed.toLocaleString()} ₪
                </p>
@@ -1044,116 +1009,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           </div>
         </div>
 
-        {/* Detailed Cost Breakdown */}
-        {costBreakdown.hasMealPricing && (
-          <div className="card main-card" style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-              <div style={{ 
-                width: '50px', 
-                height: '50px', 
-                borderRadius: '50%', 
-                background: 'linear-gradient(135deg, #f0f9ff, #e0f2fe)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginLeft: '15px'
-              }}>
-                <span style={{ fontSize: '24px' }}>🍽️</span>
-              </div>
-              <div style={{ flex: 1 }}>
-                <h3 style={{ margin: '0', color: '#0F172A' }}>פירוט עלויות מנות</h3>
-                <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
-                  חישוב מפורט של עלויות המנות לפי מספר המוזמנים
-                </p>
-              </div>
-            </div>
-            
-            <div style={{ display: 'grid', gap: '12px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', marginBottom: '15px' }}>
-              <div style={{ 
-                padding: '12px', 
-                background: '#f8fafc', 
-                borderRadius: '8px', 
-                border: '1px solid #e2e8f0',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1d5a78', marginBottom: '4px' }}>
-                  {costBreakdown.mealsConfirmed.toLocaleString()} ₪
-                </div>
-                <div style={{ fontSize: '12px', color: '#64748b' }}>
-                  עלות מנות - מאשרי הגעה
-                </div>
-                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
-                  ({confirmedGuests} אנשים)
-                </div>
-              </div>
-              
-              <div style={{ 
-                padding: '12px', 
-                background: '#f8fafc', 
-                borderRadius: '8px', 
-                border: '1px solid #e2e8f0',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1d5a78', marginBottom: '4px' }}>
-                  {costBreakdown.mealsTotal.toLocaleString()} ₪
-                </div>
-                <div style={{ fontSize: '12px', color: '#64748b' }}>
-                  עלות מנות - כל המוזמנים
-                </div>
-                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
-                  ({totalGuests} אנשים)
-                </div>
-              </div>
-              
-              <div style={{ 
-                padding: '12px', 
-                background: '#f8fafc', 
-                borderRadius: '8px', 
-                border: '1px solid #e2e8f0',
-                textAlign: 'center'
-              }}>
-                <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#1d5a78', marginBottom: '4px' }}>
-                  {costBreakdown.totalConfirmed.toLocaleString()} ₪
-                </div>
-                <div style={{ fontSize: '12px', color: '#64748b' }}>
-                  סה"כ עלות אירוע
-                </div>
-                <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
-                  (ספקים + מנות)
-                </div>
-              </div>
-            </div>
-            
-            {weddingData?.mealPricing && (
-              <div style={{ 
-                padding: '10px', 
-                background: '#f0f9ff', 
-                borderRadius: '6px', 
-                border: '1px solid #0ea5e9',
-                fontSize: '12px',
-                color: '#0c4a6e'
-              }}>
-                <div style={{ fontWeight: 'bold', marginBottom: '6px' }}>הגדרות מחירי מנות:</div>
-                <div style={{ display: 'grid', gap: '8px', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))' }}>
-                  <div>
-                    <span style={{ fontWeight: '500' }}>מחיר מנה:</span> {weddingData.mealPricing.basePrice.toLocaleString()} ₪
-                  </div>
-                  <div>
-                    <span style={{ fontWeight: '500' }}>הנחה לילדים:</span> {weddingData.mealPricing.childDiscount}%
-                  </div>
-                  <div>
-                    <span style={{ fontWeight: '500' }}>סף התחייבות:</span> {weddingData.mealPricing.bulkThreshold} אנשים
-                  </div>
-                  {weddingData.mealPricing.bulkPrice > 0 && (
-                    <div>
-                      <span style={{ fontWeight: '500' }}>מחיר התחייבות:</span> {weddingData.mealPricing.bulkPrice.toLocaleString()} ₪
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+
 
         {/* Guests */}
         <div className="card main-card" style={{ display: 'flex', flexDirection: 'column' }}>
@@ -1334,73 +1190,31 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
            borderRadius: '12px',
            border: '1px solid #CBD5E1'
          }}>
-           <div style={{ 
-             display: 'flex', 
-             justifyContent: 'space-between', 
-             alignItems: 'center',
-             marginBottom: '20px'
-           }}>
-             <h3 style={{ 
-               margin: '0', 
-               color: '#0F172A',
-               display: 'flex',
-               alignItems: 'center'
-             }}>
-               פעולות אחרונות
-             </h3>
-             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-               <button
-                 onClick={fetchData}
-                 disabled={isRefreshing}
-                 style={{
-                   padding: '6px 12px',
-                   background: isRefreshing ? '#e5e7eb' : '#f3f4f6',
-                   color: isRefreshing ? '#9ca3af' : '#374151',
-                   border: '1px solid #d1d5db',
-                   borderRadius: '6px',
-                   cursor: isRefreshing ? 'not-allowed' : 'pointer',
-                   fontSize: '12px',
-                   fontWeight: '500',
-                   transition: 'all 0.2s ease',
-                   display: 'flex',
-                   alignItems: 'center',
-                   gap: '4px'
-                 }}
-                 onMouseEnter={(e) => {
-                   if (!isRefreshing) {
-                     e.currentTarget.style.background = '#e5e7eb';
-                   }
-                 }}
-                 onMouseLeave={(e) => {
-                   if (!isRefreshing) {
-                     e.currentTarget.style.background = '#f3f4f6';
-                   }
-                 }}
-               >
-                 {isRefreshing ? (
-                   <>
-                     <span style={{ animation: 'spin 1s linear infinite' }}>⟳</span>
-                     מעדכן...
-                   </>
-                 ) : (
-                   <>
-                     <span>⟳</span>
-                     רענן
-                   </>
-                 )}
-               </button>
-               <div style={{ 
-                 fontSize: '11px', 
-                 color: '#6b7280',
-                 whiteSpace: 'nowrap'
-               }}>
-                 עודכן: {lastRefresh.toLocaleTimeString('he-IL', { 
-                   hour: '2-digit', 
-                   minute: '2-digit' 
-                 })}
-               </div>
-             </div>
-           </div>
+                       <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              marginBottom: '20px'
+            }}>
+              <h3 style={{ 
+                margin: '0', 
+                color: '#0F172A',
+                display: 'flex',
+                alignItems: 'center'
+              }}>
+                פעולות אחרונות
+              </h3>
+              <div style={{ 
+                fontSize: '11px', 
+                color: '#6b7280',
+                whiteSpace: 'nowrap'
+              }}>
+                עודכן: {lastRefresh.toLocaleTimeString('he-IL', { 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                })}
+              </div>
+            </div>
           
           {recentActivities.length > 0 ? (
             <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
@@ -1446,97 +1260,54 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           borderRadius: '12px',
           border: '1px solid #CBD5E1'
         }}>
-                     <div style={{ 
-             display: 'flex', 
-             justifyContent: 'space-between', 
-             alignItems: 'center',
-             marginBottom: '20px'
-         }}>
-           <h3 style={{ 
-               margin: '0', 
-             color: '#0F172A',
-             display: 'flex',
-             alignItems: 'center'
-           }}>
-              
-               ספקים
-           </h3>
-           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-             <button
-               onClick={fetchData}
-               disabled={isRefreshing}
-               style={{
-                 padding: '6px 12px',
-                 background: isRefreshing ? '#e5e7eb' : '#f3f4f6',
-                 color: isRefreshing ? '#9ca3af' : '#374151',
-                 border: '1px solid #d1d5db',
-                 borderRadius: '6px',
-                 cursor: isRefreshing ? 'not-allowed' : 'pointer',
-                 fontSize: '12px',
-                 fontWeight: '500',
-                 transition: 'all 0.2s ease',
-                 display: 'flex',
-                 alignItems: 'center',
-                 gap: '4px'
-               }}
-               onMouseEnter={(e) => {
-                 if (!isRefreshing) {
-                   e.currentTarget.style.background = '#e5e7eb';
-                 }
-               }}
-               onMouseLeave={(e) => {
-                 if (!isRefreshing) {
-                   e.currentTarget.style.background = '#f3f4f6';
-                 }
-               }}
-             >
-               {isRefreshing ? (
-                 <>
-                   <span style={{ animation: 'spin 1s linear infinite' }}>⟳</span>
-                   מעדכן...
-                 </>
-               ) : (
-                 <>
-                   <span>⟳</span>
-                   רענן
-                 </>
-               )}
-             </button>
-             <button
-               onClick={() => onNavigate?.('vendors')}
-               style={{
-                 padding: '8px 16px',
-                 background: '#f8fafc',
-                 color: '#1f2937',
-                 border: '2px solid #e5e7eb',
-                 borderRadius: '20px',
-                 fontSize: '12px',
-                 fontWeight: 'bold',
-                 cursor: 'pointer',
-                 transition: 'all 0.2s ease',
-                 display: 'flex',
-                 alignItems: 'center',
-                 gap: '6px'
-               }}
-               onMouseEnter={(e) => {
-                 e.currentTarget.style.transform = 'translateY(-1px)';
-                 e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-                 e.currentTarget.style.borderColor = '#d1d5db';
-               }}
-               onMouseLeave={(e) => {
-                 e.currentTarget.style.transform = 'translateY(0)';
-                 e.currentTarget.style.boxShadow = 'none';
-                 e.currentTarget.style.borderColor = '#e5e7eb';
-               }}
-             >
-               <span>הוסף ספק</span>
-               <span style={{ 
-                 fontSize: '14px',
-                 transform: 'rotate(180deg)'
-               }}>→</span>
-             </button>
-           </div>
-           </div>
+                               <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: '20px'
+          }}>
+            <h3 style={{ 
+              margin: '0', 
+              color: '#0F172A',
+              display: 'flex',
+              alignItems: 'center'
+            }}>
+              ספקים
+            </h3>
+            <button
+              onClick={() => onNavigate?.('vendors')}
+              style={{
+                padding: '8px 16px',
+                background: '#f8fafc',
+                color: '#1f2937',
+                border: '2px solid #e5e7eb',
+                borderRadius: '20px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+                e.currentTarget.style.borderColor = '#d1d5db';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.borderColor = '#e5e7eb';
+              }}
+            >
+              <span>הוסף ספק</span>
+              <span style={{ 
+                fontSize: '14px',
+                transform: 'rotate(180deg)'
+              }}>→</span>
+            </button>
+          </div>
           
           {vendors.length > 0 ? (
             <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
@@ -1630,13 +1401,13 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
             border: '1px solid #cbd5e1',
             position: 'relative'
           }}>
-            <div className="quick-summary-number" style={{ fontSize: '32px', fontWeight: 'bold', color: '#65859e', marginBottom: '8px' }}>
-              {costBreakdown.totalConfirmed.toLocaleString()}₪
-            </div>
+                         <div className="quick-summary-number" style={{ fontSize: '32px', fontWeight: 'bold', color: '#65859e', marginBottom: '8px' }}>
+               {(costBreakdown.vendors + costBreakdown.mealsTotal).toLocaleString()}₪
+             </div>
             <div className="quick-summary-label" style={{ fontSize: '14px', color: '#475569', marginBottom: '4px' }}>תחזית תקציב</div>
-            <div style={{ fontSize: '11px', color: '#64748b' }}>
-              ספקים: {costBreakdown.vendors.toLocaleString()}₪ | מנות: {costBreakdown.mealsConfirmed.toLocaleString()}₪
-            </div>
+                         <div style={{ fontSize: '11px', color: '#64748b' }}>
+               ספקים: {costBreakdown.vendors.toLocaleString()}₪ | מנות: {costBreakdown.mealsTotal.toLocaleString()}₪
+             </div>
             {costBreakdown.hasMealPricing && (
               <div style={{ 
                 position: 'absolute', 

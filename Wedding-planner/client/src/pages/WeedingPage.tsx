@@ -671,7 +671,9 @@ export default function WeddingPage() {
       maxWidth: '1200px', 
       margin: '0 auto',
       fontFamily: 'Arial, sans-serif',
-      direction: 'rtl'
+      direction: 'rtl',
+      background: '#f0f4f8',
+      minHeight: '100vh'
     }}>
       <style>
         {`
@@ -682,40 +684,163 @@ export default function WeddingPage() {
         `}
       </style>
       
-      <h1 style={{ 
-        textAlign: 'center', 
+      {/* Header Section */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         marginBottom: '30px',
-        color: '#333',
-        borderBottom: '2px solid #ddd',
-        paddingBottom: '10px'
+        padding: '20px',
+        background: 'linear-gradient(135deg, #1d5a78 0%, #2d7a9a 100%)',
+        borderRadius: '16px',
+        color: 'white',
+        boxShadow: '0 4px 20px rgba(29, 90, 120, 0.3)'
       }}>
-       הגדרות האירוע
-      </h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <div style={{
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            background: 'rgba(255, 255, 255, 0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '28px'
+          }}>
+            ⚙️
+          </div>
+          <div>
+            <h1 style={{ 
+              margin: '0 0 5px 0',
+              fontSize: '28px',
+              fontWeight: 'bold',
+              color: 'white'
+            }}>
+              הגדרות האירוע
+            </h1>
+            <p style={{ 
+              margin: '0',
+              fontSize: '16px',
+              opacity: '0.9',
+              color: 'white'
+            }}>
+              ניהול פרטי האירוע, שותפים ומחירי מנות
+            </p>
+          </div>
+        </div>
+        
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            onClick={handleSubmit}
+            disabled={saving}
+            style={{
+              padding: '12px 24px',
+              background: 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              borderRadius: '25px',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              cursor: saving ? 'not-allowed' : 'pointer',
+              transition: 'all 0.3s ease',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+            onMouseEnter={(e) => {
+              if (!saving) {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!saving) {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }
+            }}
+          >
+            {saving ? (
+              <>
+                <span style={{ animation: 'spin 1s linear infinite' }}>⟳</span>
+                שומר...
+              </>
+            ) : (
+              <>
+                💾 שמור אירוע
+              </>
+            )}
+          </button>
+        </div>
+      </div>
 
  
 
       {/* Wedding Form */}
-      <div className="card">
-        <h3 style={{ marginTop: 0, marginBottom: '20px' }}>פרטי האירוע</h3>
+      <div style={{
+        background: '#FFFFFF',
+        padding: '25px',
+        borderRadius: '12px',
+        border: '1px solid #CBD5E1',
+        marginBottom: '20px',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+          <div style={{
+            width: '50px',
+            height: '50px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #EFF5FB, #FAFAFA)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginLeft: '15px'
+          }}>
+            <span style={{ fontSize: '24px' }}>💒</span>
+          </div>
+          <div style={{ flex: 1 }}>
+            <h3 style={{ margin: '0', color: '#0F172A' }}>פרטי האירוע</h3>
+            <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
+              הגדרת פרטי האירוע הבסיסיים
+            </p>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit}>
-          <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
+          <div style={{ display: 'grid', gap: '20px', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
-               שם הזוג
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
+                שם הזוג *
               </label>
               <input
                 name="weddingName"
                 value={wedding.weddingName}
                 onChange={handleInputChange}
-              
                 required
-                style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                placeholder="הזינו את שם הזוג"
+                style={{ 
+                  width: '100%', 
+                  padding: '12px', 
+                  border: '1px solid #D1D5DB', 
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  transition: 'all 0.2s ease',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#1d5a78';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(29, 90, 120, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#D1D5DB';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
-                תאריך האירוע 
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
+                תאריך האירוע *
               </label>
               <input
                 name="weddingDate"
@@ -723,12 +848,28 @@ export default function WeddingPage() {
                 value={wedding.weddingDate}
                 onChange={handleInputChange}
                 required
-                style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                style={{ 
+                  width: '100%', 
+                  padding: '12px', 
+                  border: '1px solid #D1D5DB', 
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  transition: 'all 0.2s ease',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#1d5a78';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(29, 90, 120, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#D1D5DB';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
                 שעת התחלה
               </label>
               <input
@@ -736,25 +877,57 @@ export default function WeddingPage() {
                 type="time"
                 value={wedding.startTime}
                 onChange={handleInputChange}
-                style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                style={{ 
+                  width: '100%', 
+                  padding: '12px', 
+                  border: '1px solid #D1D5DB', 
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  transition: 'all 0.2s ease',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#1d5a78';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(29, 90, 120, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#D1D5DB';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
                 מיקום
               </label>
               <input
                 name="location"
                 value={wedding.location}
                 onChange={handleInputChange}
-               
-                style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                placeholder="הזינו את מיקום האירוע"
+                style={{ 
+                  width: '100%', 
+                  padding: '12px', 
+                  border: '1px solid #D1D5DB', 
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  transition: 'all 0.2s ease',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#1d5a78';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(29, 90, 120, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#D1D5DB';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
                 תקציב (₪)
               </label>
               <input
@@ -763,20 +936,53 @@ export default function WeddingPage() {
                 min={0}
                 value={wedding.budget}
                 onChange={handleInputChange}
-               
-                style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                placeholder="הזינו את התקציב"
+                style={{ 
+                  width: '100%', 
+                  padding: '12px', 
+                  border: '1px solid #D1D5DB', 
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  transition: 'all 0.2s ease',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#1d5a78';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(29, 90, 120, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#D1D5DB';
+                  e.target.style.boxShadow = 'none';
+                }}
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
                 סטטוס
               </label>
               <select
                 name="status"
                 value={wedding.status}
                 onChange={handleInputChange}
-                style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                style={{ 
+                  width: '100%', 
+                  padding: '12px', 
+                  border: '1px solid #D1D5DB', 
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  transition: 'all 0.2s ease',
+                  boxSizing: 'border-box',
+                  background: 'white'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#1d5a78';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(29, 90, 120, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#D1D5DB';
+                  e.target.style.boxShadow = 'none';
+                }}
               >
                 <option value="Planning">מתכננים</option>
                 <option value="Confirmed">מאושר</option>
@@ -787,8 +993,8 @@ export default function WeddingPage() {
             </div>
           </div>
 
-          <div style={{ marginTop: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+          <div style={{ marginTop: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
               פרטים נוספים לכתובת
             </label>
             <textarea
@@ -796,13 +1002,30 @@ export default function WeddingPage() {
               value={wedding.addressDetails}
               onChange={handleInputChange}
               placeholder="פרטים נוספים לכתובת האירוע"
-              rows={2}
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              rows={3}
+              style={{ 
+                width: '100%', 
+                padding: '12px', 
+                border: '1px solid #D1D5DB', 
+                borderRadius: '8px',
+                fontSize: '14px',
+                transition: 'all 0.2s ease',
+                boxSizing: 'border-box',
+                resize: 'vertical'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#1d5a78';
+                e.target.style.boxShadow = '0 0 0 3px rgba(29, 90, 120, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#D1D5DB';
+                e.target.style.boxShadow = 'none';
+              }}
             />
           </div>
 
-          <div style={{ marginTop: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+          <div style={{ marginTop: '20px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
               הערות
             </label>
             <textarea
@@ -810,169 +1033,360 @@ export default function WeddingPage() {
               value={wedding.notes}
               onChange={handleInputChange}
               placeholder="הערות נוספות על האירוע"
-              rows={3}
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+              rows={4}
+              style={{ 
+                width: '100%', 
+                padding: '12px', 
+                border: '1px solid #D1D5DB', 
+                borderRadius: '8px',
+                fontSize: '14px',
+                transition: 'all 0.2s ease',
+                boxSizing: 'border-box',
+                resize: 'vertical'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = '#1d5a78';
+                e.target.style.boxShadow = '0 0 0 3px rgba(29, 90, 120, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = '#D1D5DB';
+                e.target.style.boxShadow = 'none';
+              }}
             />
           </div>
 
                      {/* Participants Section */}
-           <div style={{ marginTop: '20px', padding: '15px', background: '#f5f5f5', borderRadius: '4px' }}>
-             <h4 style={{ margin: '0 0 15px 0' }}>שותפים לאירוע</h4>
-             <div style={{ 
-               marginBottom: '15px', 
-               padding: '8px 12px', 
-               background: '#e3f2fd', 
-               borderRadius: '4px', 
-               border: '1px solid #2196F3',
-               fontSize: '12px',
-               color: '#1976d2'
-             }}>
-               💡 <strong>טיפ:</strong> לחץ על כפתור "🗑️ הסר" כדי להסיר שותף מהאירוע. פעולה זו תדרוש אישור.
+           <div style={{
+             background: '#FFFFFF',
+             padding: '25px',
+             borderRadius: '12px',
+             border: '1px solid #CBD5E1',
+             marginBottom: '20px',
+             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+           }}>
+             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+               <div style={{
+                 width: '50px',
+                 height: '50px',
+                 borderRadius: '50%',
+                 background: 'linear-gradient(135deg, #EDF8F4, #FCF3F7)',
+                 display: 'flex',
+                 alignItems: 'center',
+                 justifyContent: 'center',
+                 marginLeft: '15px'
+               }}>
+                 <span style={{ fontSize: '24px' }}>👥</span>
+               </div>
+               <div style={{ flex: 1 }}>
+                 <h3 style={{ margin: '0', color: '#0F172A' }}>שותפים לאירוע</h3>
+                 <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
+                   ניהול שותפים לאירוע והזמנת שותפים חדשים
+                 </p>
+               </div>
              </div>
-        <div style={{ marginBottom: '12px', display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={async () => {
-              const token = localStorage.getItem('token');
-              if (!token || !wedding._id) return;
-              try {
-                setCreatingInvite(true);
-                const res = await fetch('/api/weddings/invites', { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
-                if (!res.ok) throw new Error('failed');
-                const data = await res.json();
-                const url = `${window.location.origin}/invite/${data.token}`;
-                setInviteLink(url);
-              } catch (e) {
-                alert('שגיאה ביצירת קישור הזמנה');
-              } finally {
-                setCreatingInvite(false);
-              }
-            }}
-            disabled={creatingInvite || !wedding._id}
-          className='button'
-          >
-            {creatingInvite ? 'יוצר קישור...' : 'צור קישור להזמנת שותף'}
-          </button>
-          {inviteLink && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <input className="input" style={{ width: 320 }} readOnly value={inviteLink} />
-              <button className="btn" onClick={() => { navigator.clipboard.writeText(inviteLink); }}>העתק</button>
-            </div>
-          )}
-        </div>
-            
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', alignItems: 'center' }}>
-              <select
-                value={selectedParticipantId}
-                onChange={(e) => setSelectedParticipantId(e.target.value)}
-                style={{ 
-                  flex: 1, 
-                  padding: '8px', 
-                  border: '1px solid #ddd', 
-                  borderRadius: '4px' 
-                }}
-              >
-                <option value="">בחר שותף להוספה</option>
-                {allUsers
-                  .filter((u) => !wedding.participants.some((p) => p.id === u.id))
-                  .map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.name}
-                    </option>
-                  ))}
-              </select>
-              <button
-                type="button"
-                onClick={handleAddParticipant}
-                disabled={!selectedParticipantId}
-                style={{ 
-                  padding: '8px 16px', 
-                  border: '1px solid #a7d6ba', 
-                  background: selectedParticipantId ? '#3b82f6' : '#ccc',
-                  color: '#333',
-                  borderRadius: '4px',
-                  cursor: selectedParticipantId ? 'pointer' : 'not-allowed'
-                }}
-              >
-                הוסף שותף
-              </button>
-            </div>
 
-            {wedding.participants.length > 0 ? (
-              <div style={{ display: 'grid', gap: '8px' }}>
-                                 {wedding.participants.map((p) => (
-                   <div
-                     key={p.id}
-                     style={{
-                       display: 'flex',
-                       justifyContent: 'space-between',
-                       alignItems: 'center',
-                       padding: '12px 16px',
-                       background: 'white',
-                       border: '1px solid #e5e7eb',
-                       borderRadius: '8px',
-                       boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
-                     }}
-                   >
-                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                       <div style={{
-                         width: '32px',
-                         height: '32px',
-                         borderRadius: '50%',
-                         background: '#3b82f6',
-                         color: 'white',
-                         display: 'flex',
-                         alignItems: 'center',
-                         justifyContent: 'center',
-                         fontSize: '14px',
-                         fontWeight: 'bold'
-                       }}>
-                         {p.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                       </div>
-                       <span style={{ fontWeight: 'bold', color: '#1f2937' }}>{p.name}</span>
-                     </div>
-                                         <button
-                       type="button"
-                       onClick={() => handleRemoveParticipant(p.id)}
+          
+
+             {/* Invite Link Section */}
+             <div style={{ marginBottom: '20px', padding: '15px', background: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+               <h4 style={{ margin: '0 0 15px 0', color: '#1d5a78', fontSize: '16px' }}>קישור הזמנה</h4>
+               <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                 <button
+                   type="button"
+                   onClick={async () => {
+                     const token = localStorage.getItem('token');
+                     if (!token || !wedding._id) return;
+                     try {
+                       setCreatingInvite(true);
+                       const res = await fetch('/api/weddings/invites', { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+                       if (!res.ok) throw new Error('failed');
+                       const data = await res.json();
+                       const url = `${window.location.origin}/invite/${data.token}`;
+                       setInviteLink(url);
+                     } catch (e) {
+                       alert('שגיאה ביצירת קישור הזמנה');
+                     } finally {
+                       setCreatingInvite(false);
+                     }
+                   }}
+                   disabled={creatingInvite || !wedding._id}
+                   style={{
+                     padding: '10px 20px',
+                     background: creatingInvite || !wedding._id ? '#e5e7eb' : '#1d5a78',
+                     color: 'white',
+                     border: 'none',
+                     borderRadius: '8px',
+                     cursor: creatingInvite || !wedding._id ? 'not-allowed' : 'pointer',
+                     fontSize: '14px',
+                     fontWeight: '600',
+                     transition: 'all 0.2s ease'
+                   }}
+                   onMouseEnter={(e) => {
+                     if (!creatingInvite && wedding._id) {
+                       e.currentTarget.style.background = '#164e63';
+                       e.currentTarget.style.transform = 'translateY(-1px)';
+                     }
+                   }}
+                   onMouseLeave={(e) => {
+                     if (!creatingInvite && wedding._id) {
+                       e.currentTarget.style.background = '#1d5a78';
+                       e.currentTarget.style.transform = 'translateY(0)';
+                     }
+                   }}
+                 >
+                   {creatingInvite ? 'יוצר קישור...' : '🔗 צור קישור להזמנת שותף'}
+                 </button>
+                 {inviteLink && (
+                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: '300px' }}>
+                     <input 
                        style={{ 
-                         padding: '6px 12px', 
-                         border: '1px solid #ef4444', 
-                         background: '#ef4444',
+                         flex: 1, 
+                         padding: '10px', 
+                         border: '1px solid #d1d5db', 
+                         borderRadius: '6px',
+                         fontSize: '14px',
+                         background: '#f9fafb'
+                       }} 
+                       readOnly 
+                       value={inviteLink} 
+                     />
+                     <button 
+                       style={{
+                         padding: '10px 16px',
+                         background: '#10b981',
                          color: 'white',
+                         border: 'none',
                          borderRadius: '6px',
                          cursor: 'pointer',
-                         fontSize: '12px',
-                         fontWeight: 'bold',
+                         fontSize: '14px',
+                         fontWeight: '600',
                          transition: 'all 0.2s ease'
                        }}
                        onMouseEnter={(e) => {
-                         e.currentTarget.style.backgroundColor = '#dc2626';
-                         e.currentTarget.style.borderColor = '#dc2626';
+                         e.currentTarget.style.background = '#059669';
+                         e.currentTarget.style.transform = 'translateY(-1px)';
                        }}
                        onMouseLeave={(e) => {
-                         e.currentTarget.style.backgroundColor = '#ef4444';
-                         e.currentTarget.style.borderColor = '#ef4444';
+                         e.currentTarget.style.background = '#10b981';
+                         e.currentTarget.style.transform = 'translateY(0)';
+                       }}
+                       onClick={() => { 
+                         navigator.clipboard.writeText(inviteLink); 
+                         alert('הקישור הועתק ללוח!');
                        }}
                      >
-                       🗑️ הסר
+                       📋 העתק
                      </button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div style={{ textAlign: 'center', color: '#666', fontStyle: 'italic' }}>
-                אין שותפים לאירוע עדיין
-              </div>
-            )}
-          </div>
+                   </div>
+                 )}
+               </div>
+             </div>
+            
+             {/* Add Participant Section */}
+             <div style={{ marginBottom: '20px' }}>
+               <h4 style={{ margin: '0 0 15px 0', color: '#1d5a78', fontSize: '16px' }}>הוסף שותף חדש</h4>
+               <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                 <select
+                   value={selectedParticipantId}
+                   onChange={(e) => setSelectedParticipantId(e.target.value)}
+                   style={{ 
+                     flex: 1, 
+                     padding: '12px', 
+                     border: '1px solid #d1d5db', 
+                     borderRadius: '8px',
+                     fontSize: '14px',
+                     background: 'white'
+                   }}
+                 >
+                   <option value="">בחר שותף להוספה</option>
+                   {allUsers
+                     .filter((u) => !wedding.participants.some((p) => p.id === u.id))
+                     .map((u) => (
+                       <option key={u.id} value={u.id}>
+                         {u.name}
+                       </option>
+                     ))}
+                 </select>
+                 <button
+                   type="button"
+                   onClick={handleAddParticipant}
+                   disabled={!selectedParticipantId}
+                   style={{ 
+                     padding: '12px 20px', 
+                     background: selectedParticipantId ? '#10b981' : '#e5e7eb',
+                     color: selectedParticipantId ? 'white' : '#9ca3af',
+                     border: 'none',
+                     borderRadius: '8px',
+                     cursor: selectedParticipantId ? 'pointer' : 'not-allowed',
+                     fontSize: '14px',
+                     fontWeight: '600',
+                     transition: 'all 0.2s ease'
+                   }}
+                   onMouseEnter={(e) => {
+                     if (selectedParticipantId) {
+                       e.currentTarget.style.background = '#059669';
+                       e.currentTarget.style.transform = 'translateY(-1px)';
+                     }
+                   }}
+                   onMouseLeave={(e) => {
+                     if (selectedParticipantId) {
+                       e.currentTarget.style.background = '#10b981';
+                       e.currentTarget.style.transform = 'translateY(0)';
+                     }
+                   }}
+                 >
+                   ➕ הוסף שותף
+                 </button>
+               </div>
+             </div>
 
-          <div style={{ marginTop: '20px', textAlign: 'center', display: 'flex', gap: '15px', justifyContent: 'center' }}>
+             {/* Participants List */}
+             <div>
+               <h4 style={{ margin: '0 0 15px 0', color: '#1d5a78', fontSize: '16px' }}>
+                 שותפים נוכחיים ({wedding.participants.length})
+               </h4>
+               {wedding.participants.length > 0 ? (
+                 <div style={{ display: 'grid', gap: '12px' }}>
+                   {wedding.participants.map((p) => (
+                     <div
+                       key={p.id}
+                       style={{
+                         display: 'flex',
+                         justifyContent: 'space-between',
+                         alignItems: 'center',
+                         padding: '16px 20px',
+                         background: '#f8fafc',
+                         border: '1px solid #e2e8f0',
+                         borderRadius: '12px',
+                         boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                         transition: 'all 0.2s ease'
+                       }}
+                       onMouseEnter={(e) => {
+                         e.currentTarget.style.transform = 'translateY(-2px)';
+                         e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                       }}
+                       onMouseLeave={(e) => {
+                         e.currentTarget.style.transform = 'translateY(0)';
+                         e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
+                       }}
+                     >
+                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                         <div style={{
+                           width: '40px',
+                           height: '40px',
+                           borderRadius: '50%',
+                           background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+                           color: 'white',
+                           display: 'flex',
+                           alignItems: 'center',
+                           justifyContent: 'center',
+                           fontSize: '16px',
+                           fontWeight: 'bold'
+                         }}>
+                           {p.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                         </div>
+                         <span style={{ fontWeight: '600', color: '#1f2937', fontSize: '16px' }}>{p.name}</span>
+                       </div>
+                       <button
+                         type="button"
+                         onClick={() => handleRemoveParticipant(p.id)}
+                         style={{ 
+                           padding: '8px 16px', 
+                           border: '1px solid #ef4444', 
+                           background: '#ef4444',
+                           color: 'white',
+                           borderRadius: '8px',
+                           cursor: 'pointer',
+                           fontSize: '14px',
+                           fontWeight: '600',
+                           transition: 'all 0.2s ease'
+                         }}
+                         onMouseEnter={(e) => {
+                           e.currentTarget.style.backgroundColor = '#dc2626';
+                           e.currentTarget.style.borderColor = '#dc2626';
+                           e.currentTarget.style.transform = 'translateY(-1px)';
+                         }}
+                         onMouseLeave={(e) => {
+                           e.currentTarget.style.backgroundColor = '#ef4444';
+                           e.currentTarget.style.borderColor = '#ef4444';
+                           e.currentTarget.style.transform = 'translateY(0)';
+                         }}
+                       >
+                         🗑️ הסר
+                       </button>
+                     </div>
+                   ))}
+                 </div>
+               ) : (
+                 <div style={{ 
+                   textAlign: 'center', 
+                   color: '#6b7280', 
+                   fontStyle: 'italic',
+                   padding: '40px 20px',
+                   background: '#f9fafb',
+                   borderRadius: '8px',
+                   border: '1px dashed #d1d5db'
+                 }}>
+                   אין שותפים לאירוע עדיין
+                 </div>
+               )}
+             </div>
+           </div>
+
+          <div style={{ 
+            marginTop: '30px', 
+            padding: '20px',
+            background: '#f8fafc',
+            borderRadius: '12px',
+            border: '1px solid #e2e8f0',
+            display: 'flex', 
+            gap: '15px', 
+            justifyContent: 'center',
+            flexWrap: 'wrap'
+          }}>
             <button
               type="submit"
               disabled={saving}
-              className='button'
+              style={{
+                padding: '14px 28px',
+                background: saving ? '#e5e7eb' : '#1d5a78',
+                color: 'white',
+                border: 'none',
+                borderRadius: '10px',
+                cursor: saving ? 'not-allowed' : 'pointer',
+                fontSize: '16px',
+                fontWeight: '600',
+                transition: 'all 0.3s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: saving ? 'none' : '0 4px 12px rgba(29, 90, 120, 0.3)'
+              }}
+              onMouseEnter={(e) => {
+                if (!saving) {
+                  e.currentTarget.style.background = '#164e63';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(29, 90, 120, 0.4)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!saving) {
+                  e.currentTarget.style.background = '#1d5a78';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(29, 90, 120, 0.3)';
+                }
+              }}
             >
-              {saving ? 'שומר...' : 'שמור אירוע'}
+              {saving ? (
+                <>
+                  <span style={{ animation: 'spin 1s linear infinite' }}>⟳</span>
+                  שומר...
+                </>
+              ) : (
+                <>
+                  💾 שמור אירוע
+                </>
+              )}
             </button>
             
             {wedding._id && (
@@ -980,21 +1394,29 @@ export default function WeddingPage() {
                 type="button"
                 onClick={deleteWedding}
                 style={{
-                  padding: '12px 24px',
+                  padding: '14px 28px',
                   backgroundColor: '#ef4444',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '8px',
+                  borderRadius: '10px',
                   cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  transition: 'all 0.2s ease'
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  transition: 'all 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#dc2626';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(239, 68, 68, 0.4)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = '#ef4444';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.3)';
                 }}
               >
                 🗑️ מחק אירוע
@@ -1005,24 +1427,69 @@ export default function WeddingPage() {
       </div>
 
       {/* Meal Pricing Section */}
-      <div className="card">
-        <h3 style={{ margin: '0 0 20px 0', color: '#e65100' }}>
-          🍽️ מחירי מנות - חישוב עלויות האירוע
-        </h3>
+      <div style={{
+        background: '#FFFFFF',
+        padding: '25px',
+        borderRadius: '12px',
+        border: '1px solid #CBD5E1',
+        marginBottom: '20px',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+          <div style={{
+            width: '50px',
+            height: '50px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #f0f9ff, #e0f2fe)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginLeft: '15px'
+          }}>
+            <span style={{ fontSize: '24px' }}>🍽️</span>
+          </div>
+          <div style={{ flex: 1 }}>
+            <h3 style={{ margin: '0', color: '#0F172A' }}>מחירי מנות - חישוב עלויות האירוע</h3>
+            <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
+              הגדרת מחירי מנות וחישוב עלויות האירוע
+            </p>
+          </div>
+        </div>
         
         <div style={{ 
-          background: '#f5f5f5',
-          padding: '15px', 
-          borderRadius: '4px', 
+          background: '#f8fafc',
+          padding: '20px', 
+          borderRadius: '12px', 
           marginBottom: '20px',
-       
+          border: '1px solid #e2e8f0'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-            <h4 style={{ margin: '0', color: '#333' }}>הגדרות מחירים</h4>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h4 style={{ margin: '0', color: '#1d5a78', fontSize: '18px', fontWeight: '600' }}>הגדרות מחירים</h4>
             <button
               type="button"
               onClick={() => setIsEditingMealPricing(!isEditingMealPricing)}
-              className='button'
+              style={{
+                padding: '10px 20px',
+                background: isEditingMealPricing ? '#ef4444' : '#1d5a78',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '600',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = isEditingMealPricing ? '#dc2626' : '#164e63';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = isEditingMealPricing ? '#ef4444' : '#1d5a78';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
             >
               {isEditingMealPricing ? '❌ ביטול עריכה' : '✏️ ערוך הגדרות'}
             </button>
@@ -1031,42 +1498,40 @@ export default function WeddingPage() {
           {/* Auto-saving indicator */}
           {autoSaving && (
             <div style={{ 
-              marginBottom: '15px', 
-              padding: '8px 12px', 
-              background: '#e3f2fd', 
-              borderRadius: '4px', 
-           
+              marginBottom: '20px', 
+              padding: '12px 16px', 
+              background: '#f0f9ff', 
+              borderRadius: '8px', 
+              border: '1px solid #0ea5e9',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px'
+              gap: '10px'
             }}>
               <div style={{ 
-                width: '12px', 
-                height: '12px', 
+                width: '16px', 
+                height: '16px', 
                 borderRadius: '50%', 
-                border: '2px solid #2196F3', 
+                border: '2px solid #0ea5e9', 
                 borderTop: '2px solid transparent',
                 animation: 'spin 1s linear infinite'
               }}></div>
-              <span style={{ color: '#1976d2', fontSize: '14px', fontWeight: 'bold' }}>
+              <span style={{ color: '#0c4a6e', fontSize: '14px', fontWeight: '600' }}>
                 💾 שומר שינויים אוטומטית...
               </span>
             </div>
           )}
           
           <div style={{ 
-            marginBottom: '15px', 
-            padding: '8px 12px', 
-            background: '#f2ebe2', 
-            borderRadius: '4px', 
-            border: '1px solid #3b82f6',
+            marginBottom: '20px', 
+            padding: '12px 16px', 
+            background: '#fef3c7', 
+            borderRadius: '8px', 
+         
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center'
           }}>
-            <div style={{ fontSize: '12px', color: '#1d5a78' }}>
-              <strong>💡 טיפ:</strong> השינויים נשמרים אוטומטית תוך 2 שניות מהשינוי האחרון
-            </div>
+       
             <button
               type="button"
               onClick={() => {
@@ -1077,26 +1542,54 @@ export default function WeddingPage() {
                 });
               }}
               disabled={saving}
-            className='button'
+              style={{
+                padding: '8px 16px',
+                background: saving ? '#e5e7eb' : '#f59e0b',
+                color: saving ? '#9ca3af' : 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: saving ? 'not-allowed' : 'pointer',
+                fontSize: '14px',
+                fontWeight: '600',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                if (!saving) {
+                  e.currentTarget.style.background = '#d97706';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!saving) {
+                  e.currentTarget.style.background = '#f59e0b';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }
+              }}
             >
-              {saving ? 'שומר...' : '💾 שמור '}
+              {saving ? 'שומר...' : '💾 שמור עכשיו'}
             </button>
           </div>
           
           {!isEditingMealPricing && (
-            <div className="card">
-              <div style={{ fontSize: '14px', color: '#1d5a78', fontWeight: 'bold' }}>
+            <div style={{
+              padding: '15px',
+              background: '#f8fafc',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0',
+              marginBottom: '20px'
+            }}>
+              <div style={{ fontSize: '14px', color: '#1d5a78', fontWeight: '600', marginBottom: '5px' }}>
                 🔒 השדות נעולים לעריכה
               </div>
-              <div style={{ fontSize: '12px', color: '#1d5a78', marginTop: '5px' }}>
+              <div style={{ fontSize: '12px', color: '#64748b' }}>
                 לחץ על "✏️ ערוך הגדרות" כדי לאפשר עריכה
               </div>
             </div>
           )}
           
-          <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+          <div style={{ display: 'grid', gap: '20px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#374151', fontSize: '14px' }}>
                 מחיר מנה (₪)
               </label>
               <input
@@ -1104,15 +1597,28 @@ export default function WeddingPage() {
                 min="0"
                 value={wedding.mealPricing?.basePrice || 0}
                 onChange={(e) => handleMealPricingChange('basePrice', Number(e.target.value))}
-               
+                placeholder="הזינו מחיר מנה"
                 disabled={!isEditingMealPricing}
                 style={{ 
                   width: '100%', 
-                  padding: '8px', 
-                  border: '1px solid #ddd', 
-                  borderRadius: '4px',
-                  backgroundColor: isEditingMealPricing ? 'white' : '#f5f5f5',
-                  cursor: isEditingMealPricing ? 'text' : 'not-allowed'
+                  padding: '12px', 
+                  border: '1px solid #d1d5db', 
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  backgroundColor: isEditingMealPricing ? 'white' : '#f9fafb',
+                  cursor: isEditingMealPricing ? 'text' : 'not-allowed',
+                  transition: 'all 0.2s ease',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => {
+                  if (isEditingMealPricing) {
+                    e.target.style.borderColor = '#1d5a78';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(29, 90, 120, 0.1)';
+                  }
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#d1d5db';
+                  e.target.style.boxShadow = 'none';
                 }}
               />
             </div>
