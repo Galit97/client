@@ -9,9 +9,11 @@ import {
   committedOnly,
   formatILS,
   formatNumber,
+} from '../lib/budgetTypes';
+import type {
   BudgetSettings,
   Supplier,
-} from '../lib/budgetMaster';
+} from '../lib/budgetTypes';
 
 // אייקון "טבעת ₪" קטן
 const BudgetRingShekel: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (

@@ -555,7 +555,7 @@ export default function GuestListPage() {
     } catch (error) {
       console.error("Error updating guest:", error);
       console.log("=== END CLIENT SIDE UPDATE DEBUG ===");
-      alert("שגיאה בעדכון מוזמן");
+              console.log("שגיאה בעדכון מוזמן");
     }
   }
 
@@ -1206,14 +1206,14 @@ export default function GuestListPage() {
       ) : (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
           gap: '20px'
         }}>
           {filteredGuests.map(guest => (
             <div key={guest._id} style={{
               background: 'white',
               borderRadius: '12px',
-              padding: '20px',
+              padding: '8px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               border: '1px solid #f3f4f6'
             }}>
@@ -1305,14 +1305,14 @@ export default function GuestListPage() {
                               ) : (
                 <>
                   {/* Guest Header */}
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '15px',
-                    paddingBottom: '15px',
-                    borderBottom: '1px solid #f3f4f6'
-                  }}>
+                                     <div style={{
+                     display: 'flex',
+                     justifyContent: 'space-between',
+                     alignItems: 'center',
+                     marginBottom: '8px',
+                     paddingBottom: '8px',
+                     borderBottom: '1px solid #f3f4f6'
+                   }}>
                     <div>
                       <div style={{
                         fontSize: '18px',
@@ -1376,9 +1376,9 @@ export default function GuestListPage() {
                   </div>
 
                   {/* Guest Details */}
-                  <div style={{ display: 'grid', gap: '12px' }}>
+                                     <div style={{ display: 'grid', gap: '6px' }}>
                     {/* Contact Info */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                       <div>
                         <div style={{
                           fontSize: '12px',
@@ -1413,7 +1413,7 @@ export default function GuestListPage() {
                     </div>
 
                     {/* Event Details */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                       <div>
                         <div style={{
                           fontSize: '12px',
@@ -1447,7 +1447,7 @@ export default function GuestListPage() {
                     </div>
 
                     {/* Group and Side */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                       <div>
                         <div style={{
                           fontSize: '12px',
@@ -1482,11 +1482,11 @@ export default function GuestListPage() {
 
                     {/* Status */}
                     <div>
-                      <div style={{
-                        fontSize: '12px',
-                        color: '#6b7280',
-                        marginBottom: '8px'
-                      }}>
+                                             <div style={{
+                         fontSize: '12px',
+                         color: '#6b7280',
+                         marginBottom: '4px'
+                       }}>
                         סטטוס
                       </div>
                       <div style={{
@@ -1532,12 +1532,12 @@ export default function GuestListPage() {
                     )}
 
                     {/* Quick Status Actions */}
-                    <div style={{
-                      display: 'flex',
-                      gap: '8px',
-                      paddingTop: '12px',
-                      borderTop: '1px solid #f3f4f6'
-                    }}>
+                                         <div style={{
+                       display: 'flex',
+                       gap: '8px',
+                       paddingTop: '6px',
+                       borderTop: '1px solid #f3f4f6'
+                     }}>
                       <button
                         onClick={() => updateStatus(guest._id, 'Invited')}
                         style={{

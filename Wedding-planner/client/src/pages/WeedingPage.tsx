@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useNotification } from "../components/Notification/NotificationContext";
 
 type Participant = {
   id: string;
@@ -69,6 +70,7 @@ const initialWedding: WeddingData = {
 };
 
 export default function WeddingPage() {
+  const { showNotification } = useNotification();
   const [searchParams] = useSearchParams();
   const weddingId = searchParams.get('weddingId');
   
@@ -322,7 +324,7 @@ export default function WeddingPage() {
     console.log("Submitting wedding form with current user:", currentUser);
 
     if (!currentUser || !currentUser._id) {
-      alert("לא מזוהה משתמש מחובר");
+      showNotification("לא מזוהה משתמש מחובר", "error");
       setSaving(false);
       return;
     }
@@ -379,7 +381,7 @@ export default function WeddingPage() {
       if (!res.ok) {
         const text = await res.text();
         console.error("❌ שגיאה בשמירת אירוע:", text);
-        alert("שגיאה בשמירת האירוע");
+        showNotification("שגיאה בשמירת האירוע", "error");
         return;
       }
 
@@ -390,12 +392,12 @@ export default function WeddingPage() {
       
       // Only show alert for manual saves, not auto-saves
       if (!autoSaving) {
-        alert("האירוע נשמר בהצלחה!");
+        showNotification("האירוע נשמר בהצלחה!", "success");
       }
     } catch (error) {
       console.error("❌ שגיאה בשמירת אירוע:", error);
       if (!autoSaving) {
-        alert("שגיאה בשמירת האירוע");
+        showNotification("שגיאה בשמירת האירוע", "error");
       }
     } finally {
       setSaving(false);
@@ -404,7 +406,7 @@ export default function WeddingPage() {
 
   async function deleteWedding() {
     if (!wedding._id) {
-      alert("לא ניתן למחוק אירוע שלא נשמר");
+      showNotification("לא ניתן למחוק אירוע שלא נשמר", "warning");
       return;
     }
 
@@ -414,7 +416,7 @@ export default function WeddingPage() {
 
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("לא מזוהה משתמש מחובר");
+      showNotification("לא מזוהה משתמש מחובר", "error");
       return;
     }
 
@@ -429,11 +431,11 @@ export default function WeddingPage() {
       if (!res.ok) {
         const errorText = await res.text();
         console.error("Error deleting wedding:", errorText);
-        alert("שגיאה במחיקת האירוע");
+        showNotification("שגיאה במחיקת האירוע", "error");
         return;
       }
 
-      alert("האירוע נמחק בהצלחה!");
+      showNotification("האירוע נמחק בהצלחה!", "success");
       // Redirect to MyWeddings page if we came from there, otherwise to dashboard
       if (weddingId) {
         window.location.href = "/dashboard?section=myWeddings";
@@ -442,7 +444,7 @@ export default function WeddingPage() {
       }
     } catch (error) {
       console.error("Error deleting wedding:", error);
-      alert("שגיאה במחיקת האירוע");
+      showNotification("שגיאה במחיקת האירוע", "error");
     }
   }
 
@@ -503,7 +505,7 @@ export default function WeddingPage() {
   function calculateMealCost() {
     if (!wedding.mealPricing) return;
 
-    const { basePrice, childDiscount, childAgeLimit, bulkThreshold, bulkPrice, bulkMaxGuests, reservePrice, reserveThreshold, reserveMaxGuests } = wedding.mealPricing;
+    const { basePrice, childDiscount, bulkThreshold, bulkPrice, bulkMaxGuests, reservePrice } = wedding.mealPricing;
     const { adultGuests, childGuests } = mealCalculation;
     const totalGuests = adultGuests + childGuests;
 
@@ -550,12 +552,7 @@ export default function WeddingPage() {
     }));
   }
 
-  function handleGuestCountChange(type: 'adult' | 'child', value: number) {
-    setMealCalculation(prev => ({
-      ...prev,
-      [type === 'adult' ? 'adultGuests' : 'childGuests']: value
-    }));
-  }
+
 
   // Recalculate when meal pricing or guest counts change
   useEffect(() => {
@@ -566,7 +563,7 @@ export default function WeddingPage() {
   function calculateMealCostByStatus() {
     if (!wedding.mealPricing) return {};
 
-    const { basePrice, childDiscount, childAgeLimit, bulkThreshold, bulkPrice, bulkMaxGuests, reservePrice, reserveThreshold, reserveMaxGuests } = wedding.mealPricing;
+    const { basePrice, bulkThreshold, bulkPrice, bulkMaxGuests, reservePrice } = wedding.mealPricing;
 
     const calculateForCount = (count: number) => {
       let totalCost = 0;
@@ -612,7 +609,7 @@ export default function WeddingPage() {
   function calculateManualMealCost() {
     if (!wedding.mealPricing) return { totalCost: 0, costPerPerson: 0, adultGuests: 0, childGuests: 0, totalGuests: 0, eventTotalCost: 0, eventCostPerPerson: 0 };
 
-    const { basePrice, childDiscount, childAgeLimit, bulkThreshold, bulkPrice, bulkMaxGuests, reservePrice, reserveThreshold, reserveMaxGuests } = wedding.mealPricing;
+    const { basePrice, childDiscount, bulkThreshold, bulkPrice, bulkMaxGuests, reservePrice } = wedding.mealPricing;
     const { adultGuests, childGuests } = manualCalculation;
     const totalGuests = adultGuests + childGuests;
 
@@ -1103,9 +1100,9 @@ export default function WeddingPage() {
                        const data = await res.json();
                        const url = `${window.location.origin}/invite/${data.token}`;
                        setInviteLink(url);
-                     } catch (e) {
-                       alert('שגיאה ביצירת קישור הזמנה');
-                     } finally {
+                                           } catch (e) {
+                        showNotification('שגיאה ביצירת קישור הזמנה', 'error');
+                      } finally {
                        setCreatingInvite(false);
                      }
                    }}
@@ -1170,10 +1167,10 @@ export default function WeddingPage() {
                          e.currentTarget.style.background = '#10b981';
                          e.currentTarget.style.transform = 'translateY(0)';
                        }}
-                       onClick={() => { 
-                         navigator.clipboard.writeText(inviteLink); 
-                         alert('הקישור הועתק ללוח!');
-                       }}
+                                               onClick={() => { 
+                          navigator.clipboard.writeText(inviteLink); 
+                          showNotification('הקישור הועתק ללוח!', 'success');
+                        }}
                      >
                        📋 העתק
                      </button>

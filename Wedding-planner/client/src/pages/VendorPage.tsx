@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
+import { useNotification } from "../components/Notification/NotificationContext";
 
 type VendorStatus = "Pending" | "Confirmed" | "Paid";
 type VendorType = "music" | "food" | "photography" | "decor" | "clothes" | "makeup_hair" | "internet_orders" | "lighting_sound" | "guest_gifts" | "venue_deposit" | "bride_dress" | "groom_suit" | "shoes" | "jewelry" | "rsvp" | "design_tables" | "bride_bouquet" | "chuppah" | "flowers" | "other";
@@ -42,6 +43,7 @@ type FilterOptions = {
 };
 
 export default function VendorsListPage() {
+  const { showNotification } = useNotification();
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [weddingId, setWeddingId] = useState<string>('');
   const [weddingData, setWeddingData] = useState<WeddingData>({ budget: 0 });
@@ -266,29 +268,24 @@ export default function VendorsListPage() {
     return filtered;
   }, [vendors, searchTerm, filters]);
 
-  const totalPrice = useMemo(() => {
-    return filteredAndSortedVendors.reduce((sum, v) => sum + v.price, 0);
-  }, [filteredAndSortedVendors]);
 
-  const totalDeposits = useMemo(() => {
-    return filteredAndSortedVendors.reduce((sum, v) => sum + (v.depositAmount || 0), 0);
-  }, [filteredAndSortedVendors]);
 
-  const remainingToPay = useMemo(() => {
-    return totalPrice - totalDeposits;
-  }, [totalPrice, totalDeposits]);
+
 
   async function addVendor(e: React.FormEvent) {
     e.preventDefault();
-    if (!newVendor.vendorName.trim()) return alert("אנא הכנס שם ספק");
+    if (!newVendor.vendorName.trim()) {
+      showNotification("אנא הכנס שם ספק", "warning");
+      return;
+    }
     if (!weddingId) {
-      alert("לא נמצא אירוע. אנא צור אירוע קודם.");
+      showNotification("לא נמצא אירוע. אנא צור אירוע קודם.", "error");
       return;
     }
 
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("לא מזוהה משתמש מחובר");
+      showNotification("לא מזוהה משתמש מחובר", "error");
       return;
     }
 
@@ -312,7 +309,7 @@ export default function VendorsListPage() {
       if (!res.ok) {
         const errorText = await res.text();
         console.error("Error adding vendor:", errorText);
-        alert("שגיאה בהוספת ספק");
+        showNotification("שגיאה בהוספת ספק", "error");
         return;
       }
 
@@ -338,7 +335,7 @@ export default function VendorsListPage() {
       }
     } catch (error) {
       console.error("Error adding vendor:", error);
-      alert("שגיאה בהוספת ספק");
+      showNotification("שגיאה בהוספת ספק", "error");
     }
   }
 
@@ -487,15 +484,7 @@ export default function VendorsListPage() {
     }
   }
 
-  function downloadFile(filename: string, originalName?: string) {
-    const url = `http://localhost:5000/uploads/${encodeURIComponent(filename)}`;
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = originalName || filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
+
 
   function viewFile(filename: string) {
     const url = `http://localhost:5000/uploads/${encodeURIComponent(filename)}`;
@@ -625,18 +614,7 @@ export default function VendorsListPage() {
     };
   };
 
-  // Calculate vendor distribution by type
-  const vendorDistribution = useMemo(() => {
-    const map = new Map<string, number>();
-    vendors.forEach(({ type, price }) => {
-      map.set(type, (map.get(type) || 0) + price);
-    });
-    
-    return Array.from(map.entries()).map(([name, value]) => ({ 
-      name: getTypeText(name as VendorType), 
-      value 
-    }));
-  }, [vendors]);
+
 
   if (loading) {
     return (
@@ -2048,7 +2026,7 @@ export default function VendorsListPage() {
                         if (filename) {
                           setNewVendor({ ...newVendor, contractFile: filename });
                         } else {
-                          alert('שגיאה בהעלאת הקובץ');
+                          showNotification('שגיאה בהעלאת הקובץ', 'error');
                         }
                       }
                     }}
@@ -2089,7 +2067,7 @@ export default function VendorsListPage() {
                         if (filename) {
                           setNewVendor({ ...newVendor, fileURL: filename });
                         } else {
-                          alert('שגיאה בהעלאת הקובץ');
+                          showNotification('שגיאה בהעלאת הקובץ', 'error');
                         }
                       }
                     }}

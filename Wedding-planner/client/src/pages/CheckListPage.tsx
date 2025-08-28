@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNotification } from '../components/Notification/NotificationContext';
 
 type ChecklistItem = {
   _id: string;
@@ -31,6 +32,7 @@ type FilterOptions = {
 };
 
 export default function CheckListPage() {
+  const { showNotification } = useNotification();
   const [items, setItems] = useState<ChecklistItem[]>([]);
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -206,15 +208,18 @@ export default function CheckListPage() {
 
   async function addTask(e: React.FormEvent) {
     e.preventDefault();
-    if (!newTask.trim()) return alert('יש להזין משימה');
+    if (!newTask.trim()) {
+      showNotification('יש להזין משימה', 'warning');
+      return;
+    }
     if (!weddingId) {
-      alert("לא נמצא אירוע. אנא צור אירוע קודם.");
+      showNotification("לא נמצא אירוע. אנא צור אירוע קודם.", 'error');
       return;
     }
 
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("לא מזוהה משתמש מחובר");
+      showNotification("לא מזוהה משתמש מחובר", 'error');
       return;
     }
 
@@ -240,7 +245,7 @@ export default function CheckListPage() {
     if (!res.ok) {
         const errorText = await res.text();
         console.error("Error creating task:", errorText);
-      alert('שגיאה ביצירת המשימה');
+      showNotification('שגיאה ביצירת המשימה', 'error');
       return;
     }
 
@@ -254,7 +259,7 @@ export default function CheckListPage() {
     setNewRelatedRoleId('');
     } catch (error) {
       console.error("Error creating task:", error);
-      alert('שגיאה ביצירת המשימה');
+      showNotification('שגיאה ביצירת המשימה', 'error');
     }
   }
 

@@ -85,7 +85,6 @@ type WeddingData = {
 const BudgetPage: React.FC = () => {
   const [budget, setBudget] = useState<BudgetSettings | null>(null);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
-  const [vendors, setVendors] = useState<Vendor[]>([]);
   const [loading, setLoading] = useState(true);
   const [weddingData, setWeddingData] = useState<WeddingData>({ budget: 0 });
   
@@ -97,26 +96,6 @@ const BudgetPage: React.FC = () => {
 
   // Add state for budget edit popup
   const [showBudgetEdit, setShowBudgetEdit] = useState(false);
-  const [budgetForm, setBudgetForm] = useState<BudgetSettings>({
-    guestsMin: 50,
-    guestsMax: 150,
-    giftAvg: 500,
-    savePercent: 10,
-    mode: 'ניצמד'
-  });
-
-  // Update budgetForm when budget changes
-  useEffect(() => {
-    if (budget) {
-      setBudgetForm(budget);
-      console.log("Budget form updated with:", budget);
-      console.log("Budget guests data:", {
-        guestsMin: budget.guestsMin,
-        guestsMax: budget.guestsMax,
-        guestsExact: budget.guestsExact
-      });
-    }
-  }, [budget]);
 
   const fetchData = async () => {
     const token = localStorage.getItem("token");
@@ -195,10 +174,9 @@ const BudgetPage: React.FC = () => {
       const vendorsRes = await fetch("/api/vendors", {
         headers: { Authorization: `Bearer ${token}` }
       });
-      if (vendorsRes.ok) {
-        const vendorsData = await vendorsRes.json();
-        setVendors(vendorsData);
-        console.log("Vendors data:", vendorsData);
+              if (vendorsRes.ok) {
+          const vendorsData = await vendorsRes.json();
+          console.log("Vendors data:", vendorsData);
         
         // Translate vendor types to Hebrew
         const translateVendorType = (type: string): string => {
@@ -308,64 +286,7 @@ const BudgetPage: React.FC = () => {
     }, 2000); // Increased delay to ensure data is fully saved
   };
 
-  const handleRefreshData = () => {
-    console.log("Manual refresh requested...");
-    fetchData();
-  };
 
-  const handleSaveBudget = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
-      console.log("Saving budget settings:", budgetForm);
-
-      const requestBody = {
-        guestsMin: budgetForm.guestsMin,
-        guestsMax: budgetForm.guestsMax,
-        guestsExact: budgetForm.guestsExact,
-        giftAvg: budgetForm.giftAvg,
-        savePercent: budgetForm.savePercent,
-        budgetMode: budgetForm.mode,
-      };
-
-      console.log("Request body:", requestBody);
-
-      const response = await fetch("/api/weddings/owner", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      console.log("Response status:", response.status);
-      console.log("Response headers:", response.headers);
-
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log("Budget saved successfully! Response:", responseData);
-        setBudget(budgetForm);
-        setShowBudgetEdit(false);
-        
-        // Refresh wedding data
-        const weddingRes = await fetch("/api/weddings/owner", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (weddingRes.ok) {
-          const wedding = await weddingRes.json();
-          setWeddingData(wedding);
-          console.log("Wedding data refreshed:", wedding);
-        }
-      } else {
-        const errorText = await response.text();
-        console.error("Failed to save budget:", response.status, response.statusText, errorText);
-      }
-    } catch (error) {
-      console.error("Error saving budget:", error);
-    }
-  };
 
   const handleGoToSuppliers = () => {
     // Navigate to suppliers - you can replace this with your routing logic
@@ -543,7 +464,7 @@ const BudgetPage: React.FC = () => {
   const calculateMealCosts = (guestCount: number) => {
     if (!weddingData.mealPricing || !guestCount) return 0;
     
-    const { basePrice, childDiscount, childAgeLimit } = weddingData.mealPricing;
+    const { basePrice, childDiscount } = weddingData.mealPricing;
     // Assume 20% are children for calculation
     const childGuests = Math.round(guestCount * 0.2);
     const adultGuests = guestCount - childGuests;
@@ -555,8 +476,7 @@ const BudgetPage: React.FC = () => {
   };
 
   // Get expected guest count from budget settings
-  const expectedGuests = budget?.guestsExact || budget?.guestsMax || 150;
-  const mealCosts = calculateMealCosts(expectedGuests);
+
 
   // חישוב תמצית התקציב (יעדים) ונתוני התחייבויות
   const summary = calcBudget(budget, suppliers);

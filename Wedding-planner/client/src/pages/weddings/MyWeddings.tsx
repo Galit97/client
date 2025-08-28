@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type WeddingLite = { _id: string; weddingName?: string; weddingDate?: string };
 

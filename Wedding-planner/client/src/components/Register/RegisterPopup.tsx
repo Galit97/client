@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../../api/authService';
+import { useNotification } from '../Notification/NotificationContext';
 
 type Props = {
   isOpen: boolean;
@@ -11,6 +12,7 @@ type Props = {
 
 export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLogin }: Props) {
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
 
   const [form, setForm] = useState({
     firstName: '',
@@ -44,7 +46,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
     e.preventDefault();
 
     if (form.password !== form.confirmPassword) {
-      alert('הסיסמאות אינן תואמות');
+      showNotification('הסיסמאות אינן תואמות', 'error');
       return;
     }
 
@@ -65,7 +67,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
       onSuccess();
       navigate('/dashboard'); 
     } catch (err: any) {
-      alert(err.message);
+      showNotification(err.message, 'error');
     } finally {
       setIsLoading(false);
     }
@@ -76,19 +78,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
     onSwitchToLogin();
   };
 
-  const getRoleText = (role: string) => {
-    const roleMap: { [key: string]: string } = {
-      'Bride': 'כלה',
-      'Groom': 'חתן',
-      'MotherOfBride': 'אמא של הכלה',
-      'MotherOfGroom': 'אמא של החתן',
-      'FatherOfBride': 'אבא של הכלה',
-      'FatherOfGroom': 'אבא של החתן',
-      'Planner': 'מפיק',
-      'Other': 'אחר'
-    };
-    return roleMap[role] || role;
-  };
+
 
   return (
     <div 

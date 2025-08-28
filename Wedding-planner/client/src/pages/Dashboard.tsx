@@ -92,7 +92,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     seconds: 0
   });
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
 
 
@@ -104,7 +103,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     if (!token) return;
 
     try {
-      setIsRefreshing(true);
       
       // Fetch wedding data
       const weddingRes = await fetch(apiUrl("/api/weddings/owner"), {
@@ -188,7 +186,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
-      setIsRefreshing(false);
       setLoading(false);
     }
   }, []);
@@ -329,8 +326,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const totalTasks = tasks.length;
   
   const confirmedVendors = vendors.filter(vendor => vendor.status === 'Confirmed').length;
-  const totalVendors = vendors.length;
-  const vendorProgress = totalVendors > 0 ? (confirmedVendors / totalVendors) * 100 : 0;
 
   // Calculate total guests including all people they're bringing
   const totalReservedPlaces = guests.reduce((sum, guest) => {
@@ -342,27 +337,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const guestProgress = totalGuests > 0 ? (confirmedGuests / totalGuests) * 100 : 0;
   
   // Calculate overall progress including checklist, vendors, guests, and recent registrations
-  const totalItems = totalTasks + totalVendors + totalGuests;
-  const completedItems = completedTasks + confirmedVendors + confirmedGuests;
-  const taskProgress = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
-
-  // Upcoming tasks from checklist (not completed)
-  const upcomingTasks = tasks
-    .filter(task => !task.done)
-    .sort((a, b) => {
-      // Sort by due date first
-      if (a.dueDate && b.dueDate) {
-        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-      }
-      
-      // Then by creation date
-      if (a.createdAt && b.createdAt) {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      }
-      
-      return 0;
-    })
-    .slice(0, 5);
 
   // Recent activities (simulated - in real app this would come from activity log)
   const recentActivities: Activity[] = [
@@ -555,7 +529,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
       });
 
       if (response.ok) {
-        const newWedding = await response.json();
+        await response.json();
         setWeddingData(prev => prev ? {
           ...prev,
           weddingDate: selectedDate,

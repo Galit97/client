@@ -2,8 +2,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { loginUser } from '../api/authService'
 import RegisterPopup from '../components/Register/RegisterPopup'
+import { useNotification } from '../components/Notification/NotificationContext'
 
 export default function FirstPage() {
+  const { showNotification } = useNotification();
   const [registerOpen, setRegisterOpen] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -32,7 +34,7 @@ export default function FirstPage() {
 
   const handleForgotPassword = async () => {
     if (!email) {
-      alert('אנא הכנס את האימייל שלך תחילה')
+      showNotification('אנא הכנס את האימייל שלך תחילה', 'warning')
       return
     }
 
@@ -48,18 +50,18 @@ export default function FirstPage() {
         const result = await response.json()
         
         if (result.emailError) {
-          alert(`סיסמה זמנית נוצרה: ${result.tempPassword}\n\n${result.note}`)
+          showNotification(`סיסמה זמנית נוצרה: ${result.tempPassword}\n\n${result.note}`, 'success')
           setPassword(result.tempPassword)
         } else {
-          alert(`${result.message}\n\n${result.note}`)
+          showNotification(`${result.message}\n\n${result.note}`, 'success')
         }
       } else {
         const error = await response.json()
-        alert('שגיאה: ' + error.message)
+        showNotification('שגיאה: ' + error.message, 'error')
       }
     } catch (error) {
       console.error('Error:', error)
-      alert('שגיאה בשחזור סיסמה')
+      showNotification('שגיאה בשחזור סיסמה', 'error')
     } finally {
       setForgotPasswordLoading(false)
     }

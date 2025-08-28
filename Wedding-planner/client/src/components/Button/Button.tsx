@@ -110,11 +110,11 @@ const Button: React.FC<ButtonProps> = ({
 
   const getStyles = () => {
     const base = { ...baseStyles, ...sizeStyles[size] };
-    const variant = variantStyles[disabled ? 'disabled' : variant];
+    const selectedVariant = variantStyles[disabled ? 'disabled' : variant];
     
     return {
       ...base,
-      ...variant,
+      ...selectedVariant,
     };
   };
 

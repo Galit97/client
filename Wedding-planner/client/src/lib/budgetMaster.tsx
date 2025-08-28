@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useNotification } from "../components/Notification/NotificationContext";
 
 interface BudgetMasterProps {
   onClose?: () => void;
@@ -8,6 +9,7 @@ interface BudgetMasterProps {
 
 export default function BudgetMaster({ onClose }: BudgetMasterProps) {
   console.log("BudgetMaster component loaded");
+  const { showNotification } = useNotification();
   const [guestsMin, setGuestsMin] = useState(50);
   const [guestsMax, setGuestsMax] = useState(150);
   const [guestsExact, setGuestsExact] = useState<number | undefined>(undefined);
@@ -142,7 +144,7 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("אין הרשאת גישה");
+        showNotification("אין הרשאת גישה", "error");
         return;
       }
 
@@ -209,7 +211,7 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
 
        if (!getWeddingResponse.ok) {
          console.error("Failed to get wedding data:", getWeddingResponse.status);
-         alert("שגיאה בקבלת נתוני החתונה");
+         showNotification("שגיאה בקבלת נתוני החתונה", "error");
          return;
        }
 
@@ -281,7 +283,7 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
          if (target === 'flexible') {
            alertMessage += `\nכיס אישי: ₪${personalBudget.toLocaleString()}`;
          }
-         alert(alertMessage);
+         showNotification(alertMessage, "success");
         
         // Always close popup and refresh
         if (onClose) {
@@ -305,16 +307,17 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
           statusText: response.statusText,
           errorText: errorText
         });
-        alert(`שגיאה בשמירת התקציב: ${response.status} ${response.statusText}\n\nנסה שוב או פנה לתמיכה.`);
+        showNotification(`שגיאה בשמירת התקציב: ${response.status} ${response.statusText}\n\nנסה שוב או פנה לתמיכה.`, "error");
       }
     } catch (error) {
       console.error("Error saving budget:", error);
+      const errorObj = error as Error;
       console.error("Error details:", {
-        name: error.name,
-        message: error.message,
-        stack: error.stack
+        name: errorObj.name,
+        message: errorObj.message,
+        stack: errorObj.stack
       });
-      alert(`שגיאה בשמירת התקציב: ${error.message || 'שגיאה לא ידועה'}\n\nנסה שוב או פנה לתמיכה.`);
+      showNotification(`שגיאה בשמירת התקציב: ${errorObj.message || 'שגיאה לא ידועה'}\n\nנסה שוב או פנה לתמיכה.`, "error");
     } finally {
       setLoading(false);
     }

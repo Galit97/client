@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Item = { _id?: string; text: string; done?: boolean };
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { loginUser } from "../../api/authService";
+import { useNotification } from "../Notification/NotificationContext";
 
 type Props = {
   isOpen: boolean;
@@ -9,11 +10,11 @@ type Props = {
 };
 
 export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegister }: Props) {
+  const { showNotification } = useNotification();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
 
   if (!isOpen) return null;
@@ -39,7 +40,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
 
   const handleForgotPassword = async () => {
     if (!email) {
-      alert('אנא הכנס את האימייל שלך תחילה');
+      showNotification('אנא הכנס את האימייל שלך תחילה', 'warning');
       return;
     }
 
@@ -56,19 +57,19 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
         
         if (result.emailError) {
           // Email failed, show password in alert
-          alert(`סיסמה זמנית נוצרה: ${result.tempPassword}\n\n${result.note}`);
+          showNotification(`סיסמה זמנית נוצרה: ${result.tempPassword}\n\n${result.note}`, 'success');
           setPassword(result.tempPassword);
         } else {
           // Email sent successfully
-          alert(`${result.message}\n\n${result.note}`);
+          showNotification(`${result.message}\n\n${result.note}`, 'success');
         }
       } else {
         const error = await response.json();
-        alert('שגיאה: ' + error.message);
+        showNotification('שגיאה: ' + error.message, 'error');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('שגיאה בשחזור סיסמה');
+      showNotification('שגיאה בשחזור סיסמה', 'error');
     } finally {
       setForgotPasswordLoading(false);
     }

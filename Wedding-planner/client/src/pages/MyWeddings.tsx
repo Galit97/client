@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useNotification } from '../components/Notification/NotificationContext';
 
 type Wedding = {
   _id: string;
@@ -20,7 +21,8 @@ type Wedding = {
   }>;
 };
 
-export default function MyWeddings({ onOpenWedding }: { onOpenWedding?: () => void }) {
+export default function MyWeddings() {
+  const { showNotification } = useNotification();
   const [weddings, setWeddings] = useState<Wedding[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -72,16 +74,16 @@ export default function MyWeddings({ onOpenWedding }: { onOpenWedding?: () => vo
       });
 
       if (res.ok) {
-        alert('האירוע נמחק בהצלחה!');
+        showNotification('האירוע נמחק בהצלחה!', 'success');
         fetchWeddings(); // Refresh the list
       } else {
         const errorText = await res.text();
         console.error('Error deleting wedding:', errorText);
-        alert('שגיאה במחיקת האירוע');
+        showNotification('שגיאה במחיקת האירוע', 'error');
       }
     } catch (error) {
       console.error('Error deleting wedding:', error);
-      alert('שגיאה במחיקת האירוע');
+      showNotification('שגיאה במחיקת האירוע', 'error');
     }
   }
 

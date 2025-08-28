@@ -408,7 +408,7 @@ export default function VenueComparisonPage() {
               <tbody>
                 {venues
                   .filter(venue => venue.name.trim())
-                  .map((venue, index) => (
+                  .map((venue) => (
                     <tr key={venue.id} style={{ backgroundColor: '#FFFFFF' }}>
                       <td style={{ border: '1px solid #ddd', padding: '12px', fontWeight: 'bold' }}>
                         {venue.name}

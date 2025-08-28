@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 type VendorStatus = 'Pending' | 'Confirmed' | 'Paid';
 type VendorType = 'music' | 'food' | 'photography' | 'decor' | 'clothes' | 'makeup_hair' | 'internet_orders' | 'lighting_sound' | 'guest_gifts' | 'venue_deposit' | 'bride_dress' | 'groom_suit' | 'shoes' | 'jewelry' | 'rsvp' | 'design_tables' | 'bride_bouquet' | 'chuppah' | 'flowers' | 'other';
@@ -71,7 +71,7 @@ export default function VendorComparisonPage() {
   const [extraComparisons, setExtraComparisons] = useState<Record<VendorType, ExtraComparison[]>>({} as Record<VendorType, ExtraComparison[]>);
   const [search, setSearch] = useState('');
   const [weddingId, setWeddingId] = useState<string>('');
-  const [userId, setUserId] = useState<string>('');
+  const [userId] = useState<string>('');
   const [noWeddingFound, setNoWeddingFound] = useState(false);
 
   useEffect(() => {
@@ -155,7 +155,7 @@ export default function VendorComparisonPage() {
 
 
 
-  const availableTypes = useMemo(() => allTypes, []);
+
 
   const handleAddComparison = async (type: VendorType, entry: Omit<ExtraComparison, 'id'>) => {
     setExtraComparisons(prev => {

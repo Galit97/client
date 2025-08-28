@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNotification } from '../../components/Notification/NotificationContext';
 
 export default function AccountSettings() {
+  const { showNotification } = useNotification();
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '', password: '' });
   const [userId, setUserId] = useState<string>('');
   const [saving, setSaving] = useState(false);
@@ -34,11 +36,11 @@ export default function AccountSettings() {
       if (!res.ok) throw new Error('failed');
       const updated = await res.json();
       localStorage.setItem('currentUser', JSON.stringify(updated));
-      alert('פרטי המשתמש נשמרו בהצלחה!');
+      showNotification('פרטי המשתמש נשמרו בהצלחה!', 'success');
       // Clear the password field after successful save
       setForm(prev => ({ ...prev, password: '' }));
     } catch {
-      alert('שמירה נכשלה');
+      showNotification('שמירה נכשלה', 'error');
     } finally {
       setSaving(false);
     }
