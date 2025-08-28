@@ -29,7 +29,16 @@ app.use((req: Request, res: Response, next) => {
   next();
 });
 
-app.use(cors());
+// CORS configuration for production
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? [
+        'https://your-site-name.netlify.app', // Replace with your actual Netlify URL
+        'http://localhost:5173' // For local development
+      ]
+    : true, // Allow all origins in development
+  credentials: true
+}));
 app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ limit: "100mb", extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
