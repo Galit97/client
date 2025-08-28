@@ -331,6 +331,11 @@ export default function VendorsListPage() {
         type: "music",
       });
       setShowAddVendorModal(false);
+      
+      // Trigger dashboard refresh
+      if ((window as any).triggerDashboardRefresh) {
+        (window as any).triggerDashboardRefresh('vendor-added');
+      }
     } catch (error) {
       console.error("Error adding vendor:", error);
       alert("שגיאה בהוספת ספק");
@@ -355,6 +360,11 @@ export default function VendorsListPage() {
         const updated = await res.json();
         setVendors(vendors.map(v => v._id === updatedVendor._id ? updated : v));
         setEditingVendor(null);
+        
+        // Trigger dashboard refresh
+        if ((window as any).triggerDashboardRefresh) {
+          (window as any).triggerDashboardRefresh('vendor-updated');
+        }
       }
     } catch (error) {
       console.error("Error updating vendor:", error);

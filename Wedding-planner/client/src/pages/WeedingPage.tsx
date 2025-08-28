@@ -799,7 +799,7 @@ export default function WeddingPage() {
             <span style={{ fontSize: '24px' }}>💒</span>
           </div>
           <div style={{ flex: 1 }}>
-            <h3 style={{ margin: '0', color: '#0F172A' }}>פרטי האירוע</h3>
+            <h3 style={{ margin: '0', color: '#1d5a78' }}>פרטי האירוע</h3>
             <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
               הגדרת פרטי האירוע הבסיסיים
             </p>
@@ -1449,7 +1449,7 @@ export default function WeddingPage() {
             <span style={{ fontSize: '24px' }}>🍽️</span>
           </div>
           <div style={{ flex: 1 }}>
-            <h3 style={{ margin: '0', color: '#0F172A' }}>מחירי מנות - חישוב עלויות האירוע</h3>
+            <h3 style={{ margin: '0', color: '#1d5a78' }}>מחירי מנות - חישוב עלויות האירוע</h3>
             <p style={{ margin: '5px 0 0 0', color: '#475569', fontSize: '14px' }}>
               הגדרת מחירי מנות וחישוב עלויות האירוע
             </p>
@@ -1524,7 +1524,7 @@ export default function WeddingPage() {
           <div style={{ 
             marginBottom: '20px', 
             padding: '12px 16px', 
-            background: '#fef3c7', 
+          
             borderRadius: '8px', 
          
             display: 'flex',
@@ -1555,13 +1555,13 @@ export default function WeddingPage() {
               }}
               onMouseEnter={(e) => {
                 if (!saving) {
-                  e.currentTarget.style.background = '#d97706';
+                  e.currentTarget.style.background =  '#1d5a78';
                   e.currentTarget.style.transform = 'translateY(-1px)';
                 }
               }}
               onMouseLeave={(e) => {
                 if (!saving) {
-                  e.currentTarget.style.background = '#f59e0b';
+                  e.currentTarget.style.background =  '#1d5a78';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }
               }}
@@ -1807,7 +1807,7 @@ export default function WeddingPage() {
         {/* Guest Status Based Pricing */}
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-            <h4 style={{ margin: '0', color: '#1976d2' }}>👥 מחירי מנות לפי סטטוס מוזמנים</h4>
+            <h4 style={{ margin: '0', color: '#1d5a78' }}>👥 מחירי מנות לפי סטטוס מוזמנים</h4>
             <button
               type="button"
               onClick={async () => {
@@ -1842,29 +1842,29 @@ export default function WeddingPage() {
             </button>
           </div>
           
-          <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
+          <div style={{ display: 'grid', gap: '10px', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
             {/* Confirmed Guests */}
-            <div className="card">
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+            <div className="card" style={{ padding: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
                 <div style={{ 
-                  width: '12px', 
-                  height: '12px', 
+                  width: '8px', 
+                  height: '8px', 
                   borderRadius: '50%', 
                   backgroundColor: '#3b82f6', 
-                  marginRight: '8px' 
+                  marginRight: '6px' 
                 }}></div>
-                <h5 style={{ margin: '0', color: '#1d5a78', fontWeight: 'bold' }}>מאשרי הגעה</h5>
+                <h6 style={{ margin: '0', color: '#1d5a78', fontWeight: 'bold', fontSize: '14px' }}>מאשרי הגעה</h6>
               </div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '5px' }}>
+              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#333', marginBottom: '3px' }}>
                 {guestCounts.confirmed}
               </div>
-              <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>מוזמנים</div>
+              <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>מוזמנים</div>
               {calculateMealCostByStatus().confirmed?.totalCost && typeof calculateMealCostByStatus().confirmed?.totalCost === 'number' && (
                 <>
-                  <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1d5a78' }}>
+                  <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#1d5a78' }}>
                     {calculateMealCostByStatus().confirmed?.totalCost?.toLocaleString?.() ?? 0} ₪
                   </div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>
+                  <div style={{ fontSize: '11px', color: '#666' }}>
                     {(calculateMealCostByStatus().confirmed?.costPerPerson ?? 0).toFixed(0)} ₪ לאיש
                   </div>
                 </>
@@ -1872,27 +1872,27 @@ export default function WeddingPage() {
             </div>
 
             {/* Maybe Guests */}
-            <div className="card">
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+            <div className="card" style={{ padding: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
                 <div style={{ 
-                  width: '12px', 
-                  height: '12px', 
+                  width: '8px', 
+                  height: '8px', 
                   borderRadius: '50%', 
                   backgroundColor: '#3b82f6', 
-                  marginRight: '8px' 
+                  marginRight: '6px' 
                 }}></div>
-                <h5 style={{ margin: '0', color: '#1d5a78', fontWeight: 'bold' }}>מתלבטים</h5>
+                <h6 style={{ margin: '0', color: '#1d5a78', fontWeight: 'bold', fontSize: '14px' }}>מתלבטים</h6>
               </div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '5px' }}>
+              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#333', marginBottom: '3px' }}>
                 {guestCounts.maybe}
               </div>
-              <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>מוזמנים</div>
+              <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>מוזמנים</div>
               {calculateMealCostByStatus().maybe?.totalCost && typeof calculateMealCostByStatus().maybe?.totalCost === 'number' && (
                 <>
-                  <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1d5a78' }}>
+                  <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#1d5a78' }}>
                     {calculateMealCostByStatus().maybe?.totalCost?.toLocaleString?.() ?? 0} ₪
                   </div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>
+                  <div style={{ fontSize: '11px', color: '#666' }}>
                     {(calculateMealCostByStatus().maybe?.costPerPerson ?? 0).toFixed(0)} ₪ לאיש
                   </div>
                 </>
@@ -1900,27 +1900,27 @@ export default function WeddingPage() {
             </div>
 
             {/* Pending Guests */}
-            <div className="card">
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+            <div className="card" style={{ padding: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
                 <div style={{ 
-                  width: '12px', 
-                  height: '12px', 
+                  width: '8px', 
+                  height: '8px', 
                   borderRadius: '50%', 
                   backgroundColor: '#9e9e9e', 
-                  marginRight: '8px' 
+                  marginRight: '6px' 
                 }}></div>
-                <h5 style={{ margin: '0', color: '#9e9e9e', fontWeight: 'bold' }}>ממתינים לתשובה</h5>
+                <h6 style={{ margin: '0', color: '#9e9e9e', fontWeight: 'bold', fontSize: '14px' }}>ממתינים לתשובה</h6>
               </div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '5px' }}>
+              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#333', marginBottom: '3px' }}>
                 {guestCounts.pending}
               </div>
-              <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>מוזמנים</div>
+              <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>מוזמנים</div>
               {calculateMealCostByStatus().pending?.totalCost && typeof calculateMealCostByStatus().pending?.totalCost === 'number' && (
                 <>
-                  <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#9e9e9e' }}>
+                  <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#9e9e9e' }}>
                     {calculateMealCostByStatus().pending?.totalCost?.toLocaleString?.() ?? 0} ₪
                   </div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>
+                  <div style={{ fontSize: '11px', color: '#666' }}>
                     {(calculateMealCostByStatus().pending?.costPerPerson ?? 0).toFixed(0)} ₪ לאיש
                   </div>
                 </>
@@ -1928,27 +1928,27 @@ export default function WeddingPage() {
             </div>
 
             {/* Total */}
-            <div className="card">
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+            <div className="card" style={{ padding: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
                 <div style={{ 
-                  width: '12px', 
-                  height: '12px', 
+                  width: '8px', 
+                  height: '8px', 
                   borderRadius: '50%', 
                   backgroundColor: '#2196F3', 
-                  marginRight: '8px' 
+                  marginRight: '6px' 
                 }}></div>
-                <h5 style={{ margin: '0', color: '#2196F3', fontWeight: 'bold' }}>סה"כ</h5>
+                <h6 style={{ margin: '0', color: '#2196F3', fontWeight: 'bold', fontSize: '14px' }}>סה"כ</h6>
               </div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#333', marginBottom: '5px' }}>
+              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#333', marginBottom: '3px' }}>
                 {guestCounts.total}
               </div>
-              <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px' }}>מוזמנים</div>
+              <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>מוזמנים</div>
               {calculateMealCostByStatus().total?.totalCost && typeof calculateMealCostByStatus().total?.totalCost === 'number' && (
                 <>
-                  <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#2196F3' }}>
+                  <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#2196F3' }}>
                     {calculateMealCostByStatus().total?.totalCost?.toLocaleString?.() ?? 0} ₪
                   </div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>
+                  <div style={{ fontSize: '11px', color: '#666' }}>
                     {(calculateMealCostByStatus().total?.costPerPerson ?? 0).toFixed(0)} ₪ לאיש
                   </div>
                 </>
@@ -1977,9 +1977,7 @@ export default function WeddingPage() {
             </div>
           )}
 
-          <div style={{ marginTop: '15px', padding: '10px', background: 'white', borderRadius: '4px', fontSize: '12px', color: '#666' }}>
-            <strong>הערה:</strong> המחירים מחושבים אוטומטית לפי מספר המוזמנים בכל סטטוס ויובאו מרשימת המוזמנים
-          </div>
+        
         </div>
 
         {/* Save Meal Pricing Button */}
@@ -2004,7 +2002,7 @@ export default function WeddingPage() {
 
       {/* Manual Calculation - Custom Estimation */}
       <div className="card">
-        <h3 style={{ margin: '0 0 20px 0', color: '#e65100' }}>
+        <h3 style={{ margin: '0 0 20px 0', color: '#1d5a78' }}>
           🧮 חישוב ידני - אומדן מותאם אישית - מחירי מנות
         </h3>
         
@@ -2119,7 +2117,7 @@ export default function WeddingPage() {
       {/* Wedding Summary */}
       {wedding.weddingName && (
         <div className="card">
-          <h3 style={{ margin: '0 0 20px 0', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
+          <h3 style={{ margin: '0 0 20px 0', color: '#1d5a78', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
             📋 סיכום האירוע
           </h3>
           
@@ -2185,7 +2183,7 @@ export default function WeddingPage() {
           )}
           
           <div style={{ marginTop: '15px' }}>
-            <strong style={{ color: '#666' }}>שותפים לאירוע:</strong>
+            <strong style={{ color: '#1d5a78' }}>שותפים לאירוע:</strong>
             <div style={{ marginTop: '5px' }}>
               {wedding.participants.length > 0 ? (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>

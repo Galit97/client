@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import shareIcon from "../assets/images/share.svg";
 import BudgetMaster from "../lib/budgetMaster";
 import { apiUrl } from "../utils/api";
@@ -94,8 +94,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+
+
+
+
   // Function to fetch all data
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
@@ -154,7 +158,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
       }
 
       // Fetch tasks
-              const tasksRes = await fetch(apiUrl("/api/checklists"), {
+      const tasksRes = await fetch(apiUrl("/api/checklists"), {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (tasksRes.ok) {
@@ -172,7 +176,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
       }
 
       // Fetch guests
-              const guestsRes = await fetch(apiUrl("/api/guests"), {
+      const guestsRes = await fetch(apiUrl("/api/guests"), {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (guestsRes.ok) {
@@ -187,11 +191,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
       setIsRefreshing(false);
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   // Auto-refresh every 30 seconds
   useEffect(() => {
@@ -200,7 +204,107 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     }, 30000); // 30 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchData]);
+
+  // Listen for storage events (when data changes in other tabs/windows)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'dashboard-needs-refresh') {
+        console.log('Dashboard refresh triggered by storage event');
+        fetchData();
+        // Clear the flag
+        localStorage.removeItem('dashboard-needs-refresh');
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [fetchData]);
+
+  // Listen for custom events from other components
+  useEffect(() => {
+    const handleCustomEvent = (e: CustomEvent) => {
+      console.log('Dashboard refresh triggered by custom event:', e.detail);
+      fetchData();
+    };
+
+    window.addEventListener('dashboard-refresh', handleCustomEvent as EventListener);
+    return () => window.removeEventListener('dashboard-refresh', handleCustomEvent as EventListener);
+  }, [fetchData]);
+
+  // More frequent refresh when user is active (every 10 seconds)
+  useEffect(() => {
+    let activeInterval: NodeJS.Timeout;
+    
+    const handleUserActivity = () => {
+      // Clear existing interval
+      if (activeInterval) {
+        clearInterval(activeInterval);
+      }
+      
+      // Set new interval for active user
+      activeInterval = setInterval(() => {
+        fetchData();
+      }, 10000); // 10 seconds when user is active
+    };
+
+    const handleUserInactivity = () => {
+      if (activeInterval) {
+        clearInterval(activeInterval);
+      }
+    };
+
+    // Track user activity
+    let activityTimeout: NodeJS.Timeout;
+    const resetActivityTimeout = () => {
+      clearTimeout(activityTimeout);
+      handleUserActivity();
+      activityTimeout = setTimeout(handleUserInactivity, 60000); // 1 minute of inactivity
+    };
+
+    // Listen for user activity
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    events.forEach(event => {
+      document.addEventListener(event, resetActivityTimeout, true);
+    });
+
+    // Initial setup
+    resetActivityTimeout();
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, resetActivityTimeout, true);
+      });
+      clearTimeout(activityTimeout);
+      if (activeInterval) {
+        clearInterval(activeInterval);
+      }
+    };
+  }, [fetchData]);
+
+  // Expose refresh function globally for other components to use
+  useEffect(() => {
+    const triggerDashboardRefresh = (reason?: string) => {
+      console.log('Dashboard refresh triggered:', reason);
+      
+      // Trigger storage event for cross-tab communication
+      localStorage.setItem('dashboard-needs-refresh', Date.now().toString());
+      
+      // Trigger custom event for same-tab communication
+      window.dispatchEvent(new CustomEvent('dashboard-refresh', { detail: reason }));
+      
+      // Direct call to fetchData
+      fetchData();
+    };
+
+    // Expose the function globally
+    (window as any).triggerDashboardRefresh = triggerDashboardRefresh;
+
+    return () => {
+      // Cleanup
+      delete (window as any).triggerDashboardRefresh;
+    };
+  }, [fetchData]);
 
   // Countdown timer - only days
   useEffect(() => {
@@ -378,6 +482,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     setShowSharePopup(true);
   };
 
+  // State for invite link creation
+  const [inviteLink, setInviteLink] = useState<string | null>(null);
+  const [creatingInvite, setCreatingInvite] = useState(false);
+
   // Function to translate vendor types to Hebrew
   const translateVendorType = (type: string): string => {
     const typeTranslations: { [key: string]: string } = {
@@ -426,7 +534,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   // Function to save wedding date
   const handleSaveWeddingDate = async () => {
     if (!selectedDate || !coupleName) {
-      alert('אנא מלאו את כל השדות הנדרשים');
+      console.log('אנא מלאו את כל השדות הנדרשים');
       return;
     }
 
@@ -461,13 +569,13 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
         setShowDatePicker(false);
         setSelectedDate('');
         setCoupleName('');
-        alert('תאריך החתונה נשמר בהצלחה!');
+        console.log('תאריך החתונה נשמר בהצלחה!');
       } else {
-        alert('שגיאה בשמירת תאריך החתונה');
+        console.log('שגיאה בשמירת תאריך החתונה');
       }
     } catch (error) {
       console.error("Error saving wedding date:", error);
-      alert('שגיאה בשמירת תאריך החתונה');
+      console.log('שגיאה בשמירת תאריך החתונה');
     }
   };
 
@@ -1916,65 +2024,101 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                             </div>
                           )}
                         </div>
-                        {/* Remove Partner Button */}
-                        <button
-                          onClick={async () => {
-                            if (confirm(`האם אתה בטוח שברצונך להסיר את ${firstName} ${lastName} מהאירוע?`)) {
-                              try {
-                                const token = localStorage.getItem("token");
-                                if (!token) return;
-                                
-                                const participantId = typeof participant === 'object' ? participant._id : participant;
-                                const response = await fetch(`/api/weddings/${weddingData?._id}/participants/${participantId}`, {
-                                  method: 'DELETE',
-                                  headers: {
-                                    'Authorization': `Bearer ${token}`,
-                                    'Content-Type': 'application/json'
-                                  }
-                                });
-                                
-                                if (response.ok) {
-                                  // Refresh wedding data by refetching
-                                  const refreshRes = await fetch(apiUrl("/api/weddings/owner"), {
-                                    headers: { Authorization: `Bearer ${token}` }
-                                  });
-                                  if (refreshRes.ok) {
-                                    const refreshedWedding = await refreshRes.json();
-                                    setWeddingData(refreshedWedding);
-                                  }
-                                  alert(`${firstName} ${lastName} הוסר מהאירוע בהצלחה`);
-                                } else {
-                                  const errorData = await response.json();
-                                  alert(`שגיאה בהסרת השותף: ${errorData.message || 'שגיאה לא ידועה'}`);
-                                }
-                              } catch (error) {
-                                console.error('Error removing participant:', error);
-                                alert('שגיאה בהסרת השותף');
-                              }
-                            }
-                          }}
-                          style={{
-                            padding: '6px 10px',
-                            background: '#dc2626',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '12px',
-                            fontWeight: '500',
-                            transition: 'all 0.2s ease',
-                            minWidth: '60px'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background = '#b91c1c';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background = '#dc2626';
-                          }}
-                          title="הסר שותף"
-                        >
-                          הסר
-                        </button>
+                                                 {/* Remove Partner Button - Only show if not owner */}
+                         {(() => {
+                           const currentUserRaw = localStorage.getItem("currentUser");
+                           const currentUser = currentUserRaw ? JSON.parse(currentUserRaw) : null;
+                           const participantId = typeof participant === 'object' ? participant._id : participant;
+                           const isOwner = currentUser && participantId === currentUser._id;
+                           
+                           if (isOwner) {
+                             return (
+                               <div style={{
+                                 padding: '6px 10px',
+                                 background: '#6b7280',
+                                 color: 'white',
+                                 border: 'none',
+                                 borderRadius: '6px',
+                                 fontSize: '12px',
+                                 fontWeight: '500',
+                                 minWidth: '60px',
+                                 textAlign: 'center',
+                                 cursor: 'not-allowed',
+                                 opacity: 0.6
+                               }}>
+                                 בעלים
+                               </div>
+                             );
+                           }
+                           
+                           return (
+                             <button
+                               onClick={async () => {
+                                 if (confirm(`האם אתה בטוח שברצונך להסיר את ${firstName} ${lastName} מהאירוע?`)) {
+                                   try {
+                                     const token = localStorage.getItem("token");
+                                     if (!token) return;
+                                     
+                                     // Remove participant from local state first (like in WeedingPage)
+                                     const updatedParticipants = weddingData?.participants?.filter(p => {
+                                       const pId = typeof p === 'object' ? p._id : p;
+                                       return pId !== participantId;
+                                     }) || [];
+                                     
+                                     // Update wedding data with new participants list
+                                     const updatedWeddingData = {
+                                       ...weddingData,
+                                       participants: updatedParticipants
+                                     };
+                                     
+                                     // Save to server
+                                     const response = await fetch(apiUrl(`/api/weddings/${weddingData?._id}`), {
+                                       method: "PUT",
+                                       headers: {
+                                         "Content-Type": "application/json",
+                                         Authorization: `Bearer ${token}`
+                                       },
+                                       body: JSON.stringify(updatedWeddingData)
+                                     });
+                                     
+                                     if (response.ok) {
+                                       // Update local state
+                                       setWeddingData(updatedWeddingData);
+                                                                               console.log(`${firstName} ${lastName} הוסר מהאירוע בהצלחה`);
+                                     } else {
+                                       const errorData = await response.json();
+                                                                               console.log(`שגיאה בהסרת השותף: ${errorData.message || 'שגיאה לא ידועה'}`);
+                                     }
+                                   } catch (error) {
+                                     console.error('Error removing participant:', error);
+                                                                           console.log('שגיאה בהסרת השותף');
+                                   }
+                                 }
+                               }}
+                               style={{
+                                 padding: '6px 10px',
+                                 background: '#dc2626',
+                                 color: 'white',
+                                 border: 'none',
+                                 borderRadius: '6px',
+                                 cursor: 'pointer',
+                                 fontSize: '12px',
+                                 fontWeight: '500',
+                                 transition: 'all 0.2s ease',
+                                 minWidth: '60px'
+                               }}
+                               onMouseEnter={(e) => {
+                                 e.currentTarget.style.background = '#b91c1c';
+                               }}
+                               onMouseLeave={(e) => {
+                                 e.currentTarget.style.background = '#dc2626';
+                               }}
+                               title="הסר שותף"
+                             >
+                               הסר
+                             </button>
+                           );
+                         })()}
                       </div>
                     );
                   })}
@@ -2007,48 +2151,102 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
               <div style={{
                 display: 'flex',
                 gap: '10px',
-                alignItems: 'center'
+                alignItems: 'center',
+                flexWrap: 'wrap'
               }}>
-                <input
-                  type="text"
-                  value={`${window.location.origin}/invite/${weddingData?._id || 'wedding-id'}`}
-                  readOnly
-                  style={{
-                    flex: 1,
-                    padding: '12px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    background: '#f9fafb',
-                    color: '#374151'
-                  }}
-                />
                 <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(`${window.location.origin}/invite/${weddingData?._id || 'wedding-id'}`);
-                    alert('הלינק הועתק ללוח!');
+                  type="button"
+                  onClick={async () => {
+                    const token = localStorage.getItem('token');
+                    if (!token || !weddingData?._id) return;
+                    try {
+                      setCreatingInvite(true);
+                      const res = await fetch('/api/weddings/invites', { 
+                        method: 'POST', 
+                        headers: { Authorization: `Bearer ${token}` } 
+                      });
+                      if (!res.ok) throw new Error('failed');
+                      const data = await res.json();
+                      const url = `${window.location.origin}/invite/${data.token}`;
+                      setInviteLink(url);
+                    } catch (e) {
+                                             console.log('שגיאה ביצירת קישור הזמנה');
+                    } finally {
+                      setCreatingInvite(false);
+                    }
                   }}
+                  disabled={creatingInvite || !weddingData?._id}
                   style={{
-                    padding: '12px 16px',
-                    background: '#1d5a78',
+                    padding: '10px 20px',
+                    background: creatingInvite || !weddingData?._id ? '#e5e7eb' : '#1d5a78',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
-                    cursor: 'pointer',
+                    cursor: creatingInvite || !weddingData?._id ? 'not-allowed' : 'pointer',
                     fontSize: '14px',
                     fontWeight: '600',
                     transition: 'all 0.2s ease',
                     whiteSpace: 'nowrap'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#164e63';
+                    if (!creatingInvite && weddingData?._id) {
+                      e.currentTarget.style.background = '#164e63';
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = '#1d5a78';
+                    if (!creatingInvite && weddingData?._id) {
+                      e.currentTarget.style.background = '#1d5a78';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }
                   }}
                 >
-                  העתק
+                  {creatingInvite ? 'יוצר קישור...' : '🔗 צור קישור להזמנת שותף'}
                 </button>
+                
+                {inviteLink && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: '300px' }}>
+                    <input 
+                      style={{ 
+                        flex: 1, 
+                        padding: '10px', 
+                        border: '1px solid #d1d5db', 
+                        borderRadius: '6px',
+                        fontSize: '14px',
+                        background: '#f9fafb'
+                      }} 
+                      readOnly 
+                      value={inviteLink} 
+                    />
+                    <button 
+                      style={{
+                        padding: '10px 16px',
+                        background: '#10b981',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#059669';
+                        e.currentTarget.style.transform = 'translateY(-1px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#10b981';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
+                      onClick={() => { 
+                        navigator.clipboard.writeText(inviteLink); 
+                                                 console.log('הקישור הועתק ללוח!');
+                      }}
+                    >
+                      📋 העתק
+                    </button>
+                  </div>
+                )}
               </div>
               
               <p style={{
@@ -2057,43 +2255,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                 color: '#6b7280',
                 lineHeight: '1.4'
               }}>
-                שלח את הלינק הזה לחברים ובני משפחה כדי שיוכלו להצטרף לאירוע
+                לחץ על "צור קישור" כדי ליצור קישור הזמנה חדש לשיתוף עם שותפים
               </p>
             </div>
 
-            {/* Add Partner Button */}
-            <div style={{ textAlign: 'center' }}>
-              <button
-                onClick={() => {
-                  setShowSharePopup(false);
-                  onNavigate && onNavigate('eventSettings');
-                }}
-                style={{
-                  padding: '14px 24px',
-                  background: '#3b82f6',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '25px',
-                  cursor: 'pointer',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  transition: 'all 0.2s ease',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#2563eb';
-                  e.currentTarget.style.transform = 'translateY(-1px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = '#3b82f6';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                ➕ הוסף שותפים נוספים
-              </button>
-            </div>
+          
           </div>
         </div>
       )}

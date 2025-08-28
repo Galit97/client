@@ -223,7 +223,7 @@ export default function BudgetOverview() {
         }}>
           <BudgetRingShekel style={{ color: '#1d5a78' }} />
           <strong style={{ fontSize: '18px', color: '#1d5a78' }}>
-            תמצית יעד
+           סיכום תקציב
           </strong>
         </div>
 

@@ -140,7 +140,7 @@ export default function GuestListPage() {
 
   const exportToExcel = () => {
     if (guests.length === 0) {
-      alert('אין מוזמנים לייצא');
+      console.log('אין מוזמנים לייצא');
       return;
     }
 
@@ -194,7 +194,7 @@ export default function GuestListPage() {
       console.log('Raw Excel data:', jsonData); // Debug log
 
       if (jsonData.length === 0) {
-        alert('הקובץ ריק או לא מכיל נתונים תקינים');
+        console.log('הקובץ ריק או לא מכיל נתונים תקינים');
         setImporting(false);
         return;
       }
@@ -247,7 +247,7 @@ export default function GuestListPage() {
       });
 
       if (validGuests.length === 0) {
-        alert('לא נמצאו נתונים תקינים בקובץ. אנא ודא שיש לפחות שם פרטי, שם משפחה ומספר מקומות שמורים');
+        console.log('לא נמצאו נתונים תקינים בקובץ. אנא ודא שיש לפחות שם פרטי, שם משפחה ומספר מקומות שמורים');
         setImporting(false);
         return;
       }
@@ -255,7 +255,7 @@ export default function GuestListPage() {
       console.log('Valid guests to import:', validGuests); // Debug log
 
       if (validGuests.length !== importedGuests.length) {
-        alert(`יובאו ${validGuests.length} מוזמנים מתוך ${importedGuests.length} (חלק מהשורות לא היו תקינות)`);
+        console.log(`יובאו ${validGuests.length} מוזמנים מתוך ${importedGuests.length} (חלק מהשורות לא היו תקינות)`);
       }
 
       // Add guests to database
@@ -266,7 +266,7 @@ export default function GuestListPage() {
       
     } catch (error) {
       console.error('Error importing Excel:', error);
-      alert('שגיאה בייבוא הקובץ. אנא ודא שהקובץ בפורמט Excel תקין');
+      console.log('שגיאה בייבוא הקובץ. אנא ודא שהקובץ בפורמט Excel תקין');
       setImporting(false);
     }
   };
@@ -274,7 +274,7 @@ export default function GuestListPage() {
   const addMultipleGuests = async (guestsToAdd: any[]) => {
     const token = localStorage.getItem("token");
     if (!token || !weddingId) {
-      alert('שגיאה: לא נמצא משתמש מחובר או אירוע');
+      console.log('שגיאה: לא נמצא משתמש מחובר או אירוע');
       return;
     }
 
@@ -424,13 +424,13 @@ export default function GuestListPage() {
   async function addGuest(e: React.FormEvent) {
     e.preventDefault();
     if (!weddingId) {
-      alert("לא נמצא אירוע. אנא צור אירוע קודם.");
+      console.log("לא נמצא אירוע. אנא צור אירוע קודם.");
       return;
     }
 
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("לא מזוהה משתמש מחובר");
+      console.log("לא מזוהה משתמש מחובר");
       return;
     }
 
@@ -456,7 +456,7 @@ export default function GuestListPage() {
       if (!res.ok) {
         const errorText = await res.text();
         console.error("Error adding guest:", errorText);
-        alert("שגיאה בהוספת מוזמן");
+        console.log("שגיאה בהוספת מוזמן");
         return;
       }
 
@@ -476,9 +476,14 @@ export default function GuestListPage() {
         notes: ''
       });
       setShowAddGuestModal(false);
+      
+      // Trigger dashboard refresh
+      if ((window as any).triggerDashboardRefresh) {
+        (window as any).triggerDashboardRefresh('guest-added');
+      }
     } catch (error) {
       console.error("Error adding guest:", error);
-      alert("שגיאה בהוספת מוזמן");
+      console.log("שגיאה בהוספת מוזמן");
     }
   }
 
@@ -498,6 +503,11 @@ export default function GuestListPage() {
 
       if (res.ok) {
         setGuests(guests.map(g => (g._id === id ? { ...g, status } : g)));
+        
+        // Trigger dashboard refresh
+        if ((window as any).triggerDashboardRefresh) {
+          (window as any).triggerDashboardRefresh('guest-status-updated');
+        }
       }
     } catch (error) {
       console.error("Error updating status:", error);
@@ -531,11 +541,16 @@ export default function GuestListPage() {
         console.log("=== END CLIENT SIDE UPDATE DEBUG ===");
         setGuests(guests.map(g => (g._id === guestData._id ? updated : g)));
         setEditingGuest(null);
+        
+        // Trigger dashboard refresh
+        if ((window as any).triggerDashboardRefresh) {
+          (window as any).triggerDashboardRefresh('guest-updated');
+        }
       } else {
         const errorText = await res.text();
         console.error("Error response:", errorText);
         console.log("=== END CLIENT SIDE UPDATE DEBUG ===");
-        alert("שגיאה בעדכון מוזמן");
+        console.log("שגיאה בעדכון מוזמן");
       }
     } catch (error) {
       console.error("Error updating guest:", error);
@@ -560,6 +575,11 @@ export default function GuestListPage() {
 
       if (res.ok) {
         setGuests(guests.filter(g => g._id !== id));
+        
+        // Trigger dashboard refresh
+        if ((window as any).triggerDashboardRefresh) {
+          (window as any).triggerDashboardRefresh('guest-deleted');
+        }
       }
     } catch (error) {
       console.error("Error deleting guest:", error);
@@ -632,7 +652,7 @@ export default function GuestListPage() {
       margin: '0 auto',
       fontFamily: 'Arial, sans-serif',
       direction: 'rtl',
-      background: '#f0f4f8',
+      background: '#FFF0F5',
       minHeight: '100vh'
     }}>
       {/* Header Section */}

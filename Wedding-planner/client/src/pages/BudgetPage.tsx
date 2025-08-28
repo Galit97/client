@@ -30,6 +30,35 @@ type Vendor = {
   depositPaid?: boolean;
 };
 
+type VendorType = 'music' | 'food' | 'photography' | 'decor' | 'clothes' | 'makeup_hair' | 'internet_orders' | 'lighting_sound' | 'guest_gifts' | 'venue_deposit' | 'bride_dress' | 'groom_suit' | 'shoes' | 'jewelry' | 'rsvp' | 'design_tables' | 'bride_bouquet' | 'chuppah' | 'flowers' | 'other';
+
+// Function to convert vendor type to Hebrew display name
+function getTypeText(type: VendorType | string) {
+  switch (type) {
+    case 'music': return 'מוזיקה';
+    case 'food': return 'אוכל';
+    case 'photography': return 'צילום';
+    case 'decor': return 'קישוט';
+    case 'clothes': return 'בגדים';
+    case 'makeup_hair': return 'איפור ושיער';
+    case 'internet_orders': return 'הזמנות מקוונות';
+    case 'lighting_sound': return 'תאורה והגברה';
+    case 'guest_gifts': return 'מתנות לאורחים';
+    case 'venue_deposit': return 'מקדמה לאולם';
+    case 'bride_dress': return 'שמלות כלה';
+    case 'groom_suit': return 'חליפת חתן';
+    case 'shoes': return 'נעליים';
+    case 'jewelry': return 'תכשיטים';
+    case 'rsvp': return 'אישורי הגעה';
+    case 'design_tables': return 'עיצוב ושולחנות';
+    case 'bride_bouquet': return 'זר כלה';
+    case 'chuppah': return 'חופה';
+    case 'flowers': return 'פרחים';
+    case 'other': return 'אחר';
+    default: return type;
+  }
+}
+
 type MealPricing = {
   basePrice: number;
   childDiscount: number;
@@ -557,7 +586,7 @@ const BudgetPage: React.FC = () => {
   
   const targetMin = (minGuests * giftAvg) + personalBudget;
   const targetMax = (maxGuests * giftAvg) + personalBudget;
-  const targetLikely = (likelyGuests * giftAvg) + personalBudget;
+  const targetLikely = Math.round((targetMin + targetMax) / 2); // ממוצע בין יעד מינימום ליעד מקסימום
   
   // Override summary with calculated budget targets
   const actualSummary = {
@@ -570,7 +599,7 @@ const BudgetPage: React.FC = () => {
   console.log("- Min guests:", minGuests, "Gift avg:", giftAvg, "Personal budget:", personalBudget);
   console.log("- Target min:", targetMin, "= (", minGuests, "×", giftAvg, ") +", personalBudget);
   console.log("- Target max:", targetMax, "= (", maxGuests, "×", giftAvg, ") +", personalBudget);
-  console.log("- Target likely:", targetLikely, "= (", likelyGuests, "×", giftAvg, ") +", personalBudget);
+  console.log("- Target likely:", targetLikely, "= ממוצע בין יעד מינימום ליעד מקסימום");
   console.log("Actual summary with budget override:", actualSummary);
   
   // Calculate deposits manually to verify
@@ -824,7 +853,7 @@ const BudgetPage: React.FC = () => {
                       {supplier.name}
                     </div>
                     <div style={{ fontSize: '14px', color: '#6b7280', marginTop: '2px' }}>
-                      {supplier.category}
+                      {getTypeText(supplier.category)}
                     </div>
                   </div>
                   
@@ -967,7 +996,7 @@ const BudgetPage: React.FC = () => {
       }}>
         <div className="row" style={{ alignItems: 'center', gap: 12, marginBottom: '20px' }}>
           <BudgetRingShekel aria-hidden="true" style={{ color: '#1d5a78' }} />
-          <strong id="budget-targets" style={{ fontSize: '18px', color: '#1d5a78' }}>תמצית יעד</strong>
+          <strong id="budget-targets" style={{ fontSize: '18px', color: '#1d5a78' }}>סיכום תקציב</strong>
         </div>
 
         <div className="grid cols-3" role="list" style={{ 
