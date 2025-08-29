@@ -4,7 +4,7 @@
 Deploy your Wedding Planner app to production in 3 steps:
 1. **MongoDB Atlas** - Database
 2. **Railway** - Backend API (Fixed deployment)
-3. **Netlify** - Frontend
+3. **Netlify** - Frontend (Fixed deployment)
 
 ## Step 1: MongoDB Atlas (5 minutes)
 1. Go to [mongodb.com/atlas](https://mongodb.com/atlas)
@@ -30,21 +30,19 @@ Deploy your Wedding Planner app to production in 3 steps:
 8. Wait for deployment
 9. **Copy your Railway URL** (e.g., `https://your-app.railway.app`)
 
-## Step 3: Deploy Frontend to Netlify (10 minutes)
+## Step 3: Deploy Frontend to Netlify (10 minutes) - FIXED
 1. Go to [netlify.com](https://netlify.com)
 2. Sign up with GitHub
 3. New site from Git → GitHub
 4. Select your `wedding-planner` repo
-5. Configure build settings:
-   - Base directory: `Wedding-planner/client`
-   - Build command: `npm run build`
-   - Publish directory: `dist`
-6. Add environment variable:
+5. **Important**: Deploy from ROOT directory (not client directory)
+6. Netlify will use the `netlify.toml` configuration file
+7. Add environment variable:
    ```
    VITE_API_URL=https://your-app.railway.app
    ```
-7. Deploy site
-8. **Copy your Netlify URL** (e.g., `https://your-site.netlify.app`)
+8. Deploy site
+9. **Copy your Netlify URL** (e.g., `https://your-site.netlify.app`)
 
 ## Step 4: Update CORS (2 minutes)
 1. Go back to Railway dashboard
@@ -65,12 +63,14 @@ Your wedding planner is now deployed and accessible worldwide!
 
 ## 🔧 What Was Fixed
 - **Railway Configuration**: Added `railway.json` in root directory
-- **Build Commands**: Properly configured to navigate to `Wedding-planner/server/`
-- **Directory Structure**: Railway now understands your nested project structure
+- **Netlify Configuration**: Added `netlify.toml` in root directory
+- **Build Commands**: Properly configured to navigate to nested directories
+- **Directory Structure**: Both Railway and Netlify now understand your nested project structure
 
 ## Troubleshooting
-- **"Nixpacks was unable to generate a build plan"**: This is now fixed with the `railway.json` file
-- **Build fails**: Check the build logs in Railway dashboard
+- **"Nixpacks was unable to generate a build plan"**: Fixed with `railway.json`
+- **"Deploy directory 'dist' does not exist"**: Fixed with `netlify.toml`
+- **Build fails**: Check the build logs in Railway/Netlify dashboard
 - **CORS errors**: Update the CORS origins in Railway
 - **Database connection**: Verify your MongoDB connection string
 - **API errors**: Check Railway logs for backend issues
