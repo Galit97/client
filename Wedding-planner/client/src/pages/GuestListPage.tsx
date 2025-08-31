@@ -1228,6 +1228,7 @@ export default function GuestListPage() {
                         setEditingGuest({ ...editingGuest, group: e.target.value });
                       }} />
                     </div>
+                    /*update*/
                   </div>
                   <div className="card-row">
                     <div className="field">
