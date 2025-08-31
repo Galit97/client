@@ -4,9 +4,9 @@
   "description": "Wedding Planner Application - Root Configuration",
   "private": true,
   "scripts": {
-    "build": "cd Wedding-planner/server && npm install && npm run build",
+    "build": "cd Wedding-planner/client && npm install && npm run build",
     "start": "cd Wedding-planner/server && npm start",
-    "dev": "cd Wedding-planner/server && npm run dev",
+    "dev": "cd Wedding-planner/client && npm run dev",
     "install-server": "cd Wedding-planner/server && npm install",
     "install-client": "cd Wedding-planner/client && npm install",
     "install-all": "npm run install-server && npm run install-client"

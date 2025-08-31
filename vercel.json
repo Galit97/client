@@ -1,6 +1,6 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist",
+  "outputDirectory": "Wedding-planner/client/dist",
   "framework": "vite",
   "rewrites": [
     {
@@ -9,4 +9,3 @@
     }
   ]
 }
-
