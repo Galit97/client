@@ -27,6 +27,7 @@ app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? [
         'https://your-site-name.netlify.app', // Replace with your actual Netlify URL
+        'https://your-vercel-app.vercel.app', // Replace with your actual Vercel URL
         'http://localhost:5173' // For local development
       ]
     : true, // Allow all origins in development
