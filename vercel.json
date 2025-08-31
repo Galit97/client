@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "cd Wedding-planner/client && npm install && npm run build",
   "outputDirectory": "Wedding-planner/client/dist",
   "framework": "vite",
   "rewrites": [
