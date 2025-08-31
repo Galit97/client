@@ -79,7 +79,7 @@ export default function VenueComparisonPage() {
             setAdultGuests(serverData.guestCounts?.adultGuests || 80);
             setChildGuests(serverData.guestCounts?.childGuests || 20);
           } else {
-            const errorText = await comparisonsRes.text();
+            await comparisonsRes.text();
           }
         } else {
           setNoWeddingFound(true);
@@ -133,7 +133,7 @@ export default function VenueComparisonPage() {
       });
       
       if (response.ok) {
-        const result = await response.json();
+        await response.json();
         setSaveStatus('saved');
       } else {
         const errorText = await response.text();

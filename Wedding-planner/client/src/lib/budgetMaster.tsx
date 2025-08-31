@@ -249,7 +249,7 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
                headers: { Authorization: `Bearer ${token}` }
              });
              if (verifyResponse.ok) {
-               const savedData = await verifyResponse.json();
+                               await verifyResponse.json();
             
              }
            } catch (error: any) {

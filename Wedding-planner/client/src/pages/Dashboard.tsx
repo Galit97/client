@@ -214,7 +214,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
 
   // Listen for custom events from other components
   useEffect(() => {
-    const handleCustomEvent = (e: CustomEvent) => {
+    const handleCustomEvent = (_e: CustomEvent) => {
       fetchData();
     };
 
@@ -2045,7 +2045,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                                        // Update local state
                                        setWeddingData(updatedWeddingData);
                                      } else {
-                                       const errorData = await response.json();
+                                                                               await response.json();
                                      }
                                    } catch (error) {
                                      console.error('Error removing participant:', error);

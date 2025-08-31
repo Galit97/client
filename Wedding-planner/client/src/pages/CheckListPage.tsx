@@ -94,7 +94,7 @@ export default function CheckListPage() {
           const checklistData = await checklistRes.json();
           setItems(checklistData);
         } else {
-          const errorText = await checklistRes.text();
+          await checklistRes.text();
           setItems([]);
         }
 

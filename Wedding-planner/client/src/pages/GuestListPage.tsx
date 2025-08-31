@@ -195,7 +195,7 @@ export default function GuestListPage() {
         return;
       }
 
-      const importedGuests = jsonData.map((row: any, index: number) => {
+      const importedGuests = jsonData.map((row: any, _index: number) => {
         // Handle multiple possible column names
         const firstName = row['שם פרטי'] || row['firstName'] || row['שם'] || row['name'] || '';
         const lastName = row['שם משפחה'] || row['lastName'] || row['משפחה'] || row['family'] || '';
@@ -234,7 +234,7 @@ export default function GuestListPage() {
       });
 
       // Validate data - be more lenient with validation
-      const validGuests = importedGuests.filter((guest, index) => {
+      const validGuests = importedGuests.filter((guest, _index) => {
         const isValid = guest.firstName && guest.lastName && guest.seatsReserved > 0;
         return isValid;
       });
@@ -373,7 +373,7 @@ export default function GuestListPage() {
           const guestsData = await guestsRes.json();
           setGuests(guestsData);
         } else {
-          const errorText = await guestsRes.text();
+          await guestsRes.text();
           setGuests([]);
         }
 

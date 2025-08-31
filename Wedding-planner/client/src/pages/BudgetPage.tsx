@@ -224,7 +224,7 @@ const BudgetPage: React.FC = () => {
     
         
         // Log total deposits
-        const totalDeposits = suppliersData.reduce((sum, supplier) => sum + (supplier.deposit || 0), 0);
+        // const totalDeposits = suppliersData.reduce((sum, supplier) => sum + (supplier.deposit || 0), 0);
     
       }
     } catch (error) {
