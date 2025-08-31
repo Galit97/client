@@ -13,20 +13,6 @@ const createVendor = async (req: AuthenticatedRequest, res: Response) => {
 
     const { weddingID, vendorName, price, depositPaid, depositAmount, notes, contractFile, fileURL, status, type, phone } = req.body;
 
-    console.log('Creating vendor with data:', {
-      weddingID,
-      vendorName,
-      price,
-      depositPaid,
-      depositAmount,
-      notes,
-      contractFile,
-      fileURL,
-      status,
-      type,
-      phone
-    });
-
     // Validate weddingID format
     if (!mongoose.Types.ObjectId.isValid(weddingID)) {
       return res.status(400).json({ message: "Invalid wedding ID format" });
@@ -59,7 +45,6 @@ const createVendor = async (req: AuthenticatedRequest, res: Response) => {
       phone
     });
 
-    console.log('Vendor created successfully:', newVendor);
     res.status(201).json(newVendor);
   } catch (err: any) {
     console.error('Error creating vendor:', err);

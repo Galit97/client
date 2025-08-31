@@ -10,8 +10,6 @@ const createGuest = async (req: AuthenticatedRequest, res: Response) => {
       return res.status(401).json({ message: "Unauthorized: no user info" });
     }
 
-    console.log("Creating guest - Full request body:", req.body);
-
     const { 
       weddingID, 
       firstName, 
@@ -25,20 +23,6 @@ const createGuest = async (req: AuthenticatedRequest, res: Response) => {
       side,
       notes
     } = req.body;
-
-    console.log("Extracted fields:", {
-      weddingID, 
-      firstName, 
-      lastName, 
-      phone, 
-      email,
-      seatsReserved, 
-      tableNumber,
-      dietaryRestrictions,
-      group,
-      side,
-      notes
-    });
 
     // Validate that the wedding belongs to the current user
     const wedding = await Wedding.findOne({ 
@@ -69,7 +53,6 @@ const createGuest = async (req: AuthenticatedRequest, res: Response) => {
       invitationSent: false
     });
 
-    console.log("Created guest in DB:", newGuest);
     res.status(201).json(newGuest);
   } catch (err: any) {
     console.error('Error creating guest:', err);

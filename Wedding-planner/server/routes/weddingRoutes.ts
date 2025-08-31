@@ -15,7 +15,6 @@ const router = Router();
 
 // Add logging middleware for wedding routes
 router.use((req, res, next) => {
-  console.log(`💒 Wedding route: ${req.method} ${req.path}`);
   next();
 });
 

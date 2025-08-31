@@ -6,21 +6,16 @@ async function migrateVendorTypes() {
     try {
       require('dotenv').config();
     } catch (e) {
-      console.log('No .env file found, using default connection');
+      // No .env file found, using default connection
     }
 
     // Connect to MongoDB using the same connection string as your app
     const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/wedding-planner';
-    console.log('Attempting to connect to MongoDB...');
-    console.log('Connection string:', mongoUri);
     
     await mongoose.connect(mongoUri);
-    console.log('✅ Connected to MongoDB');
 
     // Get the database instance
     const db = mongoose.connection.db;
-    
-    console.log('Updating vendor collection schema...');
     
     // Update the collection validation schema
     await db.command({
@@ -72,24 +67,20 @@ async function migrateVendorTypes() {
       }
     });
 
-    console.log('✅ Vendor collection schema updated successfully');
-    console.log('🎉 Migration completed! You can now restart your server.');
-
   } catch (error) {
     console.error('❌ Migration failed:', error);
     console.error('Error details:', error.message);
     
     if (error.message.includes('ECONNREFUSED')) {
-      console.log('💡 Make sure MongoDB is running on your system');
+      // Make sure MongoDB is running on your system
     }
     
     if (error.message.includes('Authentication failed')) {
-      console.log('💡 Check your MongoDB connection string in .env file');
+      // Check your MongoDB connection string in .env file
     }
   } finally {
     if (mongoose.connection.readyState === 1) {
       await mongoose.disconnect();
-      console.log('Disconnected from MongoDB');
     }
   }
 }

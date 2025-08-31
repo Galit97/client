@@ -119,24 +119,16 @@ router.post('/fix-password', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    console.log('Found user:', user.email);
-    console.log('Current passwordHash:', user.passwordHash);
-
     // Hash the password "123456"
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash('123456', salt);
-    
-    console.log('New hashed password:', hashedPassword);
 
     // Update the user's password hash
     user.passwordHash = hashedPassword;
     await user.save();
-
-    console.log('Password hash updated successfully!');
     
     // Test the login
     const isMatch = await bcrypt.compare('123456', hashedPassword);
-    console.log('Password verification test:', isMatch ? 'SUCCESS' : 'FAILED');
 
     res.json({ 
       message: 'Password hash updated successfully!',

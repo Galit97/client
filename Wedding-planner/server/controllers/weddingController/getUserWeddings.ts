@@ -5,12 +5,9 @@ import User from "../../models/userModel";
 
 const getUserWeddings = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    console.log('🚀 getUserWeddings called');
     const userId = req.user?._id;
-    console.log('🔍 Fetching weddings for user ID:', userId);
     
     if (!userId) {
-      console.log('❌ No user info found');
       return res.status(401).json({ message: "Unauthorized: no user info" });
     }
 
@@ -24,8 +21,6 @@ const getUserWeddings = async (req: AuthenticatedRequest, res: Response) => {
       .populate('ownerID', 'firstName lastName')
       .sort({ createdAt: -1 }); // Sort by newest first
     
-    console.log('📋 Found weddings:', weddings.length);
-    
     // Transform the data to include user's role in each wedding
     const weddingsWithRole = weddings.map(wedding => {
       const isOwner = wedding.ownerID.toString() === userId;
@@ -37,8 +32,6 @@ const getUserWeddings = async (req: AuthenticatedRequest, res: Response) => {
         canDelete: isOwner // Only owner can delete
       };
     });
-    
-    console.log('✅ Returning weddings with roles');
     
     res.json(weddingsWithRole);
   } catch (err: any) {

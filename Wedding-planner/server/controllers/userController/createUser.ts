@@ -37,7 +37,6 @@ const createUser = async (req: MulterRequest, res: Response) => {
     // Send welcome email
     try {
       await sendWelcomeEmail(email, `${firstName} ${lastName}`);
-      console.log('Welcome email sent successfully');
     } catch (emailError) {
       console.error('Failed to send welcome email:', emailError);
       // Don't fail the registration if email fails

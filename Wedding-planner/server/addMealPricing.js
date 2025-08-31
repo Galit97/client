@@ -3,7 +3,7 @@ require('dotenv').config();
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/wedding-planner')
-  .then(() => console.log('Connected to MongoDB'))
+  .then(() => {})
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Define the wedding schema (simplified version)
@@ -62,22 +62,14 @@ const Wedding = mongoose.model('Wedding', weddingSchema);
 
 async function addMealPricingToWedding() {
   try {
-    console.log('🔍 Looking for wedding with ID: 6887a674ace27971ca6056ef');
-    
     const wedding = await Wedding.findById('6887a674ace27971ca6056ef');
     
     if (!wedding) {
-      console.log('❌ Wedding not found');
       return;
     }
     
-    console.log('📋 Found wedding:', wedding.weddingName);
-    console.log('🍽️ Current mealPricing:', wedding.mealPricing);
-    
     // Add default mealPricing if it doesn't exist
     if (!wedding.mealPricing) {
-      console.log('🔧 Adding default mealPricing...');
-      
       const defaultMealPricing = {
         basePrice: 0,
         childDiscount: 50,
@@ -92,18 +84,12 @@ async function addMealPricingToWedding() {
       
       wedding.mealPricing = defaultMealPricing;
       await wedding.save();
-      
-      console.log('✅ Added default mealPricing to wedding');
-      console.log('🍽️ New mealPricing:', wedding.mealPricing);
-    } else {
-      console.log('🍽️ MealPricing already exists:', wedding.mealPricing);
     }
     
   } catch (error) {
     console.error('❌ Error:', error);
   } finally {
     mongoose.connection.close();
-    console.log('🔌 Disconnected from MongoDB');
   }
 }
 

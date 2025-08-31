@@ -67,15 +67,10 @@ mongoose.connect('mongodb://localhost:27017/wedding-planner', {
 
 async function migrateBudgetsToWeddings() {
   try {
-    console.log('🚀 Starting budget migration...');
-    
     // Get all budgets
     const budgets = await Budget.find({});
-    console.log(`📦 Found ${budgets.length} budgets to migrate`);
     
     for (const budget of budgets) {
-      console.log(`\n🔍 Processing budget for owner: ${budget.ownerID}`);
-      
       // Find the wedding for this budget
       const wedding = await Wedding.findOne({ 
         $or: [
@@ -85,11 +80,8 @@ async function migrateBudgetsToWeddings() {
       });
       
       if (!wedding) {
-        console.log(`❌ No wedding found for budget owner ${budget.ownerID}`);
         continue;
       }
-      
-      console.log(`✅ Found wedding: ${wedding._id}`);
       
       // Create budget settings object
       const budgetSettings = {
@@ -104,7 +96,7 @@ async function migrateBudgetsToWeddings() {
       };
       
       // Update wedding with budget settings
-      const updatedWedding = await Wedding.findByIdAndUpdate(
+      await Wedding.findByIdAndUpdate(
         wedding._id,
         { 
           budgetSettings,
@@ -112,26 +104,15 @@ async function migrateBudgetsToWeddings() {
         },
         { new: true }
       );
-      
-      if (updatedWedding) {
-        console.log(`✅ Successfully migrated budget to wedding ${wedding._id}`);
-        console.log(`💰 Budget settings:`, budgetSettings);
-      } else {
-        console.log(`❌ Failed to update wedding ${wedding._id}`);
-      }
     }
     
-    console.log('\n🎉 Budget migration completed!');
-    
     // Optional: Remove old budget documents
-    const deleteResult = await Budget.deleteMany({});
-    console.log(`🗑️ Deleted ${deleteResult.deletedCount} old budget documents`);
+    await Budget.deleteMany({});
     
   } catch (error) {
     console.error('❌ Migration failed:', error);
   } finally {
     mongoose.connection.close();
-    console.log('🔌 Database connection closed');
   }
 }
 

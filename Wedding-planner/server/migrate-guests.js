@@ -9,8 +9,6 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/wedding-p
 
 async function migrateGuests() {
   try {
-    console.log('Starting guest migration...');
-    
     // Find all guests that are missing the new fields
     const guests = await Guest.find({
       $or: [
@@ -20,8 +18,6 @@ async function migrateGuests() {
         { notes: { $exists: false } }
       ]
     });
-
-    console.log(`Found ${guests.length} guests to migrate`);
 
     for (const guest of guests) {
       const updates = {};
@@ -44,11 +40,8 @@ async function migrateGuests() {
 
       if (Object.keys(updates).length > 0) {
         await Guest.findByIdAndUpdate(guest._id, updates);
-        console.log(`Updated guest ${guest.firstName} ${guest.lastName} with:`, updates);
       }
     }
-
-    console.log('Guest migration completed successfully!');
   } catch (error) {
     console.error('Error during guest migration:', error);
   } finally {

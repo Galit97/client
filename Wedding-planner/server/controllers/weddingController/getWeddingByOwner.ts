@@ -8,12 +8,9 @@ interface AuthenticatedRequest extends Request {
 
 const getWeddingByOwner = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    console.log('🚀 getWeddingByOwner called');
     const ownerID = req.user?._id;
-    console.log('🔍 Fetching wedding for user ID (owner or participant):', ownerID);
     
     if (!ownerID) {
-      console.log('❌ No user info found');
       return res.status(401).json({ message: "Unauthorized: no user info" });
     }
 
@@ -25,15 +22,7 @@ const getWeddingByOwner = async (req: AuthenticatedRequest, res: Response) => {
       ]
     }).populate('participants', 'firstName lastName role');
     
-    console.log('📋 Found wedding:', JSON.stringify(wedding, null, 2));
-    console.log('🍽️ Meal pricing from database:', JSON.stringify(wedding?.mealPricing, null, 2));
-    console.log('🔍 Wedding schema fields:', Object.keys(wedding?.toObject() || {}));
-    console.log('🔍 Has mealPricing field:', wedding?.hasOwnProperty('mealPricing'));
-    console.log('🔍 mealPricing type:', typeof wedding?.mealPricing);
-    console.log('🔍 mealPricing value:', wedding?.mealPricing);
-    
     if (!wedding) {
-      console.log('❌ Wedding not found for owner');
       return res.status(404).json({ message: "Wedding not found for this user" });
     }
     
@@ -55,10 +44,6 @@ const getWeddingByOwner = async (req: AuthenticatedRequest, res: Response) => {
       ...wedding.toObject(),
       mealPricing: wedding.mealPricing || defaultMealPricing
     };
-    
-    console.log('🍽️ Final mealPricing in response:', JSON.stringify(weddingResponse.mealPricing, null, 2));
-    console.log('✅ Returning wedding data with mealPricing');
-    console.log('📦 Full response:', JSON.stringify(weddingResponse, null, 2));
     
     res.json(weddingResponse);
   } catch (err: any) {

@@ -14,8 +14,6 @@ export const getVenueComparisons = async (req: AuthenticatedRequest, res: Respon
     }
 
     const { weddingID } = req.params;
-    
-    console.log('Get venue comparisons request:', { currentUserId, weddingID });
 
     // Validate weddingID format
     if (!mongoose.Types.ObjectId.isValid(weddingID)) {
@@ -37,19 +35,9 @@ export const getVenueComparisons = async (req: AuthenticatedRequest, res: Respon
       return res.status(403).json({ message: "You don't have permission to access this wedding's comparisons" });
     }
 
-    console.log('Get venue comparisons: User has access to wedding, fetching data...');
-
     const comparison = await VenueComparison.findOne({ weddingID });
     
-    console.log('Get venue comparisons: Found comparison:', {
-      weddingID,
-      hasComparison: !!comparison,
-      venuesCount: comparison?.venues?.length || 0,
-      guestCounts: comparison?.guestCounts
-    });
-    
     if (!comparison) {
-      console.log('Get venue comparisons: No comparison found, returning defaults');
       return res.json({ venues: [], guestCounts: { guestCount: 100, adultGuests: 80, childGuests: 20 } });
     }
 
@@ -58,7 +46,6 @@ export const getVenueComparisons = async (req: AuthenticatedRequest, res: Respon
       guestCounts: comparison.guestCounts
     };
     
-    console.log('Get venue comparisons: Returning data:', response);
     res.json(response);
   } catch (err: any) {
     console.error('Error getting venue comparisons:', err);
@@ -76,13 +63,6 @@ export const saveVenueComparisons = async (req: AuthenticatedRequest, res: Respo
     }
 
     const { weddingID, venues, guestCounts } = req.body;
-    
-    console.log('Save venue comparisons request:', {
-      currentUserId,
-      weddingID,
-      venuesCount: venues?.length || 0,
-      guestCounts
-    });
 
     // Validate weddingID format
     if (!mongoose.Types.ObjectId.isValid(weddingID)) {
@@ -104,20 +84,12 @@ export const saveVenueComparisons = async (req: AuthenticatedRequest, res: Respo
       return res.status(403).json({ message: "You don't have permission to save comparisons for this wedding" });
     }
 
-    console.log('Save venue comparisons: User has access to wedding, saving data...');
-
     // Upsert venue comparisons
-    const result = await VenueComparison.findOneAndUpdate(
+    await VenueComparison.findOneAndUpdate(
       { weddingID },
       { venues, guestCounts },
       { upsert: true, new: true }
     );
-
-    console.log('Save venue comparisons: Successfully saved:', {
-      weddingID,
-      savedVenuesCount: result.venues?.length || 0,
-      savedGuestCounts: result.guestCounts
-    });
 
     res.json({ message: "Venue comparisons saved successfully" });
   } catch (err: any) {

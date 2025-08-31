@@ -179,7 +179,6 @@ export const sendPasswordResetEmail = async (email: string, data: EmailTemplateD
       throw new Error('שגיאה בשליחת האימייל');
     }
 
-    console.log('Password reset email sent successfully:', result);
     return result;
   } catch (error) {
     console.error('Email service error:', error);
@@ -335,7 +334,6 @@ export const sendWelcomeEmail = async (email: string, userName: string) => {
       throw new Error('שגיאה בשליחת אימייל הפתיחה');
     }
 
-    console.log('Welcome email sent successfully:', result);
     return result;
   } catch (error) {
     console.error('Email service error:', error);
