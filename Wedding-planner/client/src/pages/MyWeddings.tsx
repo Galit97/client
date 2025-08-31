@@ -76,6 +76,13 @@ export default function MyWeddings() {
       if (res.ok) {
         showNotification('האירוע נמחק בהצלחה!', 'success');
         fetchWeddings(); // Refresh the list
+        
+        // Trigger dashboard refresh
+        if ((window as any).notifyDashboardUpdate) {
+          (window as any).notifyDashboardUpdate('wedding-deleted');
+        } else if ((window as any).triggerDashboardRefresh) {
+          (window as any).triggerDashboardRefresh('wedding-deleted');
+        }
       } else {
         const errorText = await res.text();
         console.error('Error deleting wedding:', errorText);

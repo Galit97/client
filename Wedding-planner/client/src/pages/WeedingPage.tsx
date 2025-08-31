@@ -121,7 +121,7 @@ export default function WeddingPage() {
         const res = await fetch("/api/users");
         if (!res.ok) throw new Error(res.statusText);
         const users = await res.json();
-        console.log("Fetched users:", users);
+
         setAllUsers(
           users.map((u: any) => ({
             id: u._id,
@@ -138,14 +138,11 @@ export default function WeddingPage() {
     async function fetchWedding(users: any[]) {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.log("No token found, skipping wedding fetch");
         setLoading(false);
         return;
       }
 
       try {
-        console.log("Fetching wedding with token:", token.substring(0, 20) + "...");
-        
         // If weddingId is provided, fetch that specific wedding, otherwise fetch user's wedding
         const endpoint = weddingId ? `/api/weddings/${weddingId}` : "/api/weddings/owner";
         const res = await fetch(endpoint, {
@@ -154,10 +151,7 @@ export default function WeddingPage() {
           },
         });
 
-        console.log("Wedding fetch response status:", res.status);
-
         if (res.status === 404) {
-          console.log("No wedding found for user, setting initial state");
           setWedding(initialWedding);
           setLoading(false);
           return;
@@ -166,35 +160,25 @@ export default function WeddingPage() {
         if (!res.ok) throw new Error("Failed to fetch wedding");
 
         const data = await res.json();
-        console.log("Fetched wedding data:", JSON.stringify(data, null, 2));
-        console.log("Meal pricing from server:", JSON.stringify(data.mealPricing, null, 2));
 
         // Convert date to string format for the input field
         const formattedDate = data.weddingDate 
           ? new Date(data.weddingDate).toISOString().split('T')[0]
           : "";
-        
-        console.log("Original weddingDate:", data.weddingDate);
-        console.log("Formatted weddingDate:", formattedDate);
 
         // Handle participants - they come as ObjectIds from server
         const participants = (data.participants || []).map((p: any) => {
-          console.log("Processing participant:", p);
           if (typeof p === "string") {
             // If it's just an ID string, find the user name
             const user = users.find((u: any) => u._id === p);
-            console.log("Found user for string participant:", user);
             return { id: p, name: user ? `${user.firstName} ${user.lastName}` : "Unknown User" };
           } else if (p._id) {
             // If it's an object with _id
             const user = users.find((u: any) => u._id === p._id);
-            console.log("Found user for object participant:", user);
             return { id: p._id, name: user ? `${user.firstName} ${user.lastName}` : p.name || "Unknown User" };
           }
           return { id: p.id || p, name: p.name || "Unknown User" };
         });
-
-        console.log("Processed participants:", participants);
 
         const weddingData = { 
           ...data, 
@@ -203,9 +187,6 @@ export default function WeddingPage() {
           mealPricing: data.mealPricing || initialWedding.mealPricing
         };
         
-        console.log("Setting wedding data:", JSON.stringify(weddingData, null, 2));
-        console.log("🍽️ Meal pricing from server:", JSON.stringify(data.mealPricing, null, 2));
-        console.log("🍽️ Meal pricing after processing:", JSON.stringify(weddingData.mealPricing, null, 2));
         setWedding(weddingData);
       } catch (error) {
         console.error("שגיאה בשליפת אירוע", error);
@@ -258,7 +239,6 @@ export default function WeddingPage() {
             total: guests.length
           };
           setGuestCounts(counts);
-          console.log('👥 Guest counts:', counts);
         }
       } catch (error) {
         console.error('Error fetching guest counts:', error);
@@ -321,8 +301,6 @@ export default function WeddingPage() {
     const token = localStorage.getItem("token");
     const currentUser = currentUserRaw ? JSON.parse(currentUserRaw) : null;
 
-    console.log("Submitting wedding form with current user:", currentUser);
-
     if (!currentUser || !currentUser._id) {
       showNotification("לא מזוהה משתמש מחובר", "error");
       setSaving(false);
@@ -346,16 +324,12 @@ export default function WeddingPage() {
       mealPricing: wedding.mealPricing,
     };
 
-    console.log("Saving wedding data:", JSON.stringify(weddingToSave, null, 2));
-    console.log("Meal pricing data:", JSON.stringify(wedding.mealPricing, null, 2));
-    console.log("Wedding ID for update:", wedding._id);
-    console.log("🔍 Wedding state before save:", JSON.stringify(wedding, null, 2));
 
-    try {
-      let res;
-      if (wedding._id) {
-        console.log("Updating existing wedding with ID:", wedding._id);
-        res = await fetch(`/api/weddings/${wedding._id}`, {
+
+          try {
+        let res;
+        if (wedding._id) {
+          res = await fetch(`/api/weddings/${wedding._id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -364,7 +338,6 @@ export default function WeddingPage() {
           body: JSON.stringify(weddingToSave),
         });
       } else {
-        console.log("Creating new wedding");
         res = await fetch("/api/weddings", {
           method: "POST",
           headers: {
@@ -375,8 +348,7 @@ export default function WeddingPage() {
         });
       }
 
-      console.log("Response status:", res.status);
-      console.log("Response headers:", Object.fromEntries(res.headers.entries()));
+
 
       if (!res.ok) {
         const text = await res.text();
@@ -386,8 +358,6 @@ export default function WeddingPage() {
       }
 
       const saved = await res.json();
-      console.log("✅ אירוע נשמר בהצלחה:", JSON.stringify(saved, null, 2));
-      console.log("🍽️ Meal pricing in response:", JSON.stringify(saved.mealPricing, null, 2));
       setWedding({ ...wedding, _id: saved._id });
       
       // Only show alert for manual saves, not auto-saves
@@ -471,8 +441,7 @@ export default function WeddingPage() {
   }
 
   function handleMealPricingChange(field: keyof MealPricing, value: number) {
-    console.log(`🔄 Changing meal pricing ${field} to:`, value);
-    console.log('🍽️ Current mealPricing before change:', JSON.stringify(wedding.mealPricing, null, 2));
+    
     
     setWedding(prev => {
       const newWedding = {
@@ -482,7 +451,6 @@ export default function WeddingPage() {
           [field]: value
         }
       };
-      console.log('🍽️ New wedding state after meal pricing change:', JSON.stringify(newWedding.mealPricing, null, 2));
       return newWedding;
     });
 
@@ -493,8 +461,6 @@ export default function WeddingPage() {
 
     // Set new timeout for auto-save
     saveTimeoutRef.current = setTimeout(() => {
-      console.log('💾 Auto-saving meal pricing changes...');
-      console.log('🍽️ Final mealPricing to save:', JSON.stringify(wedding.mealPricing, null, 2));
       setAutoSaving(true);
       saveWeddingData().finally(() => {
         setAutoSaving(false);
@@ -746,13 +712,13 @@ export default function WeddingPage() {
             }}
             onMouseEnter={(e) => {
               if (!saving) {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
+               
                 e.currentTarget.style.transform = 'translateY(-2px)';
               }
             }}
             onMouseLeave={(e) => {
               if (!saving) {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+             
                 e.currentTarget.style.transform = 'translateY(0)';
               }
             }}
@@ -1288,13 +1254,13 @@ export default function WeddingPage() {
                          type="button"
                          onClick={() => handleRemoveParticipant(p.id)}
                          style={{ 
-                           padding: '8px 16px', 
-                           border: '1px solid #ef4444', 
+                           padding: '8px 8px', 
+                           border: '1px solidrgb(224, 150, 150)', 
                            background: '#ef4444',
                            color: 'white',
                            borderRadius: '8px',
                            cursor: 'pointer',
-                           fontSize: '14px',
+                           fontSize: '12px',
                            fontWeight: '600',
                            transition: 'all 0.2s ease'
                          }}
@@ -1363,14 +1329,14 @@ export default function WeddingPage() {
                 if (!saving) {
                   e.currentTarget.style.background = '#164e63';
                   e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(29, 90, 120, 0.4)';
+          
                 }
               }}
               onMouseLeave={(e) => {
                 if (!saving) {
                   e.currentTarget.style.background = '#1d5a78';
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(29, 90, 120, 0.3)';
+             
                 }
               }}
             >
@@ -1403,17 +1369,17 @@ export default function WeddingPage() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)'
+                
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#dc2626';
                   e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(239, 68, 68, 0.4)';
+         
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = '#ef4444';
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.3)';
+               
                 }}
               >
                 🗑️ מחק אירוע
@@ -1532,7 +1498,6 @@ export default function WeddingPage() {
             <button
               type="button"
               onClick={() => {
-                console.log('🚀 Immediate save clicked');
                 setAutoSaving(true);
                 saveWeddingData().finally(() => {
                   setAutoSaving(false);
@@ -1541,7 +1506,7 @@ export default function WeddingPage() {
               disabled={saving}
               style={{
                 padding: '8px 16px',
-                background: saving ? '#e5e7eb' : '#f59e0b',
+                background: saving ? '#1d5a78' : '#1d5a78',
                 color: saving ? '#9ca3af' : 'white',
                 border: 'none',
                 borderRadius: '6px',
@@ -1827,7 +1792,6 @@ export default function WeddingPage() {
                       total: guests.length
                     };
                     setGuestCounts(counts);
-                    console.log('🔄 Refreshed guest counts:', counts);
                   }
                 } catch (error) {
                   console.error('Error refreshing guest counts:', error);
@@ -1982,8 +1946,6 @@ export default function WeddingPage() {
           <button
             type="button"
             onClick={() => {
-              console.log('💾 Save button clicked');
-              console.log('🍽️ Current meal pricing before save:', JSON.stringify(wedding.mealPricing, null, 2));
               saveWeddingData();
             }}
             disabled={saving}

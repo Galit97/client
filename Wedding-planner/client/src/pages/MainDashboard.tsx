@@ -14,6 +14,7 @@ import AccountSettings from "./account/AccountSettings";
 import MyWeddings from "./weddings/MyWeddings";
 import ImportantThingsPage from "./ImportantThingsPage";
 import WeddingDayPage from "./WeddingDayPage";
+import wediLogo from "../assets/images/wedi-app-logo.png";
 import "../styles/Dashboard.css";
 
 export default function MainDashboard() {
@@ -87,10 +88,34 @@ export default function MainDashboard() {
         }}
         className="dashboard-header"
       >
-        <Menu 
-          onSelect={setSelectedSection} 
-          onLogout={handleLogout}
-        />
+        <div style={{
+          flex: 1,
+          display: "flex",
+          justifyContent: "flex-start"
+        }}>
+          <Menu 
+            onSelect={setSelectedSection} 
+            onLogout={handleLogout}
+          />
+        </div>
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+          <img 
+            src={wediLogo} 
+            alt="Wedi App Logo" 
+            style={{
+              width: '80px',
+              height: 'auto',
+              maxHeight: '80px'
+            }}
+          />
+        </div>
+        <div style={{
+          flex: 1
+        }}></div>
       </header>
 
       <main style={{ padding: "0 20px", paddingBottom: "80px" }}>{renderSection()}</main>

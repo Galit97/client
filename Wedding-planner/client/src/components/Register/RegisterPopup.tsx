@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../../api/authService';
 import { useNotification } from '../Notification/NotificationContext';
+import wediLogo from '../../assets/images/wedi-app-logo.png';
 
 type Props = {
   isOpen: boolean;
@@ -62,7 +63,7 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
       };
 
       await registerUser(dataToSend);
-      console.log('נרשמת בהצלחה');
+   
       onClose();
       onSuccess();
       navigate('/dashboard'); 
@@ -149,17 +150,20 @@ export default function RegisterPopup({ isOpen, onClose, onSuccess, onSwitchToLo
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <div style={{
-            width: '70px',
-            height: '70px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #1E5A78, #2C6B8B)',
             margin: '0 auto 15px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '28px'
+            justifyContent: 'center'
           }}>
-            💝
+            <img 
+              src={wediLogo} 
+              alt="Wedi App Logo" 
+              style={{
+                width: '80px',
+                height: '60px',
+                objectFit: 'contain'
+              }}
+            />
           </div>
           <h2 style={{
             margin: 0,

@@ -110,21 +110,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
       });
       if (weddingRes.ok) {
         const wedding = await weddingRes.json();
-        console.log('Wedding data from server:', wedding);
-        console.log('Participants from server:', wedding.participants);
         
         // If participants are just IDs, fetch user details
         if (wedding.participants && wedding.participants.length > 0) {
           const firstParticipant = wedding.participants[0];
           if (typeof firstParticipant === 'string' || !firstParticipant.firstName) {
-            console.log('Participants are IDs, fetching user details...');
             // Fetch all users to get names
             const usersRes = await fetch(apiUrl("/api/users"), {
               headers: { Authorization: `Bearer ${token}` }
             });
             if (usersRes.ok) {
               const users = await usersRes.json();
-              console.log('All users:', users);
               
               // Map participant IDs to user objects
               const populatedParticipants = wedding.participants.map((participantId: string | any) => {
@@ -147,7 +143,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
               });
               
               wedding.participants = populatedParticipants;
-              console.log('Populated participants:', populatedParticipants);
             }
           }
         }
@@ -207,7 +202,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'dashboard-needs-refresh') {
-        console.log('Dashboard refresh triggered by storage event');
         fetchData();
         // Clear the flag
         localStorage.removeItem('dashboard-needs-refresh');
@@ -221,7 +215,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   // Listen for custom events from other components
   useEffect(() => {
     const handleCustomEvent = (e: CustomEvent) => {
-      console.log('Dashboard refresh triggered by custom event:', e.detail);
       fetchData();
     };
 
@@ -282,8 +275,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   // Expose refresh function globally for other components to use
   useEffect(() => {
     const triggerDashboardRefresh = (reason?: string) => {
-      console.log('Dashboard refresh triggered:', reason);
-      
       // Trigger storage event for cross-tab communication
       localStorage.setItem('dashboard-needs-refresh', Date.now().toString());
       
@@ -297,9 +288,23 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     // Expose the function globally
     (window as any).triggerDashboardRefresh = triggerDashboardRefresh;
 
+    // Also expose a more reliable version that works even if dashboard isn't loaded
+    (window as any).notifyDashboardUpdate = (reason?: string) => {
+      // Always trigger storage event for cross-tab communication
+      localStorage.setItem('dashboard-needs-refresh', Date.now().toString());
+      
+      // Always trigger custom event
+      window.dispatchEvent(new CustomEvent('dashboard-refresh', { detail: reason }));
+      
+      // If dashboard is loaded, also call fetchData directly
+      if (typeof fetchData === 'function') {
+        fetchData();
+      }
+    };
+
     return () => {
-      // Cleanup
       delete (window as any).triggerDashboardRefresh;
+      delete (window as any).notifyDashboardUpdate;
     };
   }, [fetchData]);
 
@@ -423,7 +428,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     const firstInitial = firstName ? firstName.charAt(0).toUpperCase() : '';
     const lastInitial = lastName ? lastName.charAt(0).toUpperCase() : '';
     const result = firstInitial + lastInitial;
-    console.log(`getInitials("${firstName}", "${lastName}") = "${result}"`);
     
     // If we got Hebrew "Unknown User" text, show different initials
     if (firstName === 'משתמש' && lastName === 'לא ידוע') {
@@ -508,7 +512,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   // Function to save wedding date
   const handleSaveWeddingDate = async () => {
     if (!selectedDate || !coupleName) {
-      console.log('אנא מלאו את כל השדות הנדרשים');
       return;
     }
 
@@ -543,13 +546,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
         setShowDatePicker(false);
         setSelectedDate('');
         setCoupleName('');
-        console.log('תאריך החתונה נשמר בהצלחה!');
-      } else {
-        console.log('שגיאה בשמירת תאריך החתונה');
       }
     } catch (error) {
       console.error("Error saving wedding date:", error);
-      console.log('שגיאה בשמירת תאריך החתונה');
     }
   };
 
@@ -575,12 +574,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
         alignItems: 'center',
         gap: '8px'
       }}>
-        {/* Debug info */}
-        {(() => {
-          console.log('weddingData:', weddingData);
-          console.log('participants:', weddingData?.participants);
-          return null;
-        })()}
+
         
         {weddingData?.participants && weddingData.participants.length > 0 ? (
           <>
@@ -593,9 +587,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
               ];
               const color = colors[index % colors.length];
               
-              // Debug logging
-              console.log('Participant:', participant);
-              console.log('Type of participant:', typeof participant);
+
               
               // Handle case where participant might be just an ID string
               let firstName = '';
@@ -617,8 +609,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                 role = participant.role || 'Member';
               }
               
-              console.log('Processed participant:', { participantId, firstName, lastName, role });
-              console.log('Initials:', getInitials(firstName, lastName));
+
               
               return (
                 <div 
@@ -854,12 +845,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
             <h2 style={{ margin: '0 0 20px 0', fontSize: '28px', color: 'white'}}>
               {timeLeft.days > 0 ? `ספירה לאחור לחתונה של ${weddingData?.weddingName || 'הזוג'}` : '🎉 היום החתונה!'}
         </h2>
-            {/* Debug info */}
-            {(() => {
-              console.log('weddingName from weddingData:', weddingData?.weddingName);
-              console.log('full weddingData:', weddingData);
-              return null;
-            })()}
+
         
         {timeLeft.days > 0 ? (
           <div style={{ textAlign: 'center' }}>
@@ -2058,14 +2044,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                                      if (response.ok) {
                                        // Update local state
                                        setWeddingData(updatedWeddingData);
-                                                                               console.log(`${firstName} ${lastName} הוסר מהאירוע בהצלחה`);
                                      } else {
                                        const errorData = await response.json();
-                                                                               console.log(`שגיאה בהסרת השותף: ${errorData.message || 'שגיאה לא ידועה'}`);
                                      }
                                    } catch (error) {
                                      console.error('Error removing participant:', error);
-                                                                           console.log('שגיאה בהסרת השותף');
                                    }
                                  }
                                }}
@@ -2144,7 +2127,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                       const url = `${window.location.origin}/invite/${data.token}`;
                       setInviteLink(url);
                     } catch (e) {
-                                             console.log('שגיאה ביצירת קישור הזמנה');
                     } finally {
                       setCreatingInvite(false);
                     }
@@ -2214,7 +2196,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                       }}
                       onClick={() => { 
                         navigator.clipboard.writeText(inviteLink); 
-                                                 console.log('הקישור הועתק ללוח!');
+
                       }}
                     >
                       📋 העתק

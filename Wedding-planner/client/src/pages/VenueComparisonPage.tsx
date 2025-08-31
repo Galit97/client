@@ -69,29 +69,19 @@ export default function VenueComparisonPage() {
           setWeddingId(weddingId);
           
           // Load comparisons from server
-          console.log('Loading venue comparisons for wedding:', weddingId);
           const comparisonsRes = await fetch(`/api/comparisons/venue/${weddingId}`, { 
             headers: { Authorization: `Bearer ${token}` } 
           });
-          
-          console.log('Venue comparisons response status:', comparisonsRes.status);
           if (comparisonsRes.ok) {
             const serverData = await comparisonsRes.json();
-            console.log('Loaded venue comparisons:', serverData);
-            console.log('Number of venues loaded:', serverData.venues?.length || 0);
-            console.log('Guest counts loaded:', serverData.guestCounts);
-            
             setVenues(serverData.venues || []);
             setGuestCount(serverData.guestCounts?.guestCount || 100);
             setAdultGuests(serverData.guestCounts?.adultGuests || 80);
             setChildGuests(serverData.guestCounts?.childGuests || 20);
           } else {
             const errorText = await comparisonsRes.text();
-            console.log('Failed to load venue comparisons:', errorText);
-            console.log('Response status:', comparisonsRes.status);
           }
         } else {
-          console.log('No wedding found for user');
           setNoWeddingFound(true);
         }
       } catch (error) {
@@ -133,9 +123,6 @@ export default function VenueComparisonPage() {
         }
       };
       
-      console.log('Saving venue data:', saveData);
-      console.log('Number of venues to save:', venues.length);
-      
       const response = await fetch('/api/comparisons/venue', {
         method: 'POST',
         headers: {
@@ -145,12 +132,8 @@ export default function VenueComparisonPage() {
         body: JSON.stringify(saveData),
       });
       
-      console.log('Save response status:', response.status);
-      console.log('Save response headers:', response.headers);
-      
       if (response.ok) {
         const result = await response.json();
-        console.log('Save successful:', result);
         setSaveStatus('saved');
       } else {
         const errorText = await response.text();

@@ -11,7 +11,7 @@ const createVendor = async (req: AuthenticatedRequest, res: Response) => {
       return res.status(401).json({ message: "Unauthorized: no user info" });
     }
 
-    const { weddingID, vendorName, price, depositPaid, depositAmount, notes, contractFile, fileURL, status, type } = req.body;
+    const { weddingID, vendorName, price, depositPaid, depositAmount, notes, contractFile, fileURL, status, type, phone } = req.body;
 
     console.log('Creating vendor with data:', {
       weddingID,
@@ -23,7 +23,8 @@ const createVendor = async (req: AuthenticatedRequest, res: Response) => {
       contractFile,
       fileURL,
       status,
-      type
+      type,
+      phone
     });
 
     // Validate weddingID format
@@ -54,7 +55,8 @@ const createVendor = async (req: AuthenticatedRequest, res: Response) => {
       contractFile,
       fileURL,
       status,
-      type
+      type,
+      phone
     });
 
     console.log('Vendor created successfully:', newVendor);

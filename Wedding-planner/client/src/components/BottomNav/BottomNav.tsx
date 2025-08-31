@@ -66,11 +66,10 @@ const BottomNav: React.FC<BottomNavProps> = ({ onSelect, currentSection }) => {
   ];
 
   const handleNavClick = (item: typeof navItems[0]) => {
-    console.log('Nav item clicked:', item.id, 'Type:', item.type);
-    console.log('Current activeDropdown:', activeDropdown);
+    
     if (item.type === 'dropdown') {
       const newActiveDropdown = activeDropdown === item.id ? null : item.id;
-      console.log('Setting active dropdown to:', newActiveDropdown);
+   
       setActiveDropdown(newActiveDropdown);
     } else {
       onSelect(item.id);
@@ -176,7 +175,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ onSelect, currentSection }) => {
 
                         {/* Dropdown Menu */}
             {(() => {
-              console.log('Rendering dropdown for:', item.id, 'activeDropdown:', activeDropdown, 'should show:', item.type === 'dropdown' && activeDropdown === item.id);
+           
               return null;
             })()}
                          <div

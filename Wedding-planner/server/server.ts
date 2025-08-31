@@ -19,13 +19,6 @@ const app: Application = express();
 
 // Add logging middleware
 app.use((req: Request, res: Response, next) => {
-  console.log(`🌐 ${new Date().toISOString()} - ${req.method} ${req.path}`);
-  if (req.body && Object.keys(req.body).length > 0) {
-    console.log(`📦 Request body:`, JSON.stringify(req.body, null, 2));
-  }
-  if (req.query && Object.keys(req.query).length > 0) {
-    console.log(`🔍 Query params:`, JSON.stringify(req.query, null, 2));
-  }
   next();
 });
 
@@ -61,7 +54,7 @@ const PORT = process.env.PORT || 5000;
 
 connectDB()
   .then(() => {
-    app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+    app.listen(PORT, () => {});
   })
   .catch((err: any) => {
     console.error("Failed to start server:", err);

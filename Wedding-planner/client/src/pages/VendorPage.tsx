@@ -111,13 +111,11 @@ export default function VendorsListPage() {
     async function fetchData() {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.log("No token found");
         setLoading(false);
         return;
       }
 
       try {
-        console.log("Starting to fetch vendor data...");
         
         // First, get the user's wedding
         const weddingRes = await fetch('/api/weddings/owner', {
@@ -126,10 +124,7 @@ export default function VendorsListPage() {
           },
         });
 
-        console.log("Wedding response status:", weddingRes.status);
-
         if (weddingRes.status === 404) {
-          console.log("No wedding found for user");
           setLoading(false);
           return;
         }
@@ -141,26 +136,20 @@ export default function VendorsListPage() {
         const weddingData = await weddingRes.json();
         setWeddingId(weddingData._id);
         setWeddingData(weddingData);
-        console.log("Found wedding ID:", weddingData._id);
 
         // Fetch vendors for this wedding
-        console.log("Fetching vendors for wedding:", weddingData._id);
         const vendorsRes = await fetch('/api/vendors', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        console.log("Vendors response status:", vendorsRes.status);
-
         if (vendorsRes.ok) {
           const vendorsData = await vendorsRes.json();
           setVendors(vendorsData);
-          console.log("Fetched vendors:", vendorsData);
           
           // If no vendors exist, create default ones
           if (vendorsData.length === 0) {
-            console.log("No vendors found, creating default vendors...");
             for (const defaultVendor of defaultVendors) {
               const vendorData = {
                 ...defaultVendor,
@@ -185,13 +174,11 @@ export default function VendorsListPage() {
               if (createRes.ok) {
                 const created = await createRes.json();
                 setVendors(prev => [...prev, created]);
-                console.log(`Created default vendor: ${defaultVendor.vendorName}`);
               }
             }
             defaultVendorsCreatedRef.current = true;
           }
         } else {
-          console.log("No vendors found or error fetching");
           setVendors([]);
         }
 
@@ -295,8 +282,6 @@ export default function VendorsListPage() {
         weddingID: weddingId,
       };
 
-      console.log("Adding vendor:", vendorData);
-
       const res = await fetch("/api/vendors", {
         method: "POST",
         headers: { 
@@ -314,7 +299,6 @@ export default function VendorsListPage() {
       }
 
       const created = await res.json();
-      console.log("Vendor created:", created);
       setVendors([...vendors, created]);
       setNewVendor({
         vendorName: "",
@@ -329,10 +313,12 @@ export default function VendorsListPage() {
       });
       setShowAddVendorModal(false);
       
-      // Trigger dashboard refresh
-      if ((window as any).triggerDashboardRefresh) {
-        (window as any).triggerDashboardRefresh('vendor-added');
-      }
+             // Trigger dashboard refresh
+       if ((window as any).notifyDashboardUpdate) {
+         (window as any).notifyDashboardUpdate('vendor-added');
+       } else if ((window as any).triggerDashboardRefresh) {
+         (window as any).triggerDashboardRefresh('vendor-added');
+       }
     } catch (error) {
       console.error("Error adding vendor:", error);
       showNotification("שגיאה בהוספת ספק", "error");
@@ -358,10 +344,12 @@ export default function VendorsListPage() {
         setVendors(vendors.map(v => v._id === updatedVendor._id ? updated : v));
         setEditingVendor(null);
         
-        // Trigger dashboard refresh
-        if ((window as any).triggerDashboardRefresh) {
-          (window as any).triggerDashboardRefresh('vendor-updated');
-        }
+                 // Trigger dashboard refresh
+         if ((window as any).notifyDashboardUpdate) {
+           (window as any).notifyDashboardUpdate('vendor-updated');
+         } else if ((window as any).triggerDashboardRefresh) {
+           (window as any).triggerDashboardRefresh('vendor-updated');
+         }
       }
     } catch (error) {
       console.error("Error updating vendor:", error);
@@ -382,9 +370,17 @@ export default function VendorsListPage() {
         },
       });
 
-      if (res.ok) {
-        setVendors(vendors.filter(v => v._id !== id));
-      }
+             if (res.ok) {
+         setVendors(vendors.filter(v => v._id !== id));
+         showNotification("הספק נמחק בהצלחה", "success");
+         
+         // Trigger dashboard refresh
+         if ((window as any).notifyDashboardUpdate) {
+           (window as any).notifyDashboardUpdate('vendor-deleted');
+         } else if ((window as any).triggerDashboardRefresh) {
+           (window as any).triggerDashboardRefresh('vendor-deleted');
+         }
+       }
     } catch (error) {
       console.error("Error deleting vendor:", error);
     }
@@ -397,22 +393,14 @@ export default function VendorsListPage() {
     if (!token) return;
 
     try {
-      console.log("Creating default vendors...");
-      console.log("Current vendors:", vendors.map(v => v.vendorName));
-      
       // Check which default vendors are missing
       const existingVendorNames = vendors.map(v => v.vendorName);
       const missingVendors = defaultVendors.filter(dv => !existingVendorNames.includes(dv.vendorName));
 
-      console.log("Missing vendors:", missingVendors.map(v => v.vendorName));
-
       if (missingVendors.length === 0) {
-        console.log("All default vendors already exist");
         defaultVendorsCreatedRef.current = true;
         return; // All default vendors already exist
       }
-
-      console.log(`Creating ${missingVendors.length} default vendors...`);
 
       // Create missing vendors
       for (const defaultVendor of missingVendors) {
@@ -439,14 +427,20 @@ export default function VendorsListPage() {
         if (res.ok) {
           const created = await res.json();
           setVendors(prev => [...prev, created]);
-          console.log(`Created vendor: ${defaultVendor.vendorName}`);
         } else {
           const errorText = await res.text();
           console.error(`Failed to create vendor: ${defaultVendor.vendorName}`, errorText);
           console.error('Vendor data that failed:', vendorData);
         }
       }
-      console.log("Finished creating default vendors");
+      
+      // Trigger dashboard refresh after creating default vendors
+      if ((window as any).notifyDashboardUpdate) {
+        (window as any).notifyDashboardUpdate('default-vendors-created');
+      } else if ((window as any).triggerDashboardRefresh) {
+        (window as any).triggerDashboardRefresh('default-vendors-created');
+      }
+      
       defaultVendorsCreatedRef.current = true;
     } catch (error) {
       console.error("Error creating default vendors:", error);
@@ -2202,3 +2196,4 @@ export default function VendorsListPage() {
     </div>
   );
 }
+

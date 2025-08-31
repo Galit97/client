@@ -140,7 +140,6 @@ export default function GuestListPage() {
 
   const exportToExcel = () => {
     if (guests.length === 0) {
-      console.log('אין מוזמנים לייצא');
       return;
     }
 
@@ -191,10 +190,7 @@ export default function GuestListPage() {
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
       const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-      console.log('Raw Excel data:', jsonData); // Debug log
-
       if (jsonData.length === 0) {
-        console.log('הקובץ ריק או לא מכיל נתונים תקינים');
         setImporting(false);
         return;
       }
@@ -220,7 +216,7 @@ export default function GuestListPage() {
         // Convert side to English
         const sideEnglish = side === 'כלה' ? 'bride' : side === 'חתן' ? 'groom' : 'shared';
 
-        console.log(`Row ${index + 1}:`, { firstName, lastName, phone, email, seatsReserved: parsedSeats, tableNumber: parsedTable, dietaryRestrictions, group, side: sideEnglish, notes, status }); // Debug log
+
 
         return {
           firstName: firstName.toString().trim(),
@@ -240,22 +236,12 @@ export default function GuestListPage() {
       // Validate data - be more lenient with validation
       const validGuests = importedGuests.filter((guest, index) => {
         const isValid = guest.firstName && guest.lastName && guest.seatsReserved > 0;
-        if (!isValid) {
-          console.log(`Invalid guest at row ${index + 1}:`, guest); // Debug log
-        }
         return isValid;
       });
 
       if (validGuests.length === 0) {
-        console.log('לא נמצאו נתונים תקינים בקובץ. אנא ודא שיש לפחות שם פרטי, שם משפחה ומספר מקומות שמורים');
         setImporting(false);
         return;
-      }
-
-      console.log('Valid guests to import:', validGuests); // Debug log
-
-      if (validGuests.length !== importedGuests.length) {
-        console.log(`יובאו ${validGuests.length} מוזמנים מתוך ${importedGuests.length} (חלק מהשורות לא היו תקינות)`);
       }
 
       // Add guests to database
@@ -266,7 +252,6 @@ export default function GuestListPage() {
       
     } catch (error) {
       console.error('Error importing Excel:', error);
-      console.log('שגיאה בייבוא הקובץ. אנא ודא שהקובץ בפורמט Excel תקין');
       setImporting(false);
     }
   };
@@ -274,7 +259,6 @@ export default function GuestListPage() {
   const addMultipleGuests = async (guestsToAdd: any[]) => {
     const token = localStorage.getItem("token");
     if (!token || !weddingId) {
-      console.log('שגיאה: לא נמצא משתמש מחובר או אירוע');
       return;
     }
 
@@ -284,8 +268,6 @@ export default function GuestListPage() {
 
     for (const guestData of guestsToAdd) {
       try {
-        console.log('Adding guest:', guestData); // Debug log
-        
         const res = await fetch('/api/guests', {
           method: 'POST',
           headers: { 
@@ -303,7 +285,6 @@ export default function GuestListPage() {
           const created = await res.json();
           setGuests(prev => [...prev, created]);
           successCount++;
-          console.log('Successfully added guest:', created); // Debug log
         } else {
           const errorData = await res.json().catch(() => ({ message: 'Unknown error' }));
           console.error('Failed to add guest:', errorData); // Debug log
@@ -356,13 +337,11 @@ export default function GuestListPage() {
     async function fetchData() {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.log("No token found");
         setLoading(false);
         return;
       }
 
       try {
-        console.log("Starting to fetch data...");
         
         // First, get the user's wedding
         const weddingRes = await fetch('/api/weddings/owner', {
@@ -371,10 +350,7 @@ export default function GuestListPage() {
           },
         });
 
-        console.log("Wedding response status:", weddingRes.status);
-
         if (weddingRes.status === 404) {
-          console.log("No wedding found for user");
           setLoading(false);
           return;
         }
@@ -385,27 +361,19 @@ export default function GuestListPage() {
 
         const weddingData = await weddingRes.json();
         setWeddingId(weddingData._id);
-        console.log("Found wedding ID:", weddingData._id);
 
         // Then fetch guests for this wedding
-        console.log("Fetching guests for wedding:", weddingData._id);
         const guestsRes = await fetch(`/api/guests/by-wedding/${weddingData._id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        console.log("Guests response status:", guestsRes.status);
-        console.log("Guests response headers:", guestsRes.headers);
-
         if (guestsRes.ok) {
           const guestsData = await guestsRes.json();
           setGuests(guestsData);
-          console.log("Fetched guests:", guestsData);
         } else {
           const errorText = await guestsRes.text();
-          console.log("Error response:", errorText);
-          console.log("No guests found or error fetching guests");
           setGuests([]);
         }
 
@@ -424,13 +392,11 @@ export default function GuestListPage() {
   async function addGuest(e: React.FormEvent) {
     e.preventDefault();
     if (!weddingId) {
-      console.log("לא נמצא אירוע. אנא צור אירוע קודם.");
       return;
     }
 
     const token = localStorage.getItem("token");
     if (!token) {
-      console.log("לא מזוהה משתמש מחובר");
       return;
     }
 
@@ -441,8 +407,6 @@ export default function GuestListPage() {
         status: 'Invited' as GuestStatus,
         invitationSent: false,
       };
-
-      console.log("Adding guest:", guestData);
 
       const res = await fetch('/api/guests', {
         method: 'POST',
@@ -456,12 +420,10 @@ export default function GuestListPage() {
       if (!res.ok) {
         const errorText = await res.text();
         console.error("Error adding guest:", errorText);
-        console.log("שגיאה בהוספת מוזמן");
         return;
       }
 
       const created = await res.json();
-      console.log("Guest created:", created);
       setGuests([...guests, created]);
       setNewGuest({ 
         firstName: '', 
@@ -478,12 +440,13 @@ export default function GuestListPage() {
       setShowAddGuestModal(false);
       
       // Trigger dashboard refresh
-      if ((window as any).triggerDashboardRefresh) {
-        (window as any).triggerDashboardRefresh('guest-added');
-      }
+             if ((window as any).notifyDashboardUpdate) {
+         (window as any).notifyDashboardUpdate('guest-added');
+       } else if ((window as any).triggerDashboardRefresh) {
+         (window as any).triggerDashboardRefresh('guest-added');
+       }
     } catch (error) {
       console.error("Error adding guest:", error);
-      console.log("שגיאה בהוספת מוזמן");
     }
   }
 
@@ -505,9 +468,11 @@ export default function GuestListPage() {
         setGuests(guests.map(g => (g._id === id ? { ...g, status } : g)));
         
         // Trigger dashboard refresh
-        if ((window as any).triggerDashboardRefresh) {
-          (window as any).triggerDashboardRefresh('guest-status-updated');
-        }
+               if ((window as any).notifyDashboardUpdate) {
+         (window as any).notifyDashboardUpdate('guest-status-updated');
+       } else if ((window as any).triggerDashboardRefresh) {
+         (window as any).triggerDashboardRefresh('guest-status-updated');
+       }
       }
     } catch (error) {
       console.error("Error updating status:", error);
@@ -519,10 +484,6 @@ export default function GuestListPage() {
     if (!token) return;
 
     try {
-      console.log("=== CLIENT SIDE UPDATE DEBUG ===");
-      console.log("Updating guest with data:", guestData);
-      console.log("Data being sent to server:", JSON.stringify(guestData, null, 2));
-      
       const res = await fetch(`/api/guests/${guestData._id}`, {
         method: 'PUT',
         headers: { 
@@ -532,30 +493,23 @@ export default function GuestListPage() {
         body: JSON.stringify(guestData),
       });
 
-      console.log("Response status:", res.status);
-      console.log("Response ok:", res.ok);
-
       if (res.ok) {
         const updated = await res.json();
-        console.log("Updated guest from server:", updated);
-        console.log("=== END CLIENT SIDE UPDATE DEBUG ===");
         setGuests(guests.map(g => (g._id === guestData._id ? updated : g)));
         setEditingGuest(null);
         
         // Trigger dashboard refresh
-        if ((window as any).triggerDashboardRefresh) {
-          (window as any).triggerDashboardRefresh('guest-updated');
-        }
+               if ((window as any).notifyDashboardUpdate) {
+         (window as any).notifyDashboardUpdate('guest-updated');
+       } else if ((window as any).triggerDashboardRefresh) {
+         (window as any).triggerDashboardRefresh('guest-updated');
+       }
       } else {
         const errorText = await res.text();
         console.error("Error response:", errorText);
-        console.log("=== END CLIENT SIDE UPDATE DEBUG ===");
-        console.log("שגיאה בעדכון מוזמן");
       }
     } catch (error) {
       console.error("Error updating guest:", error);
-      console.log("=== END CLIENT SIDE UPDATE DEBUG ===");
-              console.log("שגיאה בעדכון מוזמן");
     }
   }
 
@@ -577,9 +531,11 @@ export default function GuestListPage() {
         setGuests(guests.filter(g => g._id !== id));
         
         // Trigger dashboard refresh
-        if ((window as any).triggerDashboardRefresh) {
-          (window as any).triggerDashboardRefresh('guest-deleted');
-        }
+               if ((window as any).notifyDashboardUpdate) {
+         (window as any).notifyDashboardUpdate('guest-deleted');
+       } else if ((window as any).triggerDashboardRefresh) {
+         (window as any).triggerDashboardRefresh('guest-deleted');
+       }
       }
     } catch (error) {
       console.error("Error deleting guest:", error);
@@ -1222,14 +1178,12 @@ export default function GuestListPage() {
                   <div className="card-header">
                     <div style={{ display: 'flex', gap: 8 }}>
                       <input className="input" placeholder="שם פרטי" value={editingGuest.firstName} onChange={e => {
-                        console.log("Updating firstName from:", editingGuest.firstName, "to:", e.target.value);
                         setEditingGuest({ ...editingGuest, firstName: e.target.value });
                       }} />
                       <input className="input" placeholder="שם משפחה" value={editingGuest.lastName} onChange={e => setEditingGuest({ ...editingGuest, lastName: e.target.value })} />
                     </div>
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button className="btn-icon" title="שמור" onClick={() => {
-                        console.log("Save button clicked, current editingGuest:", editingGuest);
                         if (editingGuest) {
                           updateGuest(editingGuest);
                         }
@@ -1271,7 +1225,6 @@ export default function GuestListPage() {
                     <div className="field">
                       <label>קבוצה</label>
                       <input className="input" placeholder="משפחה, חברים..." value={editingGuest.group || ''} onChange={e => {
-                        console.log("Updating group from:", editingGuest.group, "to:", e.target.value);
                         setEditingGuest({ ...editingGuest, group: e.target.value });
                       }} />
                     </div>

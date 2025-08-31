@@ -15,6 +15,7 @@ export interface IVendor {
   fileURL?: string;
   status: VendorStatus;
   type: VendorType;
+  phone?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -65,6 +66,10 @@ const vendorSchema = new Schema<IVendor>(
       type: String,
       enum: ['music', 'food', 'photography', 'decor', 'clothes', 'makeup_hair', 'internet_orders', 'lighting_sound', 'guest_gifts', 'venue_deposit', 'bride_dress', 'groom_suit', 'shoes', 'jewelry', 'rsvp', 'design_tables', 'bride_bouquet', 'chuppah', 'flowers', 'other'],
       required: true,
+    },
+    phone: {
+      type: String,
+      trim: true,
     },
   },
   {

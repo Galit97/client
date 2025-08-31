@@ -26,7 +26,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
     
     try {
       const data = await loginUser({ email, password });
-      console.log("התחברות הצליחה", data);
+    
       localStorage.setItem("token", data.token);
       localStorage.setItem("currentUser", JSON.stringify(data.user));
       onClose();

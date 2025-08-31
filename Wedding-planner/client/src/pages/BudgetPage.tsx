@@ -109,32 +109,27 @@ const BudgetPage: React.FC = () => {
       if (weddingRes.ok) {
         const wedding = await weddingRes.json();
         setWeddingData(wedding);
-        console.log("Wedding data loaded:", wedding);
+      
       }
 
       // Fetch budget data from the new API
-      console.log("🔍 Fetching budget data...");
+  
       try {
-        console.log("📡 Making request to /api/budgets/owner");
+      
         const budgetRes = await fetch("/api/budgets/owner", { 
           headers: { Authorization: `Bearer ${token}` } 
         });
-        console.log("📡 Budget response status:", budgetRes.status);
-        console.log("📡 Budget response ok:", budgetRes.ok);
+       
         
         if (budgetRes.ok) {
           const budgetData = await budgetRes.json();
-          console.log("📦 Budget data loaded from API:", budgetData);
-          console.log("📦 Budget totalBudget:", budgetData.totalBudget);
-          console.log("📦 Budget guestsMin:", budgetData.guestsMin);
-          console.log("📦 Budget guestsMax:", budgetData.guestsMax);
-
+         
           // Check if this is an empty budget (no totalBudget or totalBudget is 0)
           if (!budgetData.totalBudget || budgetData.totalBudget === 0) {
-            console.log("❌ Empty budget found, will show empty state");
+       
             setBudget(null);
           } else {
-            console.log("✅ Valid budget found, setting budget state");
+          
             // Convert budget data to BudgetSettings format
             const budgetSettings: BudgetSettings = {
               guestsMin: budgetData.guestsMin || 50,
@@ -160,13 +155,13 @@ const BudgetPage: React.FC = () => {
             budgetMode: budgetData.budgetMode,
             personalPocket: budgetData.personalPocket
           }));
-          console.log("Updated weddingData with budget:", budgetData.totalBudget);
+        
         } else {
-          console.error("❌ Failed to load budget data:", budgetRes.status);
+      
           setBudget(null);
         }
       } catch (error) {
-        console.error("❌ Error fetching budget data:", error);
+      
         setBudget(null);
       }
 
@@ -176,7 +171,7 @@ const BudgetPage: React.FC = () => {
       });
               if (vendorsRes.ok) {
           const vendorsData = await vendorsRes.json();
-          console.log("Vendors data:", vendorsData);
+  
         
         // Translate vendor types to Hebrew
         const translateVendorType = (type: string): string => {
@@ -214,7 +209,7 @@ const BudgetPage: React.FC = () => {
         };
 
         const suppliersData: Supplier[] = vendorsData.map((vendor: Vendor) => {
-          console.log("Processing vendor:", vendor.vendorName, "deposit:", vendor.depositAmount);
+       
           return {
             id: vendor._id,
             name: vendor.vendorName,
@@ -226,22 +221,27 @@ const BudgetPage: React.FC = () => {
           };
         });
         setSuppliers(suppliersData);
-        console.log("Converted suppliers:", suppliersData);
+    
         
         // Log total deposits
         const totalDeposits = suppliersData.reduce((sum, supplier) => sum + (supplier.deposit || 0), 0);
-        console.log("Total deposits from suppliers:", totalDeposits);
+    
       }
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
-      console.log("Data loading completed. Budget:", budget, "Suppliers:", suppliers);
+      
+      // Trigger dashboard refresh after data is loaded
+      if ((window as any).notifyDashboardUpdate) {
+        (window as any).notifyDashboardUpdate('budget-data-loaded');
+      } else if ((window as any).triggerDashboardRefresh) {
+        (window as any).triggerDashboardRefresh('budget-data-loaded');
+      }
     }
   };
 
   useEffect(() => {
-    console.log("Fetching data...");
     fetchData();
   }, []);
 
@@ -258,7 +258,6 @@ const BudgetPage: React.FC = () => {
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        console.log("Page became visible, refreshing data...");
         fetchData();
       }
     };
@@ -271,18 +270,21 @@ const BudgetPage: React.FC = () => {
 
   const handleEditBudget = () => {
     // Open budget edit popup
-    console.log("Opening popup with current budget:", budget);
     setShowBudgetEdit(true);
-    console.log("showBudgetEdit set to true");
   };
 
   const handleCloseBudgetEdit = () => {
     setShowBudgetEdit(false);
-    console.log("Budget edit closed, refreshing data...");
     // Refresh data after closing popup with a delay to ensure data is saved
     setTimeout(() => {
-      console.log("Refreshing data after budget edit...");
       fetchData();
+      
+      // Trigger dashboard refresh
+      if ((window as any).notifyDashboardUpdate) {
+        (window as any).notifyDashboardUpdate('budget-updated');
+      } else if ((window as any).triggerDashboardRefresh) {
+        (window as any).triggerDashboardRefresh('budget-updated');
+      }
     }, 2000); // Increased delay to ensure data is fully saved
   };
 
@@ -349,12 +351,7 @@ const BudgetPage: React.FC = () => {
     const eventTotalCost = totalCost + vendorsTotalCost;
     const eventCostPerPerson = totalGuests > 0 ? eventTotalCost / totalGuests : 0;
     
-    console.log("Manual calculation:", {
-      totalCost,
-      vendorsTotalCost,
-      eventTotalCost,
-      approvedSuppliers: suppliers.filter(s => s.status === 'התחייב')
-    });
+
 
     return { totalCost, costPerPerson, adultGuests, childGuests, totalGuests, eventTotalCost, eventCostPerPerson };
   };
@@ -487,14 +484,7 @@ const BudgetPage: React.FC = () => {
   const maxGuests = budget?.guestsMax || 150;
   const likelyGuests = budget?.guestsExact || budget?.guestsMax || 150;
   
-  console.log("Guests data from budget settings:", {
-    minGuests,
-    maxGuests,
-    likelyGuests,
-    budgetGuestsMin: budget?.guestsMin,
-    budgetGuestsMax: budget?.guestsMax,
-    budgetGuestsExact: budget?.guestsExact
-  });
+
   
   const minMealCosts = calculateMealCosts(minGuests);
   const maxMealCosts = calculateMealCosts(maxGuests);
@@ -515,25 +505,13 @@ const BudgetPage: React.FC = () => {
     targetMin: targetMin,
     targetMax: targetMax
   };
-  console.log("Budget calculation details:");
-  console.log("- Min guests:", minGuests, "Gift avg:", giftAvg, "Personal budget:", personalBudget);
-  console.log("- Target min:", targetMin, "= (", minGuests, "×", giftAvg, ") +", personalBudget);
-  console.log("- Target max:", targetMax, "= (", maxGuests, "×", giftAvg, ") +", personalBudget);
-  console.log("- Target likely:", targetLikely, "= ממוצע בין יעד מינימום ליעד מקסימום");
-  console.log("Actual summary with budget override:", actualSummary);
+
   
   // Calculate deposits manually to verify
   const manualDeposits = suppliers.filter(s => s.status === 'התחייב').reduce((sum, s) => sum + (s.deposit || 0), 0);
-  console.log("Manual deposits calculation:", manualDeposits);
-  console.log("Suppliers with deposits:", suppliers.filter(s => (s.deposit || 0) > 0));
   
   // Calculate total expected costs (suppliers + meals)
   const totalExpectedCosts = actualSummary.committedTotal + likelyMealCosts;
-  
-  console.log("Min guests:", minGuests, "Min meal costs:", minMealCosts);
-  console.log("Max guests:", maxGuests, "Max meal costs:", maxMealCosts);
-  console.log("Likely guests:", likelyGuests, "Likely meal costs:", likelyMealCosts);
-  console.log("Total expected costs:", totalExpectedCosts);
 
   return (
     <div className="stack" style={{ padding: '20px' }}>
@@ -732,8 +710,6 @@ const BudgetPage: React.FC = () => {
       {/* Approved Suppliers Section */}
       {(() => {
         const approvedSuppliers = suppliers.filter(s => s.status === 'התחייב');
-        console.log("Approved suppliers:", approvedSuppliers);
-        console.log("All suppliers:", suppliers);
         
         if (approvedSuppliers.length === 0) return null;
         
@@ -1310,7 +1286,6 @@ const BudgetPage: React.FC = () => {
 
       {/* Budget Edit Popup */}
       {showBudgetEdit && (
-        console.log("Rendering budget edit popup..."),
         <div style={{
           position: 'fixed',
           top: 0,

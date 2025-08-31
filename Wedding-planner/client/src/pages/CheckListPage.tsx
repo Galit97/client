@@ -58,13 +58,11 @@ export default function CheckListPage() {
     async function fetchData() {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.log("No token found");
         setLoading(false);
         return;
       }
 
       try {
-        console.log("Starting to fetch checklist data...");
         
         // First, get the user's wedding
         const weddingRes = await fetch('/api/weddings/owner', {
@@ -73,10 +71,7 @@ export default function CheckListPage() {
           },
         });
 
-        console.log("Wedding response status:", weddingRes.status);
-
         if (weddingRes.status === 404) {
-          console.log("No wedding found for user");
           setLoading(false);
         return;
       }
@@ -87,27 +82,19 @@ export default function CheckListPage() {
 
         const weddingData = await weddingRes.json();
         setWeddingId(weddingData._id);
-        console.log("Found wedding ID:", weddingData._id);
 
         // Fetch checklist items for this wedding
-        console.log("Fetching checklist for wedding:", weddingData._id);
         const checklistRes = await fetch('/api/checklists', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        console.log("Checklist response status:", checklistRes.status);
-        console.log("Checklist response headers:", checklistRes.headers);
-
         if (checklistRes.ok) {
           const checklistData = await checklistRes.json();
           setItems(checklistData);
-          console.log("Fetched checklist:", checklistData);
         } else {
           const errorText = await checklistRes.text();
-          console.log("Error response:", errorText);
-          console.log("No checklist found or error fetching");
           setItems([]);
         }
 
@@ -120,7 +107,6 @@ export default function CheckListPage() {
         if (vendorsRes.ok) {
           const vendorsData = await vendorsRes.json();
           setVendors(vendorsData);
-          console.log("Fetched vendors:", vendorsData);
         }
 
         // Fetch users (wedding participants)
@@ -132,7 +118,6 @@ export default function CheckListPage() {
         if (usersRes.ok) {
           const usersData = await usersRes.json();
           setUsers(usersData);
-          console.log("Fetched users:", usersData);
         }
 
       } catch (error) {
@@ -200,6 +185,13 @@ export default function CheckListPage() {
 
       if (res.ok) {
         setItems(items.map(i => i._id === id ? { ...i, done: !i.done } : i));
+        
+        // Trigger dashboard refresh
+        if ((window as any).notifyDashboardUpdate) {
+          (window as any).notifyDashboardUpdate('task-status-updated');
+        } else if ((window as any).triggerDashboardRefresh) {
+          (window as any).triggerDashboardRefresh('task-status-updated');
+        }
       }
     } catch (error) {
       console.error("Error updating task:", error);
@@ -257,6 +249,13 @@ export default function CheckListPage() {
     setNewDueDate('');
     setNewRelatedVendorId('');
     setNewRelatedRoleId('');
+    
+    // Trigger dashboard refresh
+    if ((window as any).notifyDashboardUpdate) {
+      (window as any).notifyDashboardUpdate('task-added');
+    } else if ((window as any).triggerDashboardRefresh) {
+      (window as any).triggerDashboardRefresh('task-added');
+    }
     } catch (error) {
       console.error("Error creating task:", error);
       showNotification('שגיאה ביצירת המשימה', 'error');
@@ -281,6 +280,13 @@ export default function CheckListPage() {
         const updated = await res.json();
         setItems(items.map(i => i._id === updatedItem._id ? updated : i));
         setEditingItem(null);
+        
+        // Trigger dashboard refresh
+        if ((window as any).notifyDashboardUpdate) {
+          (window as any).notifyDashboardUpdate('task-updated');
+        } else if ((window as any).triggerDashboardRefresh) {
+          (window as any).triggerDashboardRefresh('task-updated');
+        }
       }
     } catch (error) {
       console.error("Error updating task:", error);
@@ -303,6 +309,13 @@ export default function CheckListPage() {
 
       if (res.ok) {
         setItems(items.filter(i => i._id !== id));
+        
+        // Trigger dashboard refresh
+        if ((window as any).notifyDashboardUpdate) {
+          (window as any).notifyDashboardUpdate('task-deleted');
+        } else if ((window as any).triggerDashboardRefresh) {
+          (window as any).triggerDashboardRefresh('task-deleted');
+        }
       }
     } catch (error) {
       console.error("Error deleting task:", error);

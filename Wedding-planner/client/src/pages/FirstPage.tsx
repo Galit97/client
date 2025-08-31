@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { loginUser } from '../api/authService'
 import RegisterPopup from '../components/Register/RegisterPopup'
 import { useNotification } from '../components/Notification/NotificationContext'
+import wediLogo from '../assets/images/wedi-app-logo.png'
 
 export default function FirstPage() {
   const { showNotification } = useNotification();
@@ -21,7 +22,6 @@ export default function FirstPage() {
     
     try {
       const data = await loginUser({ email, password })
-      console.log("התחברות הצליחה", data)
       localStorage.setItem("token", data.token)
       localStorage.setItem("currentUser", JSON.stringify(data.user))
       navigate('/dashboard')
@@ -94,20 +94,22 @@ export default function FirstPage() {
         maxWidth: '500px',
         width: '100%'
       }}>
-        {/* Logo/Icon */}
+        {/* Logo */}
         <div style={{
-          width: '80px',
-          height: '80px',
-          borderRadius: '50%',
-          background: '#EFF5FB',
           margin: '0 auto 20px',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '32px',
-          border: '2px solid #E5E7EB'
+          justifyContent: 'center'
         }}>
-          💒
+          <img 
+            src={wediLogo} 
+            alt="Wedi App Logo" 
+            style={{
+              width: '120px',
+              height: '80px',
+              objectFit: 'contain'
+            }}
+          />
         </div>
 
         {/* Title */}

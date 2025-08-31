@@ -101,15 +101,11 @@ export default function VendorComparisonPage() {
           setWeddingId(weddingId);
           
           // Load comparisons from server
-          console.log('Loading vendor comparisons for wedding:', weddingId);
           const comparisonsRes = await fetch(`/api/comparisons/vendor/${weddingId}`, { 
             headers: { Authorization: `Bearer ${token}` } 
           });
-          
-          console.log('Vendor comparisons response status:', comparisonsRes.status);
           if (comparisonsRes.ok) {
             const serverComparisons = await comparisonsRes.json();
-            console.log('Loaded vendor comparisons:', serverComparisons);
             setExtraComparisons(serverComparisons);
             
             // Set selected types based on server data
@@ -117,8 +113,6 @@ export default function VendorComparisonPage() {
             if (keys.length > 0) {
               setSelectedTypes(keys);
             }
-          } else {
-            console.log('Failed to load vendor comparisons:', await comparisonsRes.text());
           }
           
           // Load vendors for this wedding
@@ -126,7 +120,6 @@ export default function VendorComparisonPage() {
           if (res.ok) setVendors(await res.json());
           else setVendors([]);
         } else {
-          console.log('No wedding found for user');
           setVendors([]);
           setNoWeddingFound(true);
         }
@@ -187,7 +180,6 @@ export default function VendorComparisonPage() {
       });
       
       if (response.ok) {
-        console.log('Vendor comparison saved successfully after adding');
       } else {
         console.error('Failed to save vendor comparison after adding:', await response.text());
       }

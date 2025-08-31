@@ -8,7 +8,7 @@ interface BudgetMasterProps {
 }
 
 export default function BudgetMaster({ onClose }: BudgetMasterProps) {
-  console.log("BudgetMaster component loaded");
+ 
   const { showNotification } = useNotification();
   const [guestsMin, setGuestsMin] = useState(50);
   const [guestsMax, setGuestsMax] = useState(150);
@@ -24,40 +24,39 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          console.log("No token found");
+        
           return;
         }
 
-        console.log("Loading existing budget data...");
+     
         const response = await fetch("/api/budgets/owner", {
           headers: { Authorization: `Bearer ${token}` }
         });
 
-        console.log("Load response status:", response.status);
+       
 
         if (response.ok) {
           const budget = await response.json();
-          console.log("Loaded budget data:", budget);
-          
+   
           // Map existing data to component state
           if (budget.guestsMin) {
-            console.log("Setting guestsMin:", budget.guestsMin);
+         
             setGuestsMin(budget.guestsMin);
           }
           if (budget.guestsMax) {
-            console.log("Setting guestsMax:", budget.guestsMax);
+         
             setGuestsMax(budget.guestsMax);
           }
           if (budget.guestsExact) {
-            console.log("Setting guestsExact:", budget.guestsExact);
+          
             setGuestsExact(budget.guestsExact);
           }
           if (budget.giftAvg) {
-            console.log("Setting giftAvg:", budget.giftAvg);
+          
             setGift(budget.giftAvg);
           }
           if (budget.budgetMode) {
-            console.log("Setting budgetMode:", budget.budgetMode);
+          
             // Map budget mode to component values
             const modeMap: { [key: string]: string } = {
               'ניצמד': 'balanced',
@@ -65,11 +64,11 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
               'נרוויח': 'tight'
             };
             const mappedMode = modeMap[budget.budgetMode] || 'balanced';
-            console.log("Mapped budget mode:", budget.budgetMode, "->", mappedMode);
+         
             setTarget(mappedMode);
           }
           if (budget.personalPocket) {
-            console.log("Setting personalPocket:", budget.personalPocket);
+         
             setPersonalBudget(budget.personalPocket);
           }
         } else {
@@ -139,7 +138,7 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
   }, []);
 
   const handleSaveBudget = async () => {
-    console.log("Save button clicked!");
+    
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
@@ -148,7 +147,7 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
         return;
       }
 
-      console.log("Token found:", token.substring(0, 20) + "...");
+      
 
       // Map component values to API format
       const modeMap: { [key: string]: string } = {
@@ -166,16 +165,7 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
         calculatedBudget += personalBudget;
       }
       
-      console.log("Current state values:", {
-        guestsMin,
-        guestsMax,
-        guestsExact,
-        gift,
-        target,
-        personalBudget,
-        exactGuests,
-        calculatedBudget
-      });
+    
       
       // Try with minimal data first
       const budgetData: any = {
@@ -197,12 +187,11 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
         budgetData.savePercent = target === 'flexible' ? 15 : 10;
       }
 
-      console.log("Saving budget data:", budgetData);
-      console.log("Calculated budget:", calculatedBudget, "for", exactGuests, "guests at", gift, "per guest");
+    
       if (target === 'flexible') {
-        console.log("Personal budget added:", personalBudget);
+      
       }
-      console.log("Request body:", JSON.stringify(budgetData, null, 2));
+    
 
              // Get wedding ID for the budget
        const getWeddingResponse = await fetch("/api/weddings/owner", {
@@ -216,7 +205,7 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
        }
 
        const weddingData = await getWeddingResponse.json();
-       console.log("Current wedding data:", weddingData);
+      
 
        // Prepare budget data for the API
        const budgetApiData = {
@@ -230,7 +219,7 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
          personalPocket: target === 'flexible' ? Number(personalBudget) : undefined
        };
 
-       console.log("Saving budget data to API:", budgetApiData);
+      
 
        // Save budget settings using the dedicated budget API
        const response = await fetch("/api/budgets/settings", {
@@ -242,8 +231,7 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
          body: JSON.stringify(budgetApiData),
        });
 
-      console.log("Response status:", response.status);
-      console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+    
 
       if (response.ok) {
         let responseData;
@@ -253,8 +241,6 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
           responseData = { message: "Success but no JSON response" };
         }
         
-                 console.log("Budget saved successfully! Response:", responseData);
-         console.log("Saved budget data:", responseData.budget);
         
                  // Verify the data was saved by fetching it from the budget API
          setTimeout(async () => {
@@ -264,15 +250,7 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
              });
              if (verifyResponse.ok) {
                const savedData = await verifyResponse.json();
-               console.log("Verification - saved budget data:", {
-                 guestsMin: savedData.guestsMin,
-                 guestsMax: savedData.guestsMax,
-                 guestsExact: savedData.guestsExact,
-                 giftAvg: savedData.giftAvg,
-                 totalBudget: savedData.totalBudget,
-                 budgetMode: savedData.budgetMode,
-                 personalPocket: savedData.personalPocket
-               });
+            
              }
            } catch (error: any) {
              console.error("Error verifying saved data:", error);
@@ -287,10 +265,10 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
         
         // Always close popup and refresh
         if (onClose) {
-          console.log("Closing popup and refreshing...");
+       
           onClose();
           setTimeout(() => {
-            console.log("Reloading page...");
+         
             window.location.reload();
           }, 1000);
         }
