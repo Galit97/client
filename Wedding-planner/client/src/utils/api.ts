@@ -1,5 +1,5 @@
 // API utility for handling base URL in development vs production
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://wedding-planner-wj86.onrender.com';
 
 export const apiUrl = (endpoint: string): string => {
   // If we have a production API URL, use it

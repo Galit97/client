@@ -1,5 +1,7 @@
+import { apiUrl } from '../utils/api';
+
 export async function registerUser(data: any) {
-  const res = await fetch('/api/users', {
+  const res = await fetch(apiUrl('/api/users'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -9,7 +11,7 @@ export async function registerUser(data: any) {
 }
 
 export async function loginUser(data: { email: string; password: string }) {
-  const res = await fetch('/api/users/login', {
+  const res = await fetch(apiUrl('/api/users/login'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),

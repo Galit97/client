@@ -28,6 +28,7 @@ app.use(cors({
     ? [
         'https://your-site-name.netlify.app', // Replace with your actual Netlify URL
         'https://your-vercel-app.vercel.app', // Replace with your actual Vercel URL
+        'https://wedding-planner-wj86.onrender.com', // Your Render server URL
         'http://localhost:5173' // For local development
       ]
     : true, // Allow all origins in development

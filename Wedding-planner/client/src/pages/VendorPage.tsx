@@ -481,7 +481,8 @@ export default function VendorsListPage() {
 
 
   function viewFile(filename: string) {
-    const url = `http://localhost:5000/uploads/${encodeURIComponent(filename)}`;
+    const baseUrl = import.meta.env.VITE_API_URL || 'https://wedding-planner-wj86.onrender.com';
+    const url = `${baseUrl}/uploads/${encodeURIComponent(filename)}`;
     window.open(url, '_blank');
   }
 
