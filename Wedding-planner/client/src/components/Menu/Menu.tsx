@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Settings_24, Heart_24 } from '../Icons/WeddingIconsLibrary';
 
 interface MenuProps {
   onSelect: (page: string) => void;
@@ -76,7 +77,7 @@ export default function Menu({ onSelect, onLogout }: MenuProps) {
                 onMouseEnter={(e) => { e.currentTarget.style.background = '#f8fafc'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
               >
-                ⚙️ הגדרות משתמש
+                <Settings_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> הגדרות משתמש
               </button>
               <button 
                 onClick={() => handleMenuItemClick('myWeddings')} 
@@ -94,7 +95,7 @@ export default function Menu({ onSelect, onLogout }: MenuProps) {
                 onMouseEnter={(e) => { e.currentTarget.style.background = '#f8fafc'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
               >
-                💒 האירועים שלי
+                <Heart_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> האירועים שלי
               </button>
               <button 
                 onClick={handleLogout}
@@ -113,7 +114,7 @@ export default function Menu({ onSelect, onLogout }: MenuProps) {
                 onMouseEnter={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
               >
-                🚪 התנתקות
+                התנתקות
               </button>
             </div>
           </details>

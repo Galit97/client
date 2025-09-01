@@ -2,6 +2,7 @@
 // עמוד התקציב: תמצית יעד, סיכום התחייבויות, כפתור עריכה, ומצבי ריק.
 
 import React, { useState, useEffect } from 'react';
+import { Budget_24 } from '../components/Icons/WeddingIconsLibrary';
 
 // מאסטר התקציב:
 import {
@@ -15,15 +16,7 @@ import type {
   Supplier,
 } from '../lib/budgetTypes';
 
-// אייקון "טבעת ₪" קטן
-const BudgetRingShekel: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
-    <circle cx="12" cy="12" r="9.2" />
-    <path d="M8.5 8.2v5.6c0 1.3 1 2.3 2.3 2.3h2.7" />
-    <path d="M15.5 15.8V10.2c0-1.3-1-2.3-2.3-2.3H10.5" />
-    <g opacity=".5"><path d="M16.5 6.8l1.8-1.8" /><path d="M18.3 6.8l-1.8-1.8" /></g>
-  </svg>
-);
+// Using the new Budget_24 icon from the icon library
 
 export default function BudgetOverview() {
   const [budget, setBudget] = useState<BudgetSettings | null>(null);
@@ -223,7 +216,7 @@ export default function BudgetOverview() {
           gap: '12px', 
           marginBottom: '20px' 
         }}>
-          <BudgetRingShekel style={{ color: '#1d5a78' }} />
+          <Budget_24 style={{ width: '22px', height: '22px', color: '#1d5a78' }} />
           <strong style={{ fontSize: '18px', color: '#1d5a78' }}>
            סיכום תקציב
           </strong>

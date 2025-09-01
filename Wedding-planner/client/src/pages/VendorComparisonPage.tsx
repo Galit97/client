@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Trash_24 } from '../components/Icons/WeddingIconsLibrary';
 
 type VendorStatus = 'Pending' | 'Confirmed' | 'Paid';
 type VendorType = 'music' | 'food' | 'photography' | 'decor' | 'clothes' | 'makeup_hair' | 'internet_orders' | 'lighting_sound' | 'guest_gifts' | 'venue_deposit' | 'bride_dress' | 'groom_suit' | 'shoes' | 'jewelry' | 'rsvp' | 'design_tables' | 'bride_bouquet' | 'chuppah' | 'flowers' | 'other';
@@ -276,7 +277,9 @@ export default function VendorComparisonPage() {
                   <div>{r.notes || '-'}</div>
                   <div>
                     {extras.find(e => e.id === r.id) ? (
-                      <button className="btn-icon" title="הסר" onClick={() => handleRemoveComparison(type, r.id)}>🗑️</button>
+                      <button className="btn-icon" title="הסר" onClick={() => handleRemoveComparison(type, r.id)}>
+                        <Trash_24 style={{ width: '16px', height: '16px' }} />
+                      </button>
                     ) : (
                       <span className="muted">—</span>
                     )}

@@ -697,7 +697,7 @@ export default function CheckListPage() {
                   <>
                     <button 
                       onClick={() => updateTask(editingItem)}
-                      style={{ padding: '4px 8px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
+                      className="save-btn"
                     >
                       שמור
                     </button>
@@ -718,7 +718,7 @@ export default function CheckListPage() {
                     </button>
                     <button 
                       onClick={() => deleteTask(item._id)}
-                      style={{ padding: '4px 8px', backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
+                      className="remove-btn"
                     >
                       מחק
                     </button>

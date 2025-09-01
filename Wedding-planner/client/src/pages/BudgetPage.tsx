@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import BudgetMaster from "../lib/budgetMaster";
+import { apiUrl } from "../utils/api";
+import { Budget_24 } from "../components/Icons/WeddingIconsLibrary";
 
 // מערכת תקציב מתקדמת
 import {
@@ -10,15 +12,7 @@ import {
 } from '../lib/budgetTypes';
 import type { BudgetSettings, Supplier } from '../lib/budgetTypes';
 
-// אייקון "טבעת ₪" קטן
-const BudgetRingShekel: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
-    <circle cx="12" cy="12" r="9.2" />
-    <path d="M8.5 8.2v5.6c0 1.3 1 2.3 2.3 2.3h2.7" />
-    <path d="M15.5 15.8V10.2c0-1.3-1-2.3-2.3-2.3H10.5" />
-    <g opacity=".5"><path d="M16.5 6.8l1.8-1.8" /><path d="M18.3 6.8l-1.8-1.8" /></g>
-  </svg>
-);
+// Using the new Budget_24 icon from the icon library
 
 type Vendor = {
   _id: string;
@@ -103,7 +97,7 @@ const BudgetPage: React.FC = () => {
 
     try {
       // Fetch wedding data
-      const weddingRes = await fetch("/api/weddings/owner", {
+              const weddingRes = await fetch(apiUrl("/api/weddings/owner"), {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (weddingRes.ok) {
@@ -116,7 +110,7 @@ const BudgetPage: React.FC = () => {
   
       try {
       
-        const budgetRes = await fetch("/api/budgets/owner", { 
+        const budgetRes = await fetch(apiUrl("/api/budgets/owner"), { 
           headers: { Authorization: `Bearer ${token}` } 
         });
        
@@ -166,7 +160,7 @@ const BudgetPage: React.FC = () => {
       }
 
       // Fetch vendors and convert to suppliers format
-      const vendorsRes = await fetch("/api/vendors", {
+              const vendorsRes = await fetch(apiUrl("/api/vendors"), {
         headers: { Authorization: `Bearer ${token}` }
       });
               if (vendorsRes.ok) {
@@ -654,7 +648,7 @@ const BudgetPage: React.FC = () => {
             alignItems: 'center',
             justifyContent: 'center'
           }}>
-            <span style={{ fontSize: '20px', color: '#d97706' }}>🍽️</span>
+            <Budget_24 style={{ width: '20px', height: '20px', color: '#d97706' }} />
           </div>
           <div>
             <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '5px' }}>
@@ -891,7 +885,7 @@ const BudgetPage: React.FC = () => {
         marginBottom: '20px'
       }}>
         <div className="row" style={{ alignItems: 'center', gap: 12, marginBottom: '20px' }}>
-          <BudgetRingShekel aria-hidden="true" style={{ color: '#1d5a78' }} />
+          <Budget_24 style={{ width: '22px', height: '22px', color: '#1d5a78' }} />
           <strong id="budget-targets" style={{ fontSize: '18px', color: '#1d5a78' }}>סיכום תקציב</strong>
         </div>
 
@@ -1095,7 +1089,7 @@ const BudgetPage: React.FC = () => {
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
         marginBottom: '20px'
       }}>
-                 <h3 style={{ margin: '0 0 20px 0', color: '#1d5a78' }}>🧮 חישוב ידני - אומדן מותאם אישית</h3>
+                 <h3 style={{ margin: '0 0 20px 0', color: '#1d5a78' }}>חישוב ידני - אומדן מותאם אישית</h3>
         
         <div style={{ 
           background: '#f8fafc', 

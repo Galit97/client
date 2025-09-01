@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
+import { Trash_24, X_24, Clock_24, Success_24, Error_24, Suppliers_24, Edit_24 } from "../components/Icons/WeddingIconsLibrary";
 import { useNotification } from "../components/Notification/NotificationContext";
+import { apiUrl } from "../utils/api";
 
 type VendorStatus = "Pending" | "Confirmed" | "Paid";
 type VendorType = "music" | "food" | "photography" | "decor" | "clothes" | "makeup_hair" | "internet_orders" | "lighting_sound" | "guest_gifts" | "venue_deposit" | "bride_dress" | "groom_suit" | "shoes" | "jewelry" | "rsvp" | "design_tables" | "bride_bouquet" | "chuppah" | "flowers" | "other";
@@ -118,7 +120,7 @@ export default function VendorsListPage() {
       try {
         
         // First, get the user's wedding
-        const weddingRes = await fetch('/api/weddings/owner', {
+        const weddingRes = await fetch(apiUrl('/api/weddings/owner'), {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -138,7 +140,7 @@ export default function VendorsListPage() {
         setWeddingData(weddingData);
 
         // Fetch vendors for this wedding
-        const vendorsRes = await fetch('/api/vendors', {
+        const vendorsRes = await fetch(apiUrl('/api/vendors'), {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -162,7 +164,7 @@ export default function VendorsListPage() {
                 weddingID: weddingData._id,
               };
 
-              const createRes = await fetch("/api/vendors", {
+              const createRes = await fetch(apiUrl("/api/vendors"), {
                 method: "POST",
                 headers: { 
                   "Content-Type": "application/json",
@@ -282,7 +284,7 @@ export default function VendorsListPage() {
         weddingID: weddingId,
       };
 
-      const res = await fetch("/api/vendors", {
+              const res = await fetch(apiUrl("/api/vendors"), {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -330,7 +332,7 @@ export default function VendorsListPage() {
     if (!token) return;
 
     try {
-      const res = await fetch(`/api/vendors/${updatedVendor._id}`, {
+              const res = await fetch(apiUrl(`/api/vendors/${updatedVendor._id}`), {
         method: "PUT",
         headers: { 
           "Content-Type": "application/json",
@@ -363,7 +365,7 @@ export default function VendorsListPage() {
     if (!confirm("האם אתה בטוח שברצונך למחוק ספק זה?")) return;
 
     try {
-      const res = await fetch(`/api/vendors/${id}`, { 
+              const res = await fetch(apiUrl(`/api/vendors/${id}`), { 
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -415,7 +417,7 @@ export default function VendorsListPage() {
           weddingID: weddingId,
         };
 
-        const res = await fetch("/api/vendors", {
+        const res = await fetch(apiUrl("/api/vendors"), {
           method: "POST",
           headers: { 
             "Content-Type": "application/json",
@@ -457,7 +459,7 @@ export default function VendorsListPage() {
       const formData = new FormData();
       formData.append('file', file);
 
-      const res = await fetch("/api/upload", {
+              const res = await fetch(apiUrl("/api/upload"), {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -661,7 +663,7 @@ export default function VendorsListPage() {
             color: 'white',
             fontSize: '20px'
           }}>
-            🏢
+            <Suppliers_24 style={{ width: '16px', height: '16px' }} />
           </div>
           <h1 style={{ 
             margin: 0,
@@ -954,7 +956,7 @@ export default function VendorsListPage() {
           fontWeight: 'bold',
           color: '#1d5a78'
         }}>
-          🧮 חישוב ידני - אומדן מותאם אישית
+          חישוב ידני - אומדן מותאם אישית
         </h2>
         
         <div style={{
@@ -1348,33 +1350,17 @@ export default function VendorsListPage() {
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <button
                         onClick={() => updateVendor(editingVendor)}
-                        style={{
-                          padding: '6px',
-                          background: '#10b981',
-                          border: 'none',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          transition: 'all 0.2s ease'
-                        }}
+                        className="save-btn"
                         title="שמור"
                       >
-                        💾
+                        <Success_24 style={{ width: '16px', height: '16px' }} />
                       </button>
                       <button
                         onClick={cancelEditing}
-                        style={{
-                          padding: '6px',
-                          background: '#ef4444',
-                          border: 'none',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          transition: 'all 0.2s ease'
-                        }}
+                        className="remove-btn"
                         title="בטל"
                       >
-                        ✖️
+                        <X_24 style={{ width: '16px', height: '16px' }} />
                       </button>
                     </div>
                   </div>
@@ -1577,7 +1563,7 @@ export default function VendorsListPage() {
                         }}
                         title="ערוך"
                       >
-                        ✏️
+                        <Edit_24 style={{ width: '16px', height: '16px' }} />
                       </button>
                       <button
                         onClick={() => deleteVendor(vendor._id)}
@@ -1598,7 +1584,7 @@ export default function VendorsListPage() {
                         }}
                         title="מחק"
                       >
-                        🗑️
+                        <Trash_24 style={{ width: '16px', height: '16px' }} />
                       </button>
                     </div>
                   </div>
@@ -1654,7 +1640,7 @@ export default function VendorsListPage() {
                           fontSize: '14px',
                           color: '#374151'
                         }}>
-                          {vendor.depositPaid ? `💵 ${vendor.depositAmount?.toLocaleString()} ₪` : '❌ לא שולם'}
+                          {vendor.depositPaid ? `${vendor.depositAmount?.toLocaleString()} ₪` : 'לא שולם'}
                         </div>
                       </div>
                       <div>
@@ -1676,8 +1662,8 @@ export default function VendorsListPage() {
                           color: vendor.status === 'Confirmed' ? '#166534' : 
                                  vendor.status === 'Paid' ? '#1e40af' : '#92400e'
                         }}>
-                          {vendor.status === 'Pending' ? '⏳ ממתין' : 
-                           vendor.status === 'Confirmed' ? '✅ אושר' : '💸 שולם'}
+                          {vendor.status === 'Pending' ? 'ממתין' : 
+                           vendor.status === 'Confirmed' ? 'אושר' : 'שולם'}
                         </div>
                       </div>
                     </div>
@@ -1727,7 +1713,7 @@ export default function VendorsListPage() {
                             }}
                             title="צפה בחוזה"
                           >
-                            📄 חוזה
+                            חוזה
                           </button>
                         )}
                         {vendor.fileURL && (
@@ -1744,7 +1730,7 @@ export default function VendorsListPage() {
                             }}
                             title="צפה במסמך"
                           >
-                            📄 מסמך
+                            מסמך
                           </button>
                         )}
                       </div>

@@ -26,9 +26,7 @@ app.use((req: Request, res: Response, next) => {
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? [
-        'https://your-site-name.netlify.app', // Replace with your actual Netlify URL
-        'https://your-vercel-app.vercel.app', // Replace with your actual Vercel URL
-        'https://wedding-planner-wj86.onrender.com', // Your Render server URL
+        'https://wedi-app.vercel.app', // Your Vercel frontend URL
         'http://localhost:5173' // For local development
       ]
     : true, // Allow all origins in development

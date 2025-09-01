@@ -1,6 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useNotification } from "../components/Notification/NotificationContext";
+import { apiUrl } from "../utils/api";
+import { 
+  Heart_24, 
+  Success_24, 
+  Trash_24, 
+  Link_24, 
+  Copy_24, 
+  Budget_24,
+  Clock_24,
+  Guests_24,
+  Settings_24,
+  Edit_24,
+  Plus_24
+} from "../components/Icons/WeddingIconsLibrary";
 
 type Participant = {
   id: string;
@@ -118,7 +132,7 @@ export default function WeddingPage() {
   useEffect(() => {
     async function fetchUsers() {
       try {
-        const res = await fetch("/api/users");
+        const res = await fetch(apiUrl("/api/users"));
         if (!res.ok) throw new Error(res.statusText);
         const users = await res.json();
 
@@ -205,7 +219,7 @@ export default function WeddingPage() {
       const token = localStorage.getItem("token");
       if (!token) return;
       try {
-        const res = await fetch("/api/vendors", { headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch(apiUrl("/api/vendors"), { headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) {
           const data = await res.json();
           setVendors(data);
@@ -224,7 +238,7 @@ export default function WeddingPage() {
       if (!token) return;
 
       try {
-        const res = await fetch("/api/guests", {
+        const res = await fetch(apiUrl("/api/guests"), {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -670,7 +684,7 @@ export default function WeddingPage() {
             justifyContent: 'center',
             fontSize: '28px'
           }}>
-            ⚙️
+            <Settings_24 style={{ width: '16px', height: '16px' }} />
           </div>
           <div>
             <h1 style={{ 
@@ -730,7 +744,7 @@ export default function WeddingPage() {
               </>
             ) : (
               <>
-                💾 שמור אירוע
+                <Success_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> שמור אירוע
               </>
             )}
           </button>
@@ -759,7 +773,7 @@ export default function WeddingPage() {
             justifyContent: 'center',
             marginLeft: '15px'
           }}>
-            <span style={{ fontSize: '24px' }}>💒</span>
+            <Heart_24 style={{ width: '24px', height: '24px' }} />
           </div>
           <div style={{ flex: 1 }}>
             <h3 style={{ margin: '0', color: '#1d5a78' }}>פרטי האירוע</h3>
@@ -1038,7 +1052,7 @@ export default function WeddingPage() {
                  justifyContent: 'center',
                  marginLeft: '15px'
                }}>
-                 <span style={{ fontSize: '24px' }}>👥</span>
+                 <Guests_24 style={{ width: '24px', height: '24px' }} />
                </div>
                <div style={{ flex: 1 }}>
                  <h3 style={{ margin: '0', color: '#0F172A' }}>שותפים לאירוע</h3>
@@ -1061,7 +1075,7 @@ export default function WeddingPage() {
                      if (!token || !wedding._id) return;
                      try {
                        setCreatingInvite(true);
-                       const res = await fetch('/api/weddings/invites', { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+                       const res = await fetch(apiUrl('/api/weddings/invites'), { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
                        if (!res.ok) throw new Error('failed');
                        const data = await res.json();
                        const url = `${window.location.origin}/invite/${data.token}`;
@@ -1097,7 +1111,7 @@ export default function WeddingPage() {
                      }
                    }}
                  >
-                   {creatingInvite ? 'יוצר קישור...' : '🔗 צור קישור להזמנת שותף'}
+                   {creatingInvite ? 'יוצר קישור...' : <><Link_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> צור קישור להזמנת שותף</>}
                  </button>
                  {inviteLink && (
                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: '300px' }}>
@@ -1138,7 +1152,7 @@ export default function WeddingPage() {
                           showNotification('הקישור הועתק ללוח!', 'success');
                         }}
                      >
-                       📋 העתק
+                       <Copy_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> העתק
                      </button>
                    </div>
                  )}
@@ -1198,7 +1212,7 @@ export default function WeddingPage() {
                      }
                    }}
                  >
-                   ➕ הוסף שותף
+                   <><Plus_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> הוסף שותף</>
                  </button>
                </div>
              </div>
@@ -1275,7 +1289,7 @@ export default function WeddingPage() {
                            e.currentTarget.style.transform = 'translateY(0)';
                          }}
                        >
-                         🗑️ הסר
+                         <Trash_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> הסר
                        </button>
                      </div>
                    ))}
@@ -1310,35 +1324,7 @@ export default function WeddingPage() {
             <button
               type="submit"
               disabled={saving}
-              style={{
-                padding: '14px 28px',
-                background: saving ? '#e5e7eb' : '#1d5a78',
-                color: 'white',
-                border: 'none',
-                borderRadius: '10px',
-                cursor: saving ? 'not-allowed' : 'pointer',
-                fontSize: '16px',
-                fontWeight: '600',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                boxShadow: saving ? 'none' : '0 4px 12px rgba(29, 90, 120, 0.3)'
-              }}
-              onMouseEnter={(e) => {
-                if (!saving) {
-                  e.currentTarget.style.background = '#164e63';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-          
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!saving) {
-                  e.currentTarget.style.background = '#1d5a78';
-                  e.currentTarget.style.transform = 'translateY(0)';
-             
-                }
-              }}
+              className="save-btn"
             >
               {saving ? (
                 <>
@@ -1347,7 +1333,7 @@ export default function WeddingPage() {
                 </>
               ) : (
                 <>
-                  💾 שמור אירוע
+                  <Success_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> שמור אירוע
                 </>
               )}
             </button>
@@ -1356,33 +1342,9 @@ export default function WeddingPage() {
               <button
                 type="button"
                 onClick={deleteWedding}
-                style={{
-                  padding: '14px 28px',
-                  backgroundColor: '#ef4444',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '10px',
-                  cursor: 'pointer',
-                  fontSize: '16px',
-                  fontWeight: '600',
-                  transition: 'all 0.3s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = '#dc2626';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-         
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#ef4444';
-                  e.currentTarget.style.transform = 'translateY(0)';
-               
-                }}
+                className="remove-btn"
               >
-                🗑️ מחק אירוע
+                <Trash_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> מחק אירוע
               </button>
             )}
           </div>
@@ -1409,7 +1371,7 @@ export default function WeddingPage() {
             justifyContent: 'center',
             marginLeft: '15px'
           }}>
-            <span style={{ fontSize: '24px' }}>🍽️</span>
+                          <Budget_24 style={{ width: '24px', height: '24px' }} />
           </div>
           <div style={{ flex: 1 }}>
             <h3 style={{ margin: '0', color: '#1d5a78' }}>מחירי מנות - חישוב עלויות האירוע</h3>
@@ -1479,7 +1441,7 @@ export default function WeddingPage() {
                 animation: 'spin 1s linear infinite'
               }}></div>
               <span style={{ color: '#0c4a6e', fontSize: '14px', fontWeight: '600' }}>
-                💾 שומר שינויים אוטומטית...
+                <Success_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> שומר שינויים אוטומטית...
               </span>
             </div>
           )}
@@ -1504,31 +1466,9 @@ export default function WeddingPage() {
                 });
               }}
               disabled={saving}
-              style={{
-                padding: '8px 16px',
-                background: saving ? '#1d5a78' : '#1d5a78',
-                color: saving ? '#9ca3af' : 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: saving ? 'not-allowed' : 'pointer',
-                fontSize: '14px',
-                fontWeight: '600',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                if (!saving) {
-                  e.currentTarget.style.background =  '#1d5a78';
-                  e.currentTarget.style.transform = 'translateY(-1px)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!saving) {
-                  e.currentTarget.style.background =  '#1d5a78';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }
-              }}
+              className="save-btn"
             >
-              {saving ? 'שומר...' : '💾 שמור עכשיו'}
+              {saving ? 'שומר...' : <><Success_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> שמור עכשיו</>}
             </button>
           </div>
           
@@ -1541,10 +1481,10 @@ export default function WeddingPage() {
               marginBottom: '20px'
             }}>
               <div style={{ fontSize: '14px', color: '#1d5a78', fontWeight: '600', marginBottom: '5px' }}>
-                🔒 השדות נעולים לעריכה
+                השדות נעולים לעריכה
               </div>
               <div style={{ fontSize: '12px', color: '#64748b' }}>
-                לחץ על "✏️ ערוך הגדרות" כדי לאפשר עריכה
+                לחץ על "ערוך הגדרות" כדי לאפשר עריכה
               </div>
             </div>
           )}
@@ -1769,7 +1709,7 @@ export default function WeddingPage() {
         {/* Guest Status Based Pricing */}
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-            <h4 style={{ margin: '0', color: '#1d5a78' }}>👥 מחירי מנות לפי סטטוס מוזמנים</h4>
+            <h4 style={{ margin: '0', color: '#1d5a78' }}>מחירי מנות לפי סטטוס מוזמנים</h4>
             <button
               type="button"
               onClick={async () => {
@@ -1799,7 +1739,7 @@ export default function WeddingPage() {
               }}
             className='button'
             >
-              🔄 רענן ספירת מוזמנים
+              <Clock_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> רענן ספירת מוזמנים
             </button>
           </div>
           
@@ -1927,7 +1867,7 @@ export default function WeddingPage() {
               textAlign: 'center'
             }}>
               <h4 style={{ margin: '0 0 10px 0', color: 'black', fontSize: '18px' }}>
-                💰 סה"כ עלות מנות לכל המוזמנים
+                סה"כ עלות מנות לכל המוזמנים
               </h4>
               <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'black', marginBottom: '5px' }}>
                 {calculateMealCostByStatus().total?.totalCost?.toLocaleString?.() ?? 0} ₪
@@ -1949,9 +1889,9 @@ export default function WeddingPage() {
               saveWeddingData();
             }}
             disabled={saving}
-          className='button'
+            className="save-btn"
           >
-            {saving ? 'שומר...' : '💾 שמור הגדרות מחירי מנות'}
+            {saving ? 'שומר...' : <><Success_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> שמור הגדרות מחירי מנות</>}
           </button>
           <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
             שמירת הגדרות מחירי המנות יחד עם פרטי האירוע
@@ -1962,7 +1902,7 @@ export default function WeddingPage() {
       {/* Manual Calculation - Custom Estimation */}
       <div className="card">
         <h3 style={{ margin: '0 0 20px 0', color: '#1d5a78' }}>
-          🧮 חישוב ידני - אומדן מותאם אישית - מחירי מנות
+          חישוב ידני - אומדן מותאם אישית - מחירי מנות
         </h3>
         
         <div className="card">
@@ -2077,7 +2017,7 @@ export default function WeddingPage() {
       {wedding.weddingName && (
         <div className="card">
           <h3 style={{ margin: '0 0 20px 0', color: '#1d5a78', borderBottom: '1px solid #eee', paddingBottom: '10px' }}>
-            📋 סיכום האירוע
+            סיכום האירוע
           </h3>
           
           <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
@@ -2170,7 +2110,7 @@ export default function WeddingPage() {
           {/* Meal Pricing Summary */}
           {wedding.mealPricing && (
             <div style={{ marginTop: '20px', padding: '15px', background: '#', borderRadius: '4px'}}>
-              <h4 style={{ margin: '0 0 15px 0', color: '#1d5a78' }}>🍽️ עלויות מנות</h4>
+              <h4 style={{ margin: '0 0 15px 0', color: '#1d5a78' }}>עלויות מנות</h4>
               
               {/* Basic Pricing */}
               <div style={{ marginBottom: '15px' }}>

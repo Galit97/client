@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useNotification } from "../components/Notification/NotificationContext";
+import { apiUrl } from "../utils/api";
 
 interface BudgetMasterProps {
   onClose?: () => void;
@@ -29,7 +30,7 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
         }
 
      
-        const response = await fetch("/api/budgets/owner", {
+        const response = await fetch(apiUrl("/api/budgets/owner"), {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -194,7 +195,7 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
     
 
              // Get wedding ID for the budget
-       const getWeddingResponse = await fetch("/api/weddings/owner", {
+       const getWeddingResponse = await fetch(apiUrl("/api/weddings/owner"), {
          headers: { Authorization: `Bearer ${token}` }
        });
 
@@ -222,7 +223,7 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
       
 
        // Save budget settings using the dedicated budget API
-       const response = await fetch("/api/budgets/settings", {
+       const response = await fetch(apiUrl("/api/budgets/settings"), {
          method: "POST",
          headers: {
            "Content-Type": "application/json",
@@ -245,7 +246,7 @@ export default function BudgetMaster({ onClose }: BudgetMasterProps) {
                  // Verify the data was saved by fetching it from the budget API
          setTimeout(async () => {
            try {
-             const verifyResponse = await fetch("/api/budgets/owner", {
+             const verifyResponse = await fetch(apiUrl("/api/budgets/owner"), {
                headers: { Authorization: `Bearer ${token}` }
              });
              if (verifyResponse.ok) {

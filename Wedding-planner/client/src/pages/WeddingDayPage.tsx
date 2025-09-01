@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Trash_24 } from '../components/Icons/WeddingIconsLibrary';
 
 type WDItem = { id: string; text: string; done?: boolean };
 
@@ -99,7 +100,9 @@ export default function WeddingDayPage() {
               <li key={it.id} style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto auto', gap: 8, alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #E5E7EB' }}>
                 <input type="checkbox" checked={!!it.done} onChange={() => toggle(it.id)} />
                 <input className="input" value={it.text} onChange={e => update(it.id, e.target.value)} />
-                <button className="btn-icon" title="מחק" onClick={() => remove(it.id)}>🗑️</button>
+                <button className="btn-icon" title="מחק" onClick={() => remove(it.id)}>
+                  <Trash_24 style={{ width: '16px', height: '16px' }} />
+                </button>
               </li>
             ))}
           </ul>

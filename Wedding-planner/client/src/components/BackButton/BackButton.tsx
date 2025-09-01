@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BackRTL_24 } from '../Icons/WeddingIconsLibrary';
 
 interface BackButtonProps {
   className?: string;
@@ -37,22 +38,7 @@ const BackButton: React.FC<BackButtonProps> = ({ className = '', onClick }) => {
         fontFamily: 'var(--font-family)',
       }}
     >
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ transform: 'rotate(180deg)' }}
-      >
-        <path
-          d="M15 18l-6-6 6-6"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+      <BackRTL_24 style={{ width: '16px', height: '16px' }} />
       חזרה
     </button>
   );

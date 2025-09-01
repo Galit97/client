@@ -1,6 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
 // @ts-ignore
 import * as XLSX from 'xlsx';
+import { apiUrl } from '../utils/api';
+import { 
+  Trash_24, 
+  X_24, 
+  Clock_24, 
+  Success_24, 
+  Error_24, 
+  Heart_24,
+  Upload_24,
+  Download_24,
+  Mail_24,
+  Edit_24
+} from '../components/Icons/WeddingIconsLibrary';
 
 type GuestStatus = 'Invited' | 'Confirmed' | 'Declined' | 'Arrived';
 
@@ -268,7 +281,7 @@ export default function GuestListPage() {
 
     for (const guestData of guestsToAdd) {
       try {
-        const res = await fetch('/api/guests', {
+        const res = await fetch(apiUrl('/api/guests'), {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -344,7 +357,7 @@ export default function GuestListPage() {
       try {
         
         // First, get the user's wedding
-        const weddingRes = await fetch('/api/weddings/owner', {
+        const weddingRes = await fetch(apiUrl('/api/weddings/owner'), {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -363,7 +376,7 @@ export default function GuestListPage() {
         setWeddingId(weddingData._id);
 
         // Then fetch guests for this wedding
-        const guestsRes = await fetch(`/api/guests/by-wedding/${weddingData._id}`, {
+        const guestsRes = await fetch(apiUrl(`/api/guests/by-wedding/${weddingData._id}`), {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -408,7 +421,7 @@ export default function GuestListPage() {
         invitationSent: false,
       };
 
-      const res = await fetch('/api/guests', {
+              const res = await fetch(apiUrl('/api/guests'), {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -455,7 +468,7 @@ export default function GuestListPage() {
     if (!token) return;
 
     try {
-      const res = await fetch(`/api/guests/${id}`, {
+      const res = await fetch(apiUrl(`/api/guests/${id}`), {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -484,7 +497,7 @@ export default function GuestListPage() {
     if (!token) return;
 
     try {
-      const res = await fetch(`/api/guests/${guestData._id}`, {
+      const res = await fetch(apiUrl(`/api/guests/${guestData._id}`), {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -520,7 +533,7 @@ export default function GuestListPage() {
     if (!confirm("האם אתה בטוח שברצונך למחוק מוזמן זה?")) return;
 
     try {
-      const res = await fetch(`/api/guests/${id}`, { 
+      const res = await fetch(apiUrl(`/api/guests/${id}`), { 
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -634,7 +647,7 @@ export default function GuestListPage() {
             color: 'white',
             fontSize: '20px'
           }}>
-            ✉️
+            <Mail_24 style={{ width: '16px', height: '16px' }} />
           </div>
           <h1 style={{ 
             margin: 0,
@@ -902,7 +915,7 @@ export default function GuestListPage() {
               e.currentTarget.style.borderColor = '#e5e7eb';
             }}
           >
-            📥 הורד תבנית
+                          <Download_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> הורד תבנית
           </button>
           <button
             onClick={exportToExcel}
@@ -936,7 +949,7 @@ export default function GuestListPage() {
               e.currentTarget.style.borderColor = '#e5e7eb';
             }}
           >
-            📤 ייצא ({guests.length})
+                          <Upload_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> ייצא ({guests.length})
           </button>
           <label
             style={{
@@ -968,7 +981,12 @@ export default function GuestListPage() {
               e.currentTarget.style.borderColor = '#e5e7eb';
             }}
           >
-            {importing ? '⏳ מייבא...' : '📁 ייבא'}
+            {importing ? '⏳ מייבא...' : (
+              <>
+                <Upload_24 style={{ width: '16px', height: '16px', marginLeft: '4px' }} />
+                ייבא
+              </>
+            )}
             <input
               type="file"
               accept=".xlsx,.xls"
@@ -999,7 +1017,7 @@ export default function GuestListPage() {
               borderRadius: '4px',
               color: importMessage.includes('בהצלחה') ? '#155724' : '#721c24'
             }}>
-              {importMessage.includes('בהצלחה') ? '✅ ' : '❌ '}{importMessage}
+              {importMessage.includes('בהצלחה') ? <><Success_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> </> : <><Error_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> </>}{importMessage}
             </div>
           )}
       </div>
@@ -1187,8 +1205,10 @@ export default function GuestListPage() {
                         if (editingGuest) {
                           updateGuest(editingGuest);
                         }
-                      }}>💾</button>
-                      <button className="btn-icon" title="בטל" onClick={cancelEditing}>✖️</button>
+                      }}><Success_24 style={{ width: '16px', height: '16px' }} /></button>
+                      <button className="btn-icon" title="בטל" onClick={cancelEditing}>
+                        <X_24 style={{ width: '16px', height: '16px' }} />
+                      </button>
                     </div>
                   </div>
                   <div className="card-row">
@@ -1242,10 +1262,18 @@ export default function GuestListPage() {
                     <div className="field">
                       <label>סטטוס</label>
                       <div style={{ display: 'flex', gap: 8 }}>
-                        <button className="btn-icon" title="הוזמן" onClick={() => updateStatus(editingGuest!._id, 'Invited')}>⏳</button>
-                        <button className="btn-icon" title="אושר" onClick={() => updateStatus(editingGuest!._id, 'Confirmed')}>✅</button>
-                        <button className="btn-icon" title="נדחה" onClick={() => updateStatus(editingGuest!._id, 'Declined')}>❌</button>
-                        <button className="btn-icon" title="הגיע" onClick={() => updateStatus(editingGuest!._id, 'Arrived')}>🎉</button>
+                        <button className="btn-icon" title="הוזמן" onClick={() => updateStatus(editingGuest!._id, 'Invited')}>
+                          <Clock_24 style={{ width: '16px', height: '16px' }} />
+                        </button>
+                        <button className="btn-icon" title="אושר" onClick={() => updateStatus(editingGuest!._id, 'Confirmed')}>
+                          <Success_24 style={{ width: '16px', height: '16px' }} />
+                        </button>
+                        <button className="btn-icon" title="נדחה" onClick={() => updateStatus(editingGuest!._id, 'Declined')}>
+                          <Error_24 style={{ width: '16px', height: '16px' }} />
+                        </button>
+                        <button className="btn-icon" title="הגיע" onClick={() => updateStatus(editingGuest!._id, 'Arrived')}>
+                          <Heart_24 style={{ width: '16px', height: '16px' }} />
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -1303,7 +1331,7 @@ export default function GuestListPage() {
                         }}
                         title="ערוך"
                       >
-                        ✏️
+                        <Edit_24 style={{ width: '16px', height: '16px' }} />
                       </button>
                       <button
                         onClick={() => deleteGuest(guest._id)}
@@ -1324,7 +1352,7 @@ export default function GuestListPage() {
                         }}
                         title="מחק"
                       >
-                        🗑️
+                        <Trash_24 style={{ width: '16px', height: '16px' }} />
                       </button>
                     </div>
                   </div>
@@ -1456,9 +1484,9 @@ export default function GuestListPage() {
                                guest.status === 'Declined' ? '#991b1b' : 
                                guest.status === 'Arrived' ? '#1e40af' : '#92400e'
                       }}>
-                        {guest.status === 'Invited' ? '⏳ הוזמן' : 
-                         guest.status === 'Confirmed' ? '✅ אושר' : 
-                         guest.status === 'Declined' ? '❌ נדחה' : '🎉 הגיע'}
+                        {guest.status === 'Invited' ? 'הוזמן' : 
+                         guest.status === 'Confirmed' ? 'אושר' : 
+                         guest.status === 'Declined' ? 'נדחה' : 'הגיע'}
                       </div>
                     </div>
 
@@ -1505,7 +1533,7 @@ export default function GuestListPage() {
                         }}
                         title="הוזמן"
                       >
-                        ⏳
+                        <Clock_24 style={{ width: '14px', height: '14px' }} />
                       </button>
                       <button
                         onClick={() => updateStatus(guest._id, 'Confirmed')}
@@ -1520,7 +1548,7 @@ export default function GuestListPage() {
                         }}
                         title="אושר"
                       >
-                        ✅
+                        <Success_24 style={{ width: '14px', height: '14px' }} />
                       </button>
                       <button
                         onClick={() => updateStatus(guest._id, 'Declined')}
@@ -1535,7 +1563,7 @@ export default function GuestListPage() {
                         }}
                         title="נדחה"
                       >
-                        ❌
+                        <Error_24 style={{ width: '14px', height: '14px' }} />
                       </button>
                       <button
                         onClick={() => updateStatus(guest._id, 'Arrived')}
@@ -1550,7 +1578,7 @@ export default function GuestListPage() {
                         }}
                         title="הגיע"
                       >
-                        🎉
+                        <Heart_24 style={{ width: '14px', height: '14px' }} />
                       </button>
                     </div>
                   </div>

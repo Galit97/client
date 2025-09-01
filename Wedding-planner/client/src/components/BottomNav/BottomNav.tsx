@@ -1,9 +1,35 @@
 import React, { useState } from 'react';
-import BudgetIcon from '../Icons/BudgetIcon';
+import { 
+  Home_24, 
+  Settings_24, 
+  Guests_24, 
+  Suppliers_24, 
+  Budget_24, 
+  Tasks_24,
+  Calendar_24,
+  Heart_24,
+  Star_24,
+  ChevronRTL_24
+} from '../Icons/WeddingIconsLibrary';
+
+type IconComponent = React.FC<{ className?: string; style?: React.CSSProperties }>;
 
 interface BottomNavProps {
   onSelect: (page: string) => void;
   currentSection?: string;
+}
+
+interface NavItem {
+  id: string;
+  label: string;
+  icon: IconComponent | string;
+  route: string;
+  type?: 'dropdown';
+  items?: Array<{
+    id: string;
+    label: string;
+    icon: IconComponent | string;
+  }>;
 }
 
 const BottomNav: React.FC<BottomNavProps> = ({ onSelect, currentSection }) => {
@@ -13,54 +39,54 @@ const BottomNav: React.FC<BottomNavProps> = ({ onSelect, currentSection }) => {
     {
       id: 'dashboard',
       label: 'בית',
-      icon: '🏠',
+      icon: Home_24,
       route: '/dashboard'
     },
     {
       id: 'eventSettings',
       label: 'הגדרות',
-      icon: '⚙️',
+      icon: Settings_24,
       route: '/eventSettings'
     },
     {
       id: 'guestList',
       label: 'מוזמנים',
-      icon: '👥',
+      icon: Guests_24,
       route: '/guests'
     },
     {
       id: 'vendors',
       label: 'ספקים',
-      icon: '🏢',
+      icon: Suppliers_24,
       route: '/vendors'
     },
     {
       id: 'budget',
       label: 'תקציב',
-      icon: '💰',
+      icon: Budget_24,
       route: '/budget'
     },
     {
       id: 'comparisons',
       label: 'השוואות',
-      icon: '⚖️',
+      icon: ChevronRTL_24,
       route: '/comparisons',
       type: 'dropdown',
       items: [
-        { id: 'vendorCompare', label: 'השוואת ספקים', icon: '🏢' },
-        { id: 'venueCompare', label: 'השוואת אולמות', icon: '🏰' }
+        { id: 'vendorCompare', label: 'השוואת ספקים', icon: Suppliers_24 },
+        { id: 'venueCompare', label: 'השוואת אולמות', icon: Heart_24 }
       ]
     },
     {
       id: 'lists',
       label: 'רשימות',
-      icon: '📋',
+      icon: Tasks_24,
       route: '/lists',
       type: 'dropdown',
       items: [
-        { id: 'checklist', label: 'משימות', icon: '✅' },
-        { id: 'importantThings', label: 'דברים חשובים', icon: '⭐' },
-        { id: 'weddingDay', label: 'יום החתונה', icon: '💒' }
+        { id: 'checklist', label: 'משימות', icon: Tasks_24 },
+        { id: 'importantThings', label: 'דברים חשובים', icon: Star_24 },
+        { id: 'weddingDay', label: 'יום החתונה', icon: Calendar_24 }
       ]
     }
   ];
@@ -150,10 +176,10 @@ const BottomNav: React.FC<BottomNavProps> = ({ onSelect, currentSection }) => {
               }}
             >
               <span style={{ fontSize: '16px' }}>
-                {item.id === 'budget' ? (
-                  <BudgetIcon size={16} />
-                ) : (
+                {typeof item.icon === 'string' ? (
                   item.icon
+                ) : (
+                  <item.icon style={{ width: '16px', height: '16px' }} />
                 )}
               </span>
               <span style={{ textAlign: 'center', lineHeight: '1.2' }}>
@@ -211,7 +237,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ onSelect, currentSection }) => {
                      fontWeight: 'bold',
                      backgroundColor: '#f0f9ff'
                    }}>
-                     דרופ דאון פתוח - {item.label}
+                    {item.label}
                    </div>
                                     {item.items?.map((subItem, index) => (
                     <button
@@ -242,7 +268,13 @@ const BottomNav: React.FC<BottomNavProps> = ({ onSelect, currentSection }) => {
                         e.currentTarget.style.background = currentSection === subItem.id ? '#f0f9ff' : 'none';
                       }}
                     >
-                      <span style={{ fontSize: '16px' }}>{subItem.icon}</span>
+                      <span style={{ fontSize: '16px' }}>
+                        {typeof subItem.icon === 'string' ? (
+                          subItem.icon
+                        ) : (
+                          <subItem.icon style={{ width: '16px', height: '16px' }} />
+                        )}
+                      </span>
                       <span>{subItem.label}</span>
                     </button>
                   ))}

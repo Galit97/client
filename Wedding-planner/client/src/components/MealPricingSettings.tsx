@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Success_24, X_24, Edit_24 } from './Icons/WeddingIconsLibrary';
 
 type MealPricing = {
   basePrice: number;
@@ -32,7 +33,7 @@ export default function MealPricingSettings({
   return (
     <div className="card" style={{ marginBottom: '30px' }}>
       <h3 style={{ margin: '0 0 20px 0', color: '#e65100' }}>
-        🍽️ מחירי מנות - חישוב עלויות האירוע
+        מחירי מנות - חישוב עלויות האירוע
       </h3>
       
       <div style={{ 
@@ -49,7 +50,7 @@ export default function MealPricingSettings({
             onClick={() => setIsEditing(!isEditing)}
             className='button'
           >
-            {isEditing ? '❌ ביטול עריכה' : '✏️ ערוך הגדרות'}
+            {isEditing ? <><X_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> ביטול עריכה</> : <><Edit_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> ערוך הגדרות</>}
           </button>
         </div>
         
@@ -74,7 +75,7 @@ export default function MealPricingSettings({
               animation: 'spin 1s linear infinite'
             }}></div>
             <span style={{ color: '#1976d2', fontSize: '14px', fontWeight: 'bold' }}>
-              💾 שומר שינויים אוטומטית...
+              <Success_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> שומר שינויים אוטומטית...
             </span>
           </div>
         )}
@@ -95,18 +96,9 @@ export default function MealPricingSettings({
               type="button"
               onClick={onSave}
               disabled={saving}
-              style={{
-                padding: '6px 12px',
-                backgroundColor: saving ? '#ccc' : '#ff9800',
-                color: 'white',
-              
-                borderRadius: '4px',
-                cursor: saving ? 'not-allowed' : 'pointer',
-                fontSize: '12px',
-                fontWeight: 'bold'
-              }}
+              className="save-btn"
             >
-              {saving ? 'שומר...' : '💾 שמור'}
+              {saving ? 'שומר...' : <><Success_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> שמור</>}
             </button>
           )}
         </div>
@@ -114,10 +106,10 @@ export default function MealPricingSettings({
         {!isEditing && (
           <div className='button'>
             <div style={{ fontSize: '14px', color: '#2e7d32', fontWeight: 'bold' }}>
-              🔒 השדות נעולים לעריכה
+              השדות נעולים לעריכה
             </div>
             <div style={{ fontSize: '12px', color: '#2e7d32', marginTop: '5px' }}>
-              לחץ על "✏️ ערוך הגדרות" כדי לאפשר עריכה
+              לחץ על "ערוך הגדרות" כדי לאפשר עריכה
             </div>
           </div>
         )}

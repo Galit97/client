@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { loginUser } from "../../api/authService";
 import { useNotification } from "../Notification/NotificationContext";
+import { Heart_24 } from "../Icons/WeddingIconsLibrary";
 
 type Props = {
   isOpen: boolean;
@@ -156,7 +157,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
             justifyContent: 'center',
             fontSize: '28px'
           }}>
-            💒
+            <Heart_24 style={{ width: '24px', height: '24px' }} />
           </div>
           <h2 style={{
             margin: 0,

@@ -373,21 +373,83 @@ p {
 }
 
 .btn-danger {
-  background-color: var(--color-cancel);
+  background-color: #dc2626;
   color: var(--color-white);
 }
 
 .btn-danger:hover {
-  background-color: #64748B;
+  background-color: #b91c1c;
 }
 
 .btn-success {
-  background-color: var(--color-approve);
+  background-color: var(--brand-primary);
   color: var(--color-white);
 }
 
 .btn-success:hover {
-  background-color: #2C6B8B;
+  background-color: var(--brand-primary-hover);
+}
+
+/* ===== SAVE AND REMOVE BUTTON CLASSES ===== */
+.save-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-base);
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background-color: var(--brand-primary);
+  color: var(--color-white);
+  box-shadow: 0 4px 12px rgba(30, 90, 120, 0.3);
+}
+
+.save-btn:hover {
+  background-color: var(--brand-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30, 90, 120, 0.4);
+}
+
+.save-btn:active {
+  transform: translateY(0);
+}
+
+.save-btn:disabled {
+  background-color: #e5e7eb;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-base);
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background-color: #f87171;
+  color: var(--color-white);
+  box-shadow: 0 4px 12px rgba(248, 113, 113, 0.3);
+}
+
+.remove-btn:hover {
+  background-color: #ef4444;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(248, 113, 113, 0.4);
+}
+
+.remove-btn:active {
+  transform: translateY(0);
 }
 
 /* ===== NEW BUTTON CLASSES ===== */

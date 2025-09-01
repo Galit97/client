@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Trash_24, Success_24, Error_24, Clock_24, Plus_24 } from '../components/Icons/WeddingIconsLibrary';
 
 type Venue = {
   id: string;
@@ -340,10 +341,25 @@ export default function VenueComparisonPage() {
         <div style={{ textAlign: 'center', marginTop: '20px' }}>
           <button
             onClick={handleSave}
-           className='button'
+            className="save-btn"
             disabled={saveStatus === 'saving'}
           >
-            {saveStatus === 'saving' ? '🔄 שומר...' : saveStatus === 'saved' ? '✅ נשמר!' : saveStatus === 'error' ? '❌ שגיאה' : '💾 שמור הגדרות אורחים'}
+            {saveStatus === 'saving' ? (
+              <>
+                <Clock_24 style={{ width: '16px', height: '16px', marginLeft: '4px' }} />
+                שומר...
+              </>
+            ) : saveStatus === 'saved' ? (
+              <>
+                <Success_24 style={{ width: '16px', height: '16px', marginLeft: '4px' }} />
+                נשמר!
+              </>
+            ) : saveStatus === 'error' ? (
+              <>
+                <Error_24 style={{ width: '16px', height: '16px', marginLeft: '4px' }} />
+                שגיאה
+              </>
+            ) : <><Success_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> שמור הגדרות אורחים</>}
           </button>
         </div>
       </div>
@@ -364,7 +380,7 @@ export default function VenueComparisonPage() {
             marginBottom: '15px'
           }}
         >
-          ➕ הוסף אולם/גן אירועים להשוואה
+          <><Plus_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> הוסף אולם/גן אירועים להשוואה</>
         </button>
       </div>
 
@@ -454,20 +470,14 @@ export default function VenueComparisonPage() {
                   }}
                   disabled={saveStatus === 'saving'}
                 >
-                  {saveStatus === 'saving' ? '🔄 שומר...' : saveStatus === 'saved' ? '✅ נשמר!' : saveStatus === 'error' ? '❌ שגיאה' : '💾 שמור'}
+                  {saveStatus === 'saving' ? <><Clock_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> שומר...</> : saveStatus === 'saved' ? <><Success_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> נשמר!</> : saveStatus === 'error' ? <><Error_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> שגיאה</> : <><Success_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> שמור</>}
                 </button>
                 <button
                   onClick={() => removeVenue(venue.id)}
-                  style={{
-                    background: '#ef4444',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 12px',
-                    borderRadius: '4px',
-                    cursor: 'pointer'
-                  }}
+                  className="remove-btn"
                 >
-                  🗑️ הסר
+                  <Trash_24 style={{ width: '16px', height: '16px', marginLeft: '4px' }} />
+                  הסר
                 </button>
               </div>
             </div>
@@ -532,7 +542,7 @@ export default function VenueComparisonPage() {
               marginBottom: '20px',
           
             }}>
-              <h4 style={{ margin: '0 0 15px 0', color: '#1d5a78' }}>🍽️ מחירי מנות</h4>
+              <h4 style={{ margin: '0 0 15px 0', color: '#1d5a78' }}>מחירי מנות</h4>
               
             
               
@@ -620,7 +630,7 @@ export default function VenueComparisonPage() {
                 borderRadius: '6px',
             
               }}>
-                <h5 style={{ margin: '0 0 10px 0', color: '#495057', fontSize: '14px' }}>📅 תאריכים וימים למחיר</h5>
+                <h5 style={{ margin: '0 0 10px 0', color: '#495057', fontSize: '14px' }}>תאריכים וימים למחיר</h5>
                 <div style={{ display: 'grid', gap: '15px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
                   <div>
                     <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333', fontSize: '12px' }}>

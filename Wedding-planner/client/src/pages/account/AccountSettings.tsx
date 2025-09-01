@@ -99,10 +99,9 @@ export default function AccountSettings() {
         </div>
         <div>
           <button 
-            className="btn btn-primary" 
+            className="save-btn" 
             onClick={save} 
             disabled={saving}
-         
           >
             {saving ? 'שומר...' : 'שמור שינויים'}
           </button>

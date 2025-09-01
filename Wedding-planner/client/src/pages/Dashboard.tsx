@@ -1,5 +1,16 @@
 import React, { useState, useEffect, useCallback } from "react";
-import shareIcon from "../assets/images/share.svg";
+import { 
+  Share_24, 
+  Heart_24, 
+  Budget_24, 
+  Tasks_24, 
+  Calendar_24, 
+  Copy_24,
+  Link_24,
+  Success_24,
+  Guests_24,
+  Suppliers_24
+} from "../components/Icons/WeddingIconsLibrary";
 import BudgetMaster from "../lib/budgetMaster";
 import { apiUrl } from "../utils/api";
 import "../styles/Dashboard.css";
@@ -67,7 +78,7 @@ type Activity = {
   title: string;
   description: string;
   timestamp: string;
-  icon: string;
+  icon: string | React.ReactElement;
 };
 
 interface DashboardProps {
@@ -361,7 +372,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
        title: 'משימה הושלמה',
        description: `${task.task} הושלמה בהצלחה`,
        timestamp: new Date(Date.now() - (index + 3) * 3600000).toISOString(), // 3 hours ago, 4 hours ago
-       icon: '✅'
+       icon: <Success_24 style={{ width: '16px', height: '16px' }} />
      })),
     ...vendors.slice(-1).map((vendor, index) => ({
       id: `vendor_${vendor._id}`,
@@ -369,7 +380,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
       title: 'ספק נוסף',
       description: `${vendor.vendorName} נוסף לרשימת הספקים`,
       timestamp: new Date(Date.now() - (index + 5) * 3600000).toISOString(), // 5 hours ago
-      icon: '🏢'
+      icon: <Suppliers_24 style={{ width: '16px', height: '16px' }} />
     }))
   ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 5);
 
@@ -776,10 +787,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
               }
             }}
           >
-            <img 
-              src={shareIcon} 
-              alt="Share" 
-              style={{ width: '16px', height: '16px', filter: 'brightness(0) invert(1)' }}
+            <Share_24 
+              style={{ width: '16px', height: '16px', color: 'white' }}
             />
           </button>
           
@@ -843,7 +852,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
         {weddingData?.weddingDate ? (
           <>
             <h2 style={{ margin: '0 0 20px 0', fontSize: '28px', color: 'white'}}>
-              {timeLeft.days > 0 ? `ספירה לאחור לחתונה של ${weddingData?.weddingName || 'הזוג'}` : '🎉 היום החתונה!'}
+              {timeLeft.days > 0 ? `ספירה לאחור לחתונה של ${weddingData?.weddingName || 'הזוג'}` : <><Heart_24 style={{ width: '24px', height: '24px', marginLeft: '8px' }} /> היום החתונה!</>}
         </h2>
 
         
@@ -863,8 +872,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
             </div>
           </div>
         ) : (
-          <div style={{ fontSize: '36px', fontWeight: 'bold' }}>
-            מזל טוב! 🎊
+                      <div style={{ fontSize: '36px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            מזל טוב! <Heart_24 style={{ width: '32px', height: '32px', marginRight: '8px' }} />
               </div>
             )}
           </>
@@ -925,7 +934,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                justifyContent: 'center',
               marginLeft: '15px'
              }}>
-              <span style={{ fontSize: '24px' }}>💰</span>
+              <Budget_24 style={{ width: '24px', height: '24px' }} />
              </div>
                          <div style={{ flex: 1 }}>
                                 <h3 style={{ margin: '0', color: '#0F172A' }}>חישוב עלויות האירוע</h3>
@@ -940,7 +949,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                </p>
                {costBreakdown.hasMealPricing && (
                  <p style={{ margin: '5px 0 0 0', color: '#0ea5e9', fontSize: '11px', fontWeight: 'bold' }}>
-                   🍽️ כולל חישוב עלויות מנות
+                   כולל חישוב עלויות מנות
                  </p>
                )}
              </div>
@@ -971,7 +980,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
               fontSize: '12px',
               color: '#0c4a6e'
             }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>🍽️ חישוב עלויות מנות:</div>
+              <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>חישוב עלויות מנות:</div>
               <div>• מאשרי הגעה ({confirmedGuests} אנשים): {costBreakdown.mealsConfirmed.toLocaleString()} ₪</div>
               <div>• כל המוזמנים ({totalGuests} אנשים): {costBreakdown.mealsTotal.toLocaleString()} ₪</div>
               {weddingData?.mealPricing && (
@@ -1071,7 +1080,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                 justifyContent: 'center',
                 marginLeft: '15px'
               }}>
-              <span style={{ fontSize: '24px' }}>👥</span>
+              <Guests_24 style={{ width: '24px', height: '24px' }} />
              </div>
             <div style={{ flex: 1 }}>
               <h3 style={{ margin: '0', color: '#0F172A' }}>מוזמנים</h3>
@@ -1153,7 +1162,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                justifyContent: 'center',
                marginLeft: '15px'
              }}>
-              <span style={{ fontSize: '24px' }}>📋</span>
+              <Tasks_24 style={{ width: '24px', height: '24px' }} />
             </div>
             <div style={{ flex: 1 }}>
               <h3 style={{ margin: '0', color: '#0F172A' }}>משימות</h3>
@@ -1502,7 +1511,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
               alignItems: 'center',
               marginBottom: '20px'
             }}>
-              <span style={{ fontSize: '24px', marginLeft: '10px' }}>📅</span>
+              <Calendar_24 style={{ width: '24px', height: '24px', marginLeft: '10px' }} />
               <h2 style={{ margin: 0, color: '#0F172A' }}>בחירת תאריך החתונה</h2>
             </div>
             
@@ -2052,24 +2061,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                                    }
                                  }
                                }}
-                               style={{
-                                 padding: '6px 10px',
-                                 background: '#dc2626',
-                                 color: 'white',
-                                 border: 'none',
-                                 borderRadius: '6px',
-                                 cursor: 'pointer',
-                                 fontSize: '12px',
-                                 fontWeight: '500',
-                                 transition: 'all 0.2s ease',
-                                 minWidth: '60px'
-                               }}
-                               onMouseEnter={(e) => {
-                                 e.currentTarget.style.background = '#b91c1c';
-                               }}
-                               onMouseLeave={(e) => {
-                                 e.currentTarget.style.background = '#dc2626';
-                               }}
+                               className="remove-btn"
                                title="הסר שותף"
                              >
                                הסר
@@ -2118,7 +2110,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                     if (!token || !weddingData?._id) return;
                     try {
                       setCreatingInvite(true);
-                      const res = await fetch('/api/weddings/invites', { 
+                      const res = await fetch(apiUrl('/api/weddings/invites'), { 
                         method: 'POST', 
                         headers: { Authorization: `Bearer ${token}` } 
                       });
@@ -2157,7 +2149,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                     }
                   }}
                 >
-                  {creatingInvite ? 'יוצר קישור...' : '🔗 צור קישור להזמנת שותף'}
+                  {creatingInvite ? 'יוצר קישור...' : <><Link_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> צור קישור להזמנת שותף</>}
                 </button>
                 
                 {inviteLink && (
@@ -2199,7 +2191,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
 
                       }}
                     >
-                      📋 העתק
+                      <Copy_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> העתק
                     </button>
                   </div>
                 )}

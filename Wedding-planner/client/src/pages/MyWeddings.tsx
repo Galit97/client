@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Trash_24, Edit_24, Plus_24 } from '../components/Icons/WeddingIconsLibrary';
 import { useNotification } from '../components/Notification/NotificationContext';
 
 type Wedding = {
@@ -183,7 +184,7 @@ export default function MyWeddings() {
                   
                   <div style={{ display: 'flex', gap: '20px', alignItems: 'center', marginBottom: '10px' }}>
                     <div style={{ color: '#6b7280', fontSize: '14px' }}>
-                      📅 {formatDate(wedding.weddingDate)}
+                      {formatDate(wedding.weddingDate)}
                     </div>
                     
                     <span style={{
@@ -241,31 +242,16 @@ export default function MyWeddings() {
                       e.currentTarget.style.backgroundColor = '#3b82f6';
                     }}
                   >
-                    ✏️ ערוך
+                    <><Edit_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> ערוך</>
                   </button>
                   
                   {wedding.canDelete && (
                     <button
                       onClick={() => deleteWedding(wedding._id)}
-                      style={{
-                        padding: '8px 16px',
-                        backgroundColor: '#ef4444',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                        fontWeight: 'bold',
-                        transition: 'all 0.2s ease'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#dc2626';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#ef4444';
-                      }}
+                      className="remove-btn"
                     >
-                      🗑️ מחק
+                      <Trash_24 style={{ width: '16px', height: '16px', marginLeft: '4px' }} />
+                      מחק
                     </button>
                   )}
                 </div>
@@ -303,7 +289,7 @@ export default function MyWeddings() {
             e.currentTarget.style.backgroundColor = '#10b981';
           }}
         >
-          ➕ צור אירוע חדש
+          <><Plus_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> צור אירוע חדש</>
         </button>
       </div>
     </div>
