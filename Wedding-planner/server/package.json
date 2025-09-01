@@ -6,7 +6,7 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "rimraf dist && tsc && echo 'Build completed successfully'",
     "start": "node dist/server.js",
     "dev": "ts-node server.ts",
     "build:clean": "rimraf dist && tsc",
