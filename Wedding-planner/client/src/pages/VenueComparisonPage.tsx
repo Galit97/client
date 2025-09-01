@@ -458,16 +458,7 @@ export default function VenueComparisonPage() {
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button
                   onClick={handleSave}
-                  style={{
-                    background: saveStatus === 'saving' ? '#3b82f6' : saveStatus === 'saved' ? '#3b82f6' : saveStatus === 'error' ? '#ef4444' : '#3b82f6',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 12px',
-                    borderRadius: '4px',
-                    cursor: saveStatus === 'saving' ? 'not-allowed' : 'pointer',
-                    fontWeight: 'bold',
-                    fontSize: '12px'
-                  }}
+                  className="save-btn"
                   disabled={saveStatus === 'saving'}
                 >
                   {saveStatus === 'saving' ? <><Clock_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> שומר...</> : saveStatus === 'saved' ? <><Success_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> נשמר!</> : saveStatus === 'error' ? <><Error_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> שגיאה</> : <><Success_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> שמור</>}

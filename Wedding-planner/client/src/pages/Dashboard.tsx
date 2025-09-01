@@ -364,7 +364,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
        title: 'אורח נוסף',
        description: `${guest.firstName} ${guest.lastName} נוסף לרשימת המוזמנים`,
        timestamp: new Date(Date.now() - (index + 1) * 3600000).toISOString(), // 1 hour ago, 2 hours ago
-       icon: '👤'
+       icon: <Guests_24 style={{ width: '16px', height: '16px' }} />
      })),
          ...tasks.filter(task => task.done).slice(-2).map((task, index) => ({
        id: `task_${task._id}`,

@@ -1267,27 +1267,7 @@ export default function WeddingPage() {
                        <button
                          type="button"
                          onClick={() => handleRemoveParticipant(p.id)}
-                         style={{ 
-                           padding: '8px 8px', 
-                           border: '1px solidrgb(224, 150, 150)', 
-                           background: '#ef4444',
-                           color: 'white',
-                           borderRadius: '8px',
-                           cursor: 'pointer',
-                           fontSize: '12px',
-                           fontWeight: '600',
-                           transition: 'all 0.2s ease'
-                         }}
-                         onMouseEnter={(e) => {
-                           e.currentTarget.style.backgroundColor = '#dc2626';
-                           e.currentTarget.style.borderColor = '#dc2626';
-                           e.currentTarget.style.transform = 'translateY(-1px)';
-                         }}
-                         onMouseLeave={(e) => {
-                           e.currentTarget.style.backgroundColor = '#ef4444';
-                           e.currentTarget.style.borderColor = '#ef4444';
-                           e.currentTarget.style.transform = 'translateY(0)';
-                         }}
+                         className="remove-btn"
                        >
                          <Trash_24 style={{ width: '16px', height: '16px', marginLeft: '8px' }} /> הסר
                        </button>
@@ -1393,28 +1373,7 @@ export default function WeddingPage() {
             <button
               type="button"
               onClick={() => setIsEditingMealPricing(!isEditingMealPricing)}
-              style={{
-                padding: '10px 20px',
-                background: isEditingMealPricing ? '#ef4444' : '#1d5a78',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                fontWeight: '600',
-                transition: 'all 0.2s ease',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = isEditingMealPricing ? '#dc2626' : '#164e63';
-                e.currentTarget.style.transform = 'translateY(-1px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = isEditingMealPricing ? '#ef4444' : '#1d5a78';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
+              className={isEditingMealPricing ? "remove-btn" : "save-btn"}
             >
               {isEditingMealPricing ? '❌ ביטול עריכה' : '✏️ ערוך הגדרות'}
             </button>
