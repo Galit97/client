@@ -81,7 +81,7 @@ router.post('/forgot-password', async (req, res) => {
     try {
       await sendPasswordResetEmail(email, {
         userName: `${user.firstName} ${user.lastName}`,
-        resetLink: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password`,
+        resetLink: `${process.env.FRONTEND_URL || 'https://wedding-planner-wj86.onrender.com'}/reset-password`,
         tempPassword: tempPassword
       });
 

@@ -27,7 +27,8 @@ app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? [
         'https://wedi-app.vercel.app', // Your Vercel frontend URL
-        'http://localhost:5173' // For local development
+        'http://localhost:5173', // For local development
+        'https://wedding-planner-wj86.onrender.com' // for server
       ]
     : true, // Allow all origins in development
   credentials: true

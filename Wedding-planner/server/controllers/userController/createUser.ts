@@ -21,7 +21,7 @@ const createUser = async (req: MulterRequest, res: Response) => {
 
     let profileImageUrl;
     if (req.file) {
-      profileImageUrl = `http://localhost:5000/uploads/${req.file.filename}`;
+      profileImageUrl = `https://wedding-planner-wj86.onrender.com/${req.file.filename}`;
     }
 
     const newUser = await User.create({
