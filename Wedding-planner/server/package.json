@@ -6,11 +6,10 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "dev": "nodemon --exec ts-node server.ts",
+    "build": "tsc",
     "start": "node dist/server.js",
-    "start:debug": "node start.js",
-    "build": "npm run prebuild && tsc",
-    "build:clean": "rimraf dist && npm run build",
+    "dev": "ts-node server.ts",
+    "build:clean": "rimraf dist && tsc",
     "prebuild": "rimraf dist",
     "verify": "node verify-build.js"
   },

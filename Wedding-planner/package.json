@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "description": "Wedding Planner Application",
   "scripts": {
-    "build": "cd server && npm install && npm run build:clean && cd ../client && npm install && npm run build",
+    "build": "cd server && npm install && npm run build && cd ../client && npm install && npm run build",
+    "start": "cd server && npm start",
     "build:client": "cd client && npm install && npm run build",
     "build:server": "cd server && npm install && npm run build:clean",
     "build:server:clean": "cd server && npm run build:clean",
     "dev": "cd client && npm run dev",
     "install-client": "cd client && npm install",
     "install-server": "cd server && npm install",
-    "install-all": "npm run install-client && npm run install-server",
-    "start": "cd server && npm start"
+    "install-all": "npm run install-client && npm run install-server"
   },
   "keywords": ["wedding", "planner", "react", "node"],
   "author": "Your Name",
