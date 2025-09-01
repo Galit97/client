@@ -11,8 +11,8 @@ fi
 
 echo "📋 Prerequisites Check:"
 echo "1. MongoDB Atlas database set up"
-echo "2. Railway account created"
-echo "3. Netlify account created"
+echo "2. Render account created"
+echo "3. Vercel account created"
 echo "4. GitHub repository pushed"
 echo ""
 
@@ -20,9 +20,9 @@ read -p "Have you completed all prerequisites? (y/n): " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     echo "Please complete the prerequisites first:"
-    echo "- Read MONGODB_SETUP.md"
-    echo "- Read RAILWAY_DEPLOYMENT.md"
-    echo "- Read NETLIFY_DEPLOYMENT.md"
+echo "- Read MONGODB_SETUP.md"
+echo "- Read RENDER_DEPLOYMENT.md"
+echo "- Read VERCEL_DEPLOYMENT.md"
     exit 1
 fi
 
@@ -61,16 +61,16 @@ echo ""
 echo "✅ Build completed successfully!"
 echo ""
 echo "📝 Next Steps:"
-echo "1. Deploy backend to Railway:"
-echo "   - Follow RAILWAY_DEPLOYMENT.md"
-echo "   - Get your Railway URL"
+echo "1. Deploy backend to Render:"
+echo "   - Follow RENDER_DEPLOYMENT.md"
+echo "   - Get your Render URL"
 echo ""
-echo "2. Deploy frontend to Netlify:"
-echo "   - Follow NETLIFY_DEPLOYMENT.md"
-echo "   - Set VITE_API_URL to your Railway URL"
+echo "2. Deploy frontend to Vercel:"
+echo "   - Follow VERCEL_DEPLOYMENT.md"
+echo "   - Set VITE_API_URL to your Render URL"
 echo ""
 echo "3. Test your deployment:"
-echo "   - Visit your Netlify URL"
+echo "   - Visit your Vercel URL"
 echo "   - Test all functionality"
 echo ""
 echo "🎉 Your wedding planner will be live!"
