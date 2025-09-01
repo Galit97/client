@@ -2,20 +2,8 @@ services:
   - type: web
     name: wedding-planner-server
     env: node
-    buildCommand: |
-      echo "Starting build process..."
-      cd server
-      echo "Installing server dependencies..."
-      npm install
-      echo "Building server..."
-      npm run build:clean
-      echo "Build complete. Checking dist folder contents:"
-      ls -la dist/
-      echo "Checking if server.js exists:"
-      test -f dist/server.js && echo "server.js exists" || echo "server.js NOT found"
-      echo "Running build verification..."
-      node verify-build.js
-    startCommand: cd server && node start.js
+    buildCommand: npm run build
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production

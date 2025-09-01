@@ -27,6 +27,7 @@ app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? [
         'https://wedi-app.vercel.app', // Your Vercel frontend URL
+        'https://wedi-icevbne50-galits-projects-9399d19b.vercel.app', // Vercel preview URL
         'http://localhost:5173', // For local development
         'https://wedding-planner-wj86.onrender.com' // for server ok
       ]

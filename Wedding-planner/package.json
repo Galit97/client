@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Wedding Planner Application",
   "scripts": {
-    "build": "npm run build:client && npm run build:server",
+    "build": "cd server && npm install && npm run build:clean && cd ../client && npm install && npm run build",
     "build:client": "cd client && npm install && npm run build",
     "build:server": "cd server && npm install && npm run build:clean",
     "build:server:clean": "cd server && npm run build:clean",
