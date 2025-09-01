@@ -8,9 +8,11 @@
   "scripts": {
     "dev": "nodemon --exec ts-node server.ts",
     "start": "node dist/server.js",
-    "build": "tsc",
-    "build:clean": "rimraf dist && tsc",
-    "postinstall": "npm run build"
+    "start:debug": "node start.js",
+    "build": "npm run prebuild && tsc",
+    "build:clean": "rimraf dist && npm run build",
+    "prebuild": "rimraf dist",
+    "verify": "node verify-build.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
