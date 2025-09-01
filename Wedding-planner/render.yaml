@@ -4,9 +4,9 @@ services:
     env: node
     buildCommand: |
       npm install
-      npm run install-all
-      npm run build:server
-    startCommand: cd server && npm start
+      cd server && npm install
+      cd server && npm run build:clean
+    startCommand: cd server && node dist/server.js
     envVars:
       - key: NODE_ENV
         value: production
