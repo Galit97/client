@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { apiUrl } from '../../utils/api';
 
 export default function InviteAcceptPage() {
   const { token } = useParams<{ token: string }>();
@@ -13,7 +14,7 @@ export default function InviteAcceptPage() {
       if (!auth) { setStatus('login'); return; }
       try {
         setStatus('accepting');
-        const res = await fetch(`/api/weddings/invites/accept/${token}`, { method: 'POST', headers: { Authorization: `Bearer ${auth}` } });
+        const res = await fetch(apiUrl(`/api/weddings/invites/accept/${token}`), { method: 'POST', headers: { Authorization: `Bearer ${auth}` } });
         if (!res.ok) {
           const text = await res.text();
           setStatus('error'); setMessage(text || 'Failed to accept invite');

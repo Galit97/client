@@ -15,6 +15,9 @@ export const apiUrl = (endpoint: string): string => {
     console.log(`API Call: ${endpoint} -> ${fullUrl}`);
   }
   
+  // Always log in production to debug the issue
+  console.log(`🔍 API Debug: ${endpoint} -> ${fullUrl} (ENV: ${import.meta.env.MODE}, BASE: ${API_BASE_URL})`);
+  
   return fullUrl;
 };
 

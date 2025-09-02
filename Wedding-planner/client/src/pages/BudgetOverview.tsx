@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Budget_24 } from '../components/Icons/WeddingIconsLibrary';
+import { apiUrl } from '../utils/api';
 
 // מאסטר התקציב:
 import {
@@ -30,7 +31,7 @@ export default function BudgetOverview() {
 
       try {
         // Fetch wedding data for budget settings
-        const weddingRes = await fetch("/api/weddings/owner", {
+        const weddingRes = await fetch(apiUrl("/api/weddings/owner"), {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (weddingRes.ok) {
@@ -50,7 +51,7 @@ export default function BudgetOverview() {
         }
 
         // Fetch vendors and convert to suppliers format
-        const vendorsRes = await fetch("/api/vendors", {
+        const vendorsRes = await fetch(apiUrl("/api/vendors"), {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (vendorsRes.ok) {

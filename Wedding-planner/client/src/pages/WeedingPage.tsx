@@ -343,7 +343,7 @@ export default function WeddingPage() {
           try {
         let res;
         if (wedding._id) {
-          res = await fetch(`/api/weddings/${wedding._id}`, {
+          res = await fetch(apiUrl(`/api/weddings/${wedding._id}`), {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -352,7 +352,7 @@ export default function WeddingPage() {
           body: JSON.stringify(weddingToSave),
         });
       } else {
-        res = await fetch("/api/weddings", {
+        res = await fetch(apiUrl("/api/weddings"), {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -405,7 +405,7 @@ export default function WeddingPage() {
     }
 
     try {
-      const res = await fetch(`/api/weddings/${wedding._id}`, {
+      const res = await fetch(apiUrl(`/api/weddings/${wedding._id}`), {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -1676,7 +1676,7 @@ export default function WeddingPage() {
                 if (!token) return;
 
                 try {
-                  const res = await fetch("/api/guests", {
+                  const res = await fetch(apiUrl("/api/guests"), {
                     headers: {
                       Authorization: `Bearer ${token}`,
                     },

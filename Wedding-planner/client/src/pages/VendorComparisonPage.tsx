@@ -117,10 +117,24 @@ export default function VendorComparisonPage() {
             }
           }
           
-          // Load vendors for this wedding
+          // Load vendors for this wedding (backend already filters by wedding)
           const res = await fetch(apiUrl('/api/vendors'), { headers: { Authorization: `Bearer ${token}` } });
-          if (res.ok) setVendors(await res.json());
-          else setVendors([]);
+          if (res.ok) {
+            const vendorsData = await res.json();
+            console.log(`🔍 Loaded ${vendorsData.length} vendors for wedding ${weddingId}`);
+            
+            // Safety check: if we get too many vendors, something is wrong
+            if (vendorsData.length > 100) {
+              console.error(`❌ Too many vendors loaded: ${vendorsData.length}. This suggests a backend issue.`);
+              console.log('🔍 First few vendors:', vendorsData.slice(0, 5));
+              // Still set the vendors but log the issue
+            }
+            
+            setVendors(vendorsData);
+          } else {
+            console.log('⚠️ No vendors found for this wedding');
+            setVendors([]);
+          }
         } else {
           setVendors([]);
           setNoWeddingFound(true);
@@ -234,6 +248,11 @@ export default function VendorComparisonPage() {
     );
   }
 
+  // Debug information
+  console.log(`🔍 DEBUG: Total vendors loaded: ${vendors.length}`);
+  console.log(`🔍 DEBUG: Total extra comparisons: ${Object.values(extraComparisons).flat().length}`);
+  console.log(`🔍 DEBUG: Selected types: ${selectedTypes.join(', ')}`);
+
   if (noWeddingFound) {
     return (
       <div style={{ textAlign: 'center', padding: '50px' }}>
@@ -279,19 +298,35 @@ export default function VendorComparisonPage() {
            // Get extra comparisons for this type
            const extras = extraComparisons[type] || [];
            
-           // Combine and remove duplicates based on name
+           // Combine and remove duplicates based on name (case-insensitive)
            const allItems = [...existingVendors, ...extras];
+           console.log(`🔍 Processing ${allItems.length} items for type ${type}: ${existingVendors.length} vendors + ${extras.length} comparisons`);
+           
            const uniqueItems = allItems.reduce((acc, item) => {
              const itemName = 'vendorName' in item ? item.vendorName : item.name;
+             const normalizedName = itemName?.toLowerCase().trim();
+             
+             if (!normalizedName) {
+               console.warn('⚠️ Item without name:', item);
+               return acc;
+             }
+             
              const existingItem = acc.find(existing => {
                const existingName = 'vendorName' in existing ? existing.vendorName : existing.name;
-               return existingName.toLowerCase() === itemName.toLowerCase();
+               const normalizedExistingName = existingName?.toLowerCase().trim();
+               return normalizedExistingName === normalizedName;
              });
+             
              if (!existingItem) {
                acc.push(item);
+             } else {
+               console.log(`🔄 Duplicate found and removed: ${itemName}`);
              }
+             
              return acc;
            }, [] as any[]);
+           
+           console.log(`✅ After deduplication: ${uniqueItems.length} unique items`);
            
            // Check for duplicates
            const hasDuplicates = allItems.length > uniqueItems.length;
