@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNotification } from '../../components/Notification/NotificationContext';
+import { apiUrl } from '../../utils/api';
 
 export default function AccountSettings() {
   const { showNotification } = useNotification();
@@ -22,7 +23,7 @@ export default function AccountSettings() {
     if (!userId) return;
     setSaving(true);
     try {
-      const res = await fetch(`/api/users/${userId}`, {
+      const res = await fetch(apiUrl(`/api/users/${userId}`), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

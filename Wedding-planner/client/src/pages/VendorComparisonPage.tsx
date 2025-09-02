@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Trash_24 } from '../components/Icons/WeddingIconsLibrary';
+import { apiUrl } from '../utils/api';
 
 type VendorStatus = 'Pending' | 'Confirmed' | 'Paid';
 type VendorType = 'music' | 'food' | 'photography' | 'decor' | 'clothes' | 'makeup_hair' | 'internet_orders' | 'lighting_sound' | 'guest_gifts' | 'venue_deposit' | 'bride_dress' | 'groom_suit' | 'shoes' | 'jewelry' | 'rsvp' | 'design_tables' | 'bride_bouquet' | 'chuppah' | 'flowers' | 'other';
@@ -82,14 +83,14 @@ export default function VendorComparisonPage() {
       try {
         // Try to get wedding as owner first
         let weddingId = '';
-        let wed = await fetch('/api/weddings/owner', { headers: { Authorization: `Bearer ${token}` } });
+        let wed = await fetch(apiUrl('/api/weddings/owner'), { headers: { Authorization: `Bearer ${token}` } });
         
         if (wed.ok) {
           const w = await wed.json();
           weddingId = w._id;
         } else {
           // If not owner, try as participant
-          const participantWed = await fetch('/api/weddings/by-participant', { headers: { Authorization: `Bearer ${token}` } });
+          const participantWed = await fetch(apiUrl('/api/weddings/by-participant'), { headers: { Authorization: `Bearer ${token}` } });
           if (participantWed.ok) {
             const participantWeddings = await participantWed.json();
             if (participantWeddings.length > 0) {
@@ -117,7 +118,7 @@ export default function VendorComparisonPage() {
           }
           
           // Load vendors for this wedding
-          const res = await fetch('/api/vendors', { headers: { Authorization: `Bearer ${token}` } });
+          const res = await fetch(apiUrl('/api/vendors'), { headers: { Authorization: `Bearer ${token}` } });
           if (res.ok) setVendors(await res.json());
           else setVendors([]);
         } else {
@@ -168,7 +169,7 @@ export default function VendorComparisonPage() {
         [type]: [...(extraComparisons[type] || []), { id: `${type}-${Date.now()}-${Math.round(Math.random() * 1e6)}`, ...entry }]
       };
       
-      const response = await fetch('/api/comparisons/vendor', {
+      const response = await fetch(apiUrl('/api/comparisons/vendor'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

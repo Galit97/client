@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Trash_24 } from '../components/Icons/WeddingIconsLibrary';
+import { apiUrl } from '../utils/api';
 
 type WDItem = { id: string; text: string; done?: boolean };
 
@@ -40,7 +41,7 @@ export default function WeddingDayPage() {
         return;
       }
       try {
-        const res = await fetch('/api/lists/weddingDay', { headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch(apiUrl('/api/lists/weddingDay'), { headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) {
           const data = await res.json();
           const arr = (data.items && Array.isArray(data.items) && data.items.length > 0)
@@ -59,7 +60,7 @@ export default function WeddingDayPage() {
     async function save() {
       const token = localStorage.getItem('token');
       if (!token) return;
-      await fetch('/api/lists/weddingDay', {
+      await fetch(apiUrl('/api/lists/weddingDay'), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ items }),

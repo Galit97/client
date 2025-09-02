@@ -1,15 +1,14 @@
 // API utility for handling base URL in development vs production
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://wedding-planner-wj86.onrender.com';
 
 export const apiUrl = (endpoint: string): string => {
-  // If we have a production API URL, use it
-  if (API_BASE_URL) {
-    return `${API_BASE_URL}${endpoint}`;
+  // In development, use localhost if no VITE_API_URL is set
+  if (import.meta.env.DEV && !import.meta.env.VITE_API_URL) {
+    return `http://localhost:5000${endpoint}`;
   }
   
-  // In production (Vercel), use relative URL (Vercel will proxy to Render backend)
-  // In development, use relative URL (works with Vite proxy)
-  return endpoint;
+  // In production, use the Render backend URL
+  return `${API_BASE_URL}${endpoint}`;
 };
 
 export default apiUrl; 

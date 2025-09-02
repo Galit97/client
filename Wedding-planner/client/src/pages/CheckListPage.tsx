@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNotification } from '../components/Notification/NotificationContext';
+import { apiUrl } from '../utils/api';
 
 type ChecklistItem = {
   _id: string;
@@ -65,7 +66,7 @@ export default function CheckListPage() {
       try {
         
         // First, get the user's wedding
-        const weddingRes = await fetch('/api/weddings/owner', {
+        const weddingRes = await fetch(apiUrl('/api/weddings/owner'), {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -84,7 +85,7 @@ export default function CheckListPage() {
         setWeddingId(weddingData._id);
 
         // Fetch checklist items for this wedding
-        const checklistRes = await fetch('/api/checklists', {
+        const checklistRes = await fetch(apiUrl('/api/checklists'), {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -99,7 +100,7 @@ export default function CheckListPage() {
         }
 
         // Fetch vendors
-        const vendorsRes = await fetch('/api/vendors', {
+        const vendorsRes = await fetch(apiUrl('/api/vendors'), {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -110,7 +111,7 @@ export default function CheckListPage() {
         }
 
         // Fetch users (wedding participants)
-        const usersRes = await fetch('/api/users', {
+        const usersRes = await fetch(apiUrl('/api/users'), {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -174,7 +175,7 @@ export default function CheckListPage() {
     if (!item) return;
 
     try {
-    const res = await fetch(`/api/checklists/${id}`, {
+    const res = await fetch(apiUrl(`/api/checklists/${id}`), {
       method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -225,7 +226,7 @@ export default function CheckListPage() {
         relatedRoleId: newRelatedRoleId || undefined,
       };
 
-      const res = await fetch('/api/checklists', {
+      const res = await fetch(apiUrl('/api/checklists'), {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -267,7 +268,7 @@ export default function CheckListPage() {
     if (!token) return;
 
     try {
-      const res = await fetch(`/api/checklists/${updatedItem._id}`, {
+      const res = await fetch(apiUrl(`/api/checklists/${updatedItem._id}`), {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -300,7 +301,7 @@ export default function CheckListPage() {
     if (!confirm("האם אתה בטוח שברצונך למחוק משימה זו?")) return;
 
     try {
-      const res = await fetch(`/api/checklists/${id}`, { 
+      const res = await fetch(apiUrl(`/api/checklists/${id}`), { 
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { loginUser } from "../../api/authService";
 import { useNotification } from "../Notification/NotificationContext";
 import { Heart_24 } from "../Icons/WeddingIconsLibrary";
+import { apiUrl } from "../../utils/api";
 
 type Props = {
   isOpen: boolean;
@@ -47,7 +48,7 @@ export default function LoginPopup({ isOpen, onClose, onSuccess, onSwitchToRegis
 
     setForgotPasswordLoading(true);
     try {
-      const response = await fetch('/api/users/forgot-password', {
+      const response = await fetch(apiUrl('/api/users/forgot-password'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),

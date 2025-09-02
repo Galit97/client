@@ -26,6 +26,7 @@ app.use((req: Request, res: Response, next) => {
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? [
+        'https://wedi-bud.vercel.app', // Your new Vercel frontend URL
         'https://wedi-app.vercel.app', // Your Vercel frontend URL
         'https://wedi-icevbne50-galits-projects-9399d19b.vercel.app', // Vercel preview URL
         'http://localhost:5173', // For local development

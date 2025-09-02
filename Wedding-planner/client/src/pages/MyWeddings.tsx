@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Trash_24, Edit_24, Plus_24 } from '../components/Icons/WeddingIconsLibrary';
 import { useNotification } from '../components/Notification/NotificationContext';
+import { apiUrl } from '../utils/api';
 
 type Wedding = {
   _id: string;
@@ -39,7 +40,7 @@ export default function MyWeddings() {
     }
 
     try {
-      const res = await fetch('/api/weddings/user', {
+      const res = await fetch(apiUrl('/api/weddings/user'), {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -67,7 +68,7 @@ export default function MyWeddings() {
     if (!token) return;
 
     try {
-      const res = await fetch(`/api/weddings/${weddingId}`, {
+      const res = await fetch(apiUrl(`/api/weddings/${weddingId}`), {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

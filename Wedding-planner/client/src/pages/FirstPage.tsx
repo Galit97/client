@@ -4,6 +4,7 @@ import { loginUser } from '../api/authService'
 import RegisterPopup from '../components/Register/RegisterPopup'
 import { useNotification } from '../components/Notification/NotificationContext'
 import wediLogo from '../assets/images/wedi-app-logo.png'
+import { apiUrl } from '../utils/api'
 
 export default function FirstPage() {
   const { showNotification } = useNotification();
@@ -40,7 +41,7 @@ export default function FirstPage() {
 
     setForgotPasswordLoading(true)
     try {
-      const response = await fetch('/api/users/forgot-password', {
+      const response = await fetch(apiUrl('/api/users/forgot-password'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),

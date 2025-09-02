@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { apiUrl } from '../../utils/api';
 
 type WeddingLite = { _id: string; weddingName?: string; weddingDate?: string };
 
@@ -12,7 +13,7 @@ export default function MyWeddings({ onOpenWedding }: { onOpenWedding: (id: stri
       if (!token) { setLoading(false); return; }
       try {
         // events by participant/co-owner
-        const partRes = await fetch('/api/weddings/by-participant', { headers: { Authorization: `Bearer ${token}` } });
+        const partRes = await fetch(apiUrl('/api/weddings/by-participant'), { headers: { Authorization: `Bearer ${token}` } });
         if (partRes.ok) {
           const data = await partRes.json();
           setParticipating(Array.isArray(data) ? data : (data ? [data] : []));

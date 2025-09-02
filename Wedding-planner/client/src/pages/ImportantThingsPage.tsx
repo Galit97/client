@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Trash_24 } from '../components/Icons/WeddingIconsLibrary';
+import { apiUrl } from '../utils/api';
 
 type Item = { _id?: string; text: string; done?: boolean };
 
@@ -13,7 +14,7 @@ export default function ImportantThingsPage() {
       const token = localStorage.getItem('token');
       if (!token) { setLoading(false); return; }
       try {
-        const res = await fetch('/api/lists/importantThings', { headers: { Authorization: `Bearer ${token}` } });
+        const res = await fetch(apiUrl('/api/lists/importantThings'), { headers: { Authorization: `Bearer ${token}` } });
         if (res.ok) {
           const data = await res.json();
           setItems(data.items || []);
@@ -29,7 +30,7 @@ export default function ImportantThingsPage() {
     async function save() {
       const token = localStorage.getItem('token');
       if (!token) return;
-      await fetch('/api/lists/importantThings', {
+      await fetch(apiUrl('/api/lists/importantThings'), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ items }),
