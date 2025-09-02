@@ -27,6 +27,7 @@ app.use((req: Request, res: Response, next) => {
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? [
+        'https://client-ecru-five-45.vercel.app', // Your working Vercel frontend URL
         'https://wedi-bud.vercel.app', // Your new Vercel frontend URL
         'https://wedi-app.vercel.app', // Your Vercel frontend URL
         'https://wedi-icevbne50-galits-projects-9399d19b.vercel.app', // Vercel preview URL
@@ -56,7 +57,22 @@ app.get("/", (req: Request, res: Response) => {
 
 // Handle preflight requests explicitly
 app.options('*', (req: Request, res: Response) => {
-  res.header('Access-Control-Allow-Origin', req.get('origin') || '*');
+  const origin = req.get('origin');
+  const allowedOrigins = [
+    'https://client-ecru-five-45.vercel.app',
+    'https://wedi-bud.vercel.app',
+    'https://wedi-app.vercel.app',
+    'https://wedi-icevbne50-galits-projects-9399d19b.vercel.app',
+    'http://localhost:5173',
+    'https://wedding-planner-wj86.onrender.com'
+  ];
+  
+  if (origin && allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  } else {
+    res.header('Access-Control-Allow-Origin', '*');
+  }
+  
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,Origin,X-Requested-With,Accept');
   res.header('Access-Control-Allow-Credentials', 'true');

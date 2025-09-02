@@ -8,7 +8,14 @@ export const apiUrl = (endpoint: string): string => {
   }
   
   // In production, use the Render backend URL
-  return `${API_BASE_URL}${endpoint}`;
+  const fullUrl = `${API_BASE_URL}${endpoint}`;
+  
+  // Debug logging in development
+  if (import.meta.env.DEV) {
+    console.log(`API Call: ${endpoint} -> ${fullUrl}`);
+  }
+  
+  return fullUrl;
 };
 
 export default apiUrl; 

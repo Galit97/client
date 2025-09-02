@@ -103,7 +103,7 @@ export default function VendorComparisonPage() {
           setWeddingId(weddingId);
           
           // Load comparisons from server
-          const comparisonsRes = await fetch(`/api/comparisons/vendor/${weddingId}`, { 
+          const comparisonsRes = await fetch(apiUrl(`/api/comparisons/vendor/${weddingId}`), { 
             headers: { Authorization: `Bearer ${token}` } 
           });
           if (comparisonsRes.ok) {
