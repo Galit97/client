@@ -2,8 +2,21 @@ services:
   - type: web
     name: wedding-planner-server
     env: node
-    buildCommand: npm run build
-    startCommand: npm start
+    buildCommand: |
+      echo "Starting build process..."
+      chmod +x build-server.sh
+      ./build-server.sh
+      echo "Build process completed!"
+    startCommand: |
+      if [ -f "Wedding-planner/server/dist/server.js" ]; then
+        cd Wedding-planner/server && npm start
+      elif [ -f "server/dist/server.js" ]; then
+        cd server && npm start
+      else
+        echo "❌ server.js not found! Available files:"
+        find . -name "server.js" -type f
+        exit 1
+      fi
     envVars:
       - key: NODE_ENV
         value: production
