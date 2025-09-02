@@ -19,6 +19,7 @@ const app: Application = express();
 
 // Add logging middleware
 app.use((req: Request, res: Response, next) => {
+  console.log(`${req.method} ${req.path} - Origin: ${req.get('origin')} - User-Agent: ${req.get('user-agent')}`);
   next();
 });
 
@@ -50,6 +51,18 @@ app.use("/api/budgets", budgetRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running");
+});
+
+// Add error handling middleware
+app.use((err: any, req: Request, res: Response, next: any) => {
+  console.error('Server error:', err);
+  res.status(500).json({ message: 'Internal server error', error: err.message });
+});
+
+// Add 404 handler for unmatched routes
+app.use((req: Request, res: Response) => {
+  console.log(`404 - Route not found: ${req.method} ${req.path}`);
+  res.status(404).json({ message: 'Route not found' });
 });
 
 const PORT = process.env.PORT || 5000;

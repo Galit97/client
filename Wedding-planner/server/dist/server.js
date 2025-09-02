@@ -21,6 +21,7 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 // Add logging middleware
 app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path} - Origin: ${req.get('origin')} - User-Agent: ${req.get('user-agent')}`);
     next();
 });
 // CORS configuration for production
@@ -49,6 +50,16 @@ app.use("/api/comparisons", comparisonRoutes_1.default);
 app.use("/api/budgets", budgetRoutes_1.default);
 app.get("/", (req, res) => {
     res.send("Server is running");
+});
+// Add error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Server error:', err);
+    res.status(500).json({ message: 'Internal server error', error: err.message });
+});
+// Add 404 handler for unmatched routes
+app.use((req, res) => {
+    console.log(`404 - Route not found: ${req.method} ${req.path}`);
+    res.status(404).json({ message: 'Route not found' });
 });
 const PORT = process.env.PORT || 5000;
 (0, db_1.default)()
