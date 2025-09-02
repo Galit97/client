@@ -190,15 +190,43 @@ export default function VendorComparisonPage() {
     }
   };
 
-  const handleRemoveComparison = (type: VendorType, id: string) => {
-    setExtraComparisons(prev => ({ ...prev, [type]: (prev[type] || []).filter(e => e.id !== id) }));
-  };
+     const handleRemoveComparison = (type: VendorType, id: string) => {
+     setExtraComparisons(prev => ({ ...prev, [type]: (prev[type] || []).filter(e => e.id !== id) }));
+     
+     // Also save the updated state to the server
+     try {
+       const token = localStorage.getItem('token');
+       if (!token || !weddingId) return;
+       
+       const updatedComparisons = {
+         ...extraComparisons,
+         [type]: (extraComparisons[type] || []).filter(e => e.id !== id)
+       };
+       
+       fetch(apiUrl('/api/comparisons/vendor'), {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+           Authorization: `Bearer ${token}`,
+         },
+         body: JSON.stringify({
+           weddingID: weddingId,
+           comparisons: updatedComparisons
+         }),
+       });
+     } catch (error) {
+       console.error("Error saving vendor comparison after removal:", error);
+     }
+   };
 
-  const filteredBySearch = <T extends { name: string }>(items: T[]) => {
-    if (!search.trim()) return items;
-    const term = search.trim().toLowerCase();
-    return items.filter(i => i.name.toLowerCase().includes(term));
-  };
+     const filteredBySearch = (items: (Vendor | ExtraComparison)[]) => {
+     if (!search.trim()) return items;
+     const term = search.trim().toLowerCase();
+     return items.filter(i => {
+       const itemName = 'vendorName' in i ? i.vendorName : i.name;
+       return itemName?.toLowerCase().includes(term);
+     });
+   };
 
   if (loading) {
     return (
@@ -243,18 +271,44 @@ export default function VendorComparisonPage() {
         </div>
       </div>
 
-      <div className="card-grid">
-        {selectedTypes.map(type => {
-          const existing = vendors.filter(v => v.type === type).map(v => ({ id: v._id, name: v.vendorName, price: v.price, notes: v.notes || '', phone: undefined, instagram: undefined }));
-          const extras = extraComparisons[type] || [];
-          const rows = filteredBySearch([...existing, ...extras]);
-          const minPrice = rows.length > 0 ? Math.min(...rows.map(r => r.price || 0)) : undefined;
+             <div className="card-grid">
+         {selectedTypes.map(type => {
+           // Get existing vendors for this type
+           const existingVendors = vendors.filter(v => v.type === type);
+           
+           // Get extra comparisons for this type
+           const extras = extraComparisons[type] || [];
+           
+           // Combine and remove duplicates based on name
+           const allItems = [...existingVendors, ...extras];
+           const uniqueItems = allItems.reduce((acc, item) => {
+             const itemName = 'vendorName' in item ? item.vendorName : item.name;
+             const existingItem = acc.find(existing => {
+               const existingName = 'vendorName' in existing ? existing.vendorName : existing.name;
+               return existingName.toLowerCase() === itemName.toLowerCase();
+             });
+             if (!existingItem) {
+               acc.push(item);
+             }
+             return acc;
+           }, [] as any[]);
+           
+           // Check for duplicates
+           const hasDuplicates = allItems.length > uniqueItems.length;
+           
+           const rows = filteredBySearch(uniqueItems);
+           const minPrice = rows.length > 0 ? Math.min(...rows.map(r => r.price || 0)) : undefined;
 
           return (
-            <div key={type} className="card">
-              <div className="card-header">
-                <div className="card-title">{hebrewTypeMap[type]}</div>
-              </div>
+                         <div key={type} className="card">
+               <div className="card-header">
+                 <div className="card-title">{hebrewTypeMap[type]}</div>
+                 {hasDuplicates && (
+                   <div style={{ fontSize: '12px', color: '#f57c00', marginTop: '4px' }}>
+                     ⚠️ נמצאו כפילויות - הוסרו אוטומטית
+                   </div>
+                 )}
+               </div>
 
               {rows.length === 0 ? (
                 <div className="muted" style={{ marginBottom: 10 }}>אין ספקים להשוואה כרגע. הוסף ספק להשוואה.</div>
@@ -269,24 +323,33 @@ export default function VendorComparisonPage() {
                 </div>
               )}
 
-              {rows.map(r => (
-                <div key={r.id} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1.5fr 1.5fr 2fr auto', gap: 8, alignItems: 'center', marginBottom: 6 }}>
-                  <div style={{ fontWeight: 600 }}>{r.name}</div>
-                  <div style={{ color: r.price === minPrice ? '#2e7d32' : undefined, fontWeight: r.price === minPrice ? 700 : 400 }}>{r.price.toLocaleString()} ₪</div>
-                  <div>{r.phone || '-'}</div>
-                  <div>{r.instagram ? (<a href={r.instagram} target="_blank" rel="noreferrer">קישור</a>) : '-'}</div>
-                  <div>{r.notes || '-'}</div>
-                  <div>
-                    {extras.find(e => e.id === r.id) ? (
-                      <button className="btn-icon" title="הסר" onClick={() => handleRemoveComparison(type, r.id)}>
-                        <Trash_24 style={{ width: '16px', height: '16px' }} />
-                      </button>
-                    ) : (
-                      <span className="muted">—</span>
-                    )}
-                  </div>
-                </div>
-              ))}
+                             {rows.map(r => {
+                 const isExtraComparison = 'name' in r;
+                 const displayName = isExtraComparison ? r.name : r.vendorName;
+                 const displayNotes = isExtraComparison ? r.notes : r.notes || '';
+                 const displayPhone = isExtraComparison ? r.phone : undefined;
+                 const displayInstagram = isExtraComparison ? r.instagram : undefined;
+                 const itemId = isExtraComparison ? r.id : r._id;
+                 
+                 return (
+                   <div key={itemId} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1.5fr 1.5fr 2fr auto', gap: 8, alignItems: 'center', marginBottom: 6 }}>
+                     <div style={{ fontWeight: 600 }}>{displayName}</div>
+                     <div style={{ color: r.price === minPrice ? '#2e7d32' : undefined, fontWeight: r.price === minPrice ? 700 : 400 }}>{r.price.toLocaleString()} ₪</div>
+                     <div>{displayPhone || '-'}</div>
+                     <div>{displayInstagram ? (<a href={displayInstagram} target="_blank" rel="noreferrer">קישור</a>) : '-'}</div>
+                     <div>{displayNotes || '-'}</div>
+                     <div>
+                       {isExtraComparison ? (
+                         <button className="btn-icon" title="הסר" onClick={() => handleRemoveComparison(type, r.id)}>
+                           <Trash_24 style={{ width: '16px', height: '16px' }} />
+                         </button>
+                       ) : (
+                         <span className="muted">—</span>
+                       )}
+                     </div>
+                   </div>
+                 );
+               })}
 
               {/* Add extra comparison row - only after at least one exists */}
               {rows.length > 0 ? (
