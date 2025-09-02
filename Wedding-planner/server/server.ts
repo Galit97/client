@@ -53,6 +53,15 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Server is running");
 });
 
+// Handle preflight requests explicitly
+app.options('*', (req: Request, res: Response) => {
+  res.header('Access-Control-Allow-Origin', req.get('origin') || '*');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,Origin,X-Requested-With,Accept');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.sendStatus(200);
+});
+
 // Add error handling middleware
 app.use((err: any, req: Request, res: Response, next: any) => {
   console.error('Server error:', err);

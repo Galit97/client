@@ -18,22 +18,22 @@ const comparisonRoutes_1 = __importDefault(require("./routes/comparisonRoutes"))
 const budgetRoutes_1 = __importDefault(require("./routes/budgetRoutes"));
 const path_1 = __importDefault(require("path"));
 dotenv_1.default.config();
-const app = (0, express_1.default)();
+const app = express_1.default();
 // Add logging middleware
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.path} - Origin: ${req.get('origin')} - User-Agent: ${req.get('user-agent')}`);
     next();
 });
 // CORS configuration for production
-app.use((0, cors_1.default)({
+app.use(cors_1.default({
     origin: process.env.NODE_ENV === 'production'
         ? [
-            'https://wedi-app.vercel.app', // Your Vercel frontend URL
-            'https://wedi-icevbne50-galits-projects-9399d19b.vercel.app', // Vercel preview URL
-            'http://localhost:5173', // For local development
+            'https://wedi-app.vercel.app',
+            'https://wedi-icevbne50-galits-projects-9399d19b.vercel.app',
+            'http://localhost:5173',
             'https://wedding-planner-wj86.onrender.com' // for server ok
         ]
-        : true, // Allow all origins in development
+        : true,
     credentials: true
 }));
 app.use(express_1.default.json({ limit: "100mb" }));
@@ -51,6 +51,14 @@ app.use("/api/budgets", budgetRoutes_1.default);
 app.get("/", (req, res) => {
     res.send("Server is running");
 });
+// Handle preflight requests explicitly
+app.options('*', (req, res) => {
+    res.header('Access-Control-Allow-Origin', req.get('origin') || '*');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,Origin,X-Requested-With,Accept');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.sendStatus(200);
+});
 // Add error handling middleware
 app.use((err, req, res, next) => {
     console.error('Server error:', err);
@@ -62,7 +70,7 @@ app.use((req, res) => {
     res.status(404).json({ message: 'Route not found' });
 });
 const PORT = process.env.PORT || 5000;
-(0, db_1.default)()
+db_1.default()
     .then(() => {
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 })
