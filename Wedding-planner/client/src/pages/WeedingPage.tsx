@@ -159,7 +159,7 @@ export default function WeddingPage() {
       try {
         // If weddingId is provided, fetch that specific wedding, otherwise fetch user's wedding
         const endpoint = weddingId ? `/api/weddings/${weddingId}` : "/api/weddings/owner";
-        const res = await fetch(endpoint, {
+        const res = await fetch(apiUrl(endpoint), {
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -6,9 +6,9 @@ export const apiUrl = (endpoint: string): string => {
   const fullUrl = `${API_BASE_URL}${endpoint}`;
   
   // Always log to debug the issue
-  console.log(`🔍 API Debug: ${endpoint} -> ${fullUrl}`);
-  console.log(`🔍 Current origin: ${window.location.origin}`);
-  console.log(`🔍 API_BASE_URL: ${API_BASE_URL}`);
+  console.log(` API Debug: ${endpoint} -> ${fullUrl}`);
+  console.log(` Current origin: ${window.location.origin}`);
+  console.log(` API_BASE_URL: ${API_BASE_URL}`);
   
   return fullUrl;
 };

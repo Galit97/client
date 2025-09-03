@@ -121,12 +121,12 @@ export default function VendorComparisonPage() {
           const res = await fetch(apiUrl('/api/vendors'), { headers: { Authorization: `Bearer ${token}` } });
           if (res.ok) {
             const vendorsData = await res.json();
-            console.log(`🔍 Loaded ${vendorsData.length} vendors for wedding ${weddingId}`);
+    
             
             // Safety check: if we get too many vendors, something is wrong
             if (vendorsData.length > 100) {
               console.error(`❌ Too many vendors loaded: ${vendorsData.length}. This suggests a backend issue.`);
-              console.log('🔍 First few vendors:', vendorsData.slice(0, 5));
+      
               // Still set the vendors but log the issue
             }
             
@@ -249,9 +249,8 @@ export default function VendorComparisonPage() {
   }
 
   // Debug information
-  console.log(`🔍 DEBUG: Total vendors loaded: ${vendors.length}`);
-  console.log(`🔍 DEBUG: Total extra comparisons: ${Object.values(extraComparisons).flat().length}`);
-  console.log(`🔍 DEBUG: Selected types: ${selectedTypes.join(', ')}`);
+
+
 
   if (noWeddingFound) {
     return (
@@ -300,7 +299,7 @@ export default function VendorComparisonPage() {
            
            // Combine and remove duplicates based on name (case-insensitive)
            const allItems = [...existingVendors, ...extras];
-           console.log(`🔍 Processing ${allItems.length} items for type ${type}: ${existingVendors.length} vendors + ${extras.length} comparisons`);
+       
            
            const uniqueItems = allItems.reduce((acc, item) => {
              const itemName = 'vendorName' in item ? item.vendorName : item.name;
