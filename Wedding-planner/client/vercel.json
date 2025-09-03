@@ -4,55 +4,5 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
-  ],
-  "routes": [
-    {
-      "src": "/dashboard",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/vendors",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/budget",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/guests",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/checklist",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/vendor-comparison",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/venue-comparison",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/important-things",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/wedding-day",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/my-weddings",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/wedding",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/account",
-      "dest": "/index.html"
-    }
   ]
 }

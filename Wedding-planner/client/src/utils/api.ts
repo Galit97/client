@@ -1,5 +1,5 @@
 // API utility for handling base URL in development vs production
-const API_BASE_URL = 'https://server-l5jj.onrender.com/';
+const API_BASE_URL = 'https://server-l5jj.onrender.com';
 
 export const apiUrl = (endpoint: string): string => {
   // Force production URL - no more localhost fallback
