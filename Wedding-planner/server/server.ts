@@ -27,12 +27,11 @@ app.use((req: Request, res: Response, next) => {
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? [
-        'https://client-ecru-five-45.vercel.app', // Your working Vercel frontend URL
-        'https://wedi-bud.vercel.app', // Your new Vercel frontend URL
-        'https://wedi-app.vercel.app', // Your Vercel frontend URL
-        'https://wedi-icevbne50-galits-projects-9399d19b.vercel.app', // Vercel preview URL
-        'http://localhost:5173', // For local development
-        'https://wedding-planner-wj86.onrender.com' // for server ok
+        'https://client-ecru-five-45.vercel.app', 
+       'client-git-main-galits-projects-9399d19b.vercel.app',
+        'client-94bai3xky-galits-projects-9399d19b.vercel.app', 
+        'http://localhost:5173', 
+        'https://server-l5jj.onrender.com/' 
       ]
     : true, // Allow all origins in development
   credentials: true
@@ -59,12 +58,11 @@ app.get("/", (req: Request, res: Response) => {
 app.options('*', (req: Request, res: Response) => {
   const origin = req.get('origin');
   const allowedOrigins = [
-    'https://client-ecru-five-45.vercel.app',
-    'https://wedi-bud.vercel.app',
-    'https://wedi-app.vercel.app',
-    'https://wedi-icevbne50-galits-projects-9399d19b.vercel.app',
-    'http://localhost:5173',
-    'https://wedding-planner-wj86.onrender.com'
+    'https://client-ecru-five-45.vercel.app', 
+    'client-git-main-galits-projects-9399d19b.vercel.app',
+     'client-94bai3xky-galits-projects-9399d19b.vercel.app', 
+     'http://localhost:5173', 
+     'https://server-l5jj.onrender.com/' 
   ];
   
   if (origin && allowedOrigins.includes(origin)) {
