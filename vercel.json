@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://wedding-planner-wj86.onrender.com/api/$1"
+      "destination": "hhttps://server-l5jj.onrender.com/api/$1"
     },
     {
       "source": "/(.*)",
