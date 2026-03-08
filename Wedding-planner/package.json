@@ -1,0 +1,41 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "server.ts",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "rimraf dist && tsc && echo 'Build completed successfully'",
+    "start": "node dist/server.js",
+    "dev": "ts-node server.ts",
+    "build:clean": "rimraf dist && tsc",
+    "prebuild": "rimraf dist",
+    "verify": "node verify-build.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^2.7.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^8.16.4",
+    "multer": "^2.0.2",
+    "resend": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/mongoose": "^5.11.96",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.0.15",
+    "nodemon": "^3.1.10",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.9.2"
+  }
+}

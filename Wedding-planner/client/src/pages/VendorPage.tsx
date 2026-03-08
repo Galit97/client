@@ -80,6 +80,7 @@ export default function VendorsListPage() {
   });
 
   const defaultVendorsCreatedRef = useRef(false);
+  const getDefaultVendorsSeedKey = (id: string) => `default-vendors-seeded:${id}`;
 
   // Pre-defined vendor templates
   const defaultVendors = [
@@ -150,8 +151,13 @@ export default function VendorsListPage() {
           const vendorsData = await vendorsRes.json();
           setVendors(vendorsData);
           
-          // If no vendors exist, create default ones
-          if (vendorsData.length === 0) {
+          // Seed default vendors ONLY ONCE per wedding.
+          // If the user deletes them later, we do NOT recreate them.
+          const seedKey = getDefaultVendorsSeedKey(weddingData._id);
+          const alreadySeeded = localStorage.getItem(seedKey) === "1";
+          if (!alreadySeeded && !defaultVendorsCreatedRef.current && vendorsData.length === 0) {
+            const createdVendors: Vendor[] = [];
+
             for (const defaultVendor of defaultVendors) {
               const vendorData = {
                 ...defaultVendor,
@@ -166,7 +172,7 @@ export default function VendorsListPage() {
 
               const createRes = await fetch(apiUrl("/api/vendors"), {
                 method: "POST",
-                headers: { 
+                headers: {
                   "Content-Type": "application/json",
                   Authorization: `Bearer ${token}`,
                 },
@@ -175,9 +181,15 @@ export default function VendorsListPage() {
 
               if (createRes.ok) {
                 const created = await createRes.json();
-                setVendors(prev => [...prev, created]);
+                createdVendors.push(created);
               }
             }
+
+            if (createdVendors.length > 0) {
+              setVendors(prev => [...prev, ...createdVendors]);
+            }
+
+            localStorage.setItem(seedKey, "1");
             defaultVendorsCreatedRef.current = true;
           }
         } else {
@@ -193,20 +205,6 @@ export default function VendorsListPage() {
 
     fetchData();
   }, []);
-
-  // Create default vendors after vendors are loaded
-  useEffect(() => {
-    if (vendors.length > 0 && weddingId) {
-      createDefaultVendorsIfNeeded();
-    }
-  }, [vendors, weddingId]);
-
-  // Create default vendors if no vendors exist at all
-  useEffect(() => {
-    if (vendors.length === 0 && weddingId && !loading) {
-      createDefaultVendorsIfNeeded();
-    }
-  }, [vendors.length, weddingId, loading]);
 
   // Filter and sort vendors
   const filteredAndSortedVendors = useMemo(() => {
@@ -388,67 +386,7 @@ export default function VendorsListPage() {
     }
   }
 
-  async function createDefaultVendorsIfNeeded() {
-    if (!weddingId || defaultVendorsCreatedRef.current) return;
-
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    try {
-      // Check which default vendors are missing
-      const existingVendorNames = vendors.map(v => v.vendorName);
-      const missingVendors = defaultVendors.filter(dv => !existingVendorNames.includes(dv.vendorName));
-
-      if (missingVendors.length === 0) {
-        defaultVendorsCreatedRef.current = true;
-        return; // All default vendors already exist
-      }
-
-      // Create missing vendors
-      for (const defaultVendor of missingVendors) {
-        const vendorData = {
-          ...defaultVendor,
-          price: 0,
-          depositPaid: false,
-          depositAmount: 0,
-          contractFile: "",
-          fileURL: "",
-          status: "Pending" as VendorStatus,
-          weddingID: weddingId,
-        };
-
-        const res = await fetch(apiUrl("/api/vendors"), {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(vendorData),
-        });
-
-        if (res.ok) {
-          const created = await res.json();
-          setVendors(prev => [...prev, created]);
-        } else {
-          const errorText = await res.text();
-          console.error(`Failed to create vendor: ${defaultVendor.vendorName}`, errorText);
-          console.error('Vendor data that failed:', vendorData);
-        }
-      }
-      
-      // Trigger dashboard refresh after creating default vendors
-      if ((window as any).notifyDashboardUpdate) {
-        (window as any).notifyDashboardUpdate('default-vendors-created');
-      } else if ((window as any).triggerDashboardRefresh) {
-        (window as any).triggerDashboardRefresh('default-vendors-created');
-      }
-      
-      defaultVendorsCreatedRef.current = true;
-    } catch (error) {
-      console.error("Error creating default vendors:", error);
-      defaultVendorsCreatedRef.current = true; // Even if there's an error, don't try again
-    }
-  }
+  // Note: We intentionally do NOT recreate defaults after seeding once.
 
   // File upload functions
   async function uploadFile(file: File): Promise<string | null> {
