@@ -96,5 +96,7 @@ connectDB()
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
   .catch((err: any) => {
-    console.error("Failed to start server:", err);
+    // db.ts has already logged the category, name, code, and message.
+    console.error("[server] Aborting startup because MongoDB is not reachable.");
+    process.exit(1);
   });
