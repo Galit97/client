@@ -26,3 +26,7 @@ services:
         sync: false
       - key: PORT
         value: 5000
+      - key: FRONTEND_URL
+        value: https://wedi-bud.onrender.com
+      - key: CLIENT_URL
+        value: https://wedi-bud.onrender.com

@@ -17,7 +17,7 @@ const createUser = async (req, res) => {
         const passwordHash = await bcrypt_1.default.hash(password, salt);
         let profileImageUrl;
         if (req.file) {
-            profileImageUrl = `https://server-l5jj.onrender.com/${req.file.filename}`;
+            profileImageUrl = `https://wedi-bud-server.onrender.com/${req.file.filename}`;
         }
         const newUser = await userModel_1.default.create({
             firstName,

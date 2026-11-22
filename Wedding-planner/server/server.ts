@@ -23,17 +23,47 @@ app.use((req: Request, res: Response, next) => {
   next();
 });
 
+const defaultAllowedOrigins = [
+  'https://client-ecru-five-45.vercel.app',
+  'https://client-git-main-galits-projects-9399d19b.vercel.app',
+  'https://client-94bai3xky-galits-projects-9399d19b.vercel.app',
+  'http://localhost:5173',
+  'https://wedi-bud.onrender.com',
+  'https://wedi-bud-server.onrender.com',
+];
+
+const envAllowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.CLIENT_URL,
+  ...(process.env.CLIENT_ORIGINS || '').split(','),
+]
+  .map((value) => value?.trim())
+  .filter((value): value is string => Boolean(value))
+  .map((value) => value.replace(/\/$/, ''));
+
+const allowedOrigins = Array.from(new Set([...defaultAllowedOrigins, ...envAllowedOrigins]));
+
+const isAllowedOrigin = (origin?: string | null) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+
+  try {
+    const { hostname } = new URL(origin);
+    // Allow current and future Vercel preview/production URLs after domain changes
+    return hostname.endsWith('.vercel.app') || hostname.endsWith('.onrender.com');
+  } catch {
+    return false;
+  }
+};
+
 // CORS configuration for production
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? [
-        'https://client-ecru-five-45.vercel.app', 
-       'client-git-main-galits-projects-9399d19b.vercel.app',
-        'client-94bai3xky-galits-projects-9399d19b.vercel.app', 
-        'http://localhost:5173', 
-        'https://server-l5jj.onrender.com/' 
-      ]
-    : true, // Allow all origins in development
+  origin: (origin, callback) => {
+    if (process.env.NODE_ENV !== 'production' || isAllowedOrigin(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
   credentials: true
 }));
 app.use(express.json({ limit: "100mb" }));
@@ -57,20 +87,13 @@ app.get("/", (req: Request, res: Response) => {
 // Handle preflight requests explicitly
 app.options('*', (req: Request, res: Response) => {
   const origin = req.get('origin');
-  const allowedOrigins = [
-    'https://client-ecru-five-45.vercel.app', 
-    'client-git-main-galits-projects-9399d19b.vercel.app',
-     'client-94bai3xky-galits-projects-9399d19b.vercel.app', 
-     'http://localhost:5173', 
-     'https://server-l5jj.onrender.com/' 
-  ];
-  
-  if (origin && allowedOrigins.includes(origin)) {
+
+  if (origin && isAllowedOrigin(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
-  } else {
+  } else if (!origin) {
     res.header('Access-Control-Allow-Origin', '*');
   }
-  
+
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,Origin,X-Requested-With,Accept');
   res.header('Access-Control-Allow-Credentials', 'true');

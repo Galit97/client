@@ -21,7 +21,7 @@ const createUser = async (req: MulterRequest, res: Response) => {
 
     let profileImageUrl;
     if (req.file) {
-      profileImageUrl = `https://server-l5jj.onrender.com/${req.file.filename}`;
+      profileImageUrl = `https://wedi-bud-server.onrender.com/${req.file.filename}`;
     }
 
     const newUser = await User.create({
